@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\jbraceyLaptop\\HDD\\Projects\\C#NET\\OpenGL\\WinOpenGL_ShaderToy\\ShaderToy_Components\\ShaderToy_Components.csproj": {}
+    "C:\\inetpub\\GitHub\\WinOpenGL_ShaderToyNET\\ShaderToy_Components\\ShaderToy_Components.csproj": {}
   },
   "projects": {
-    "C:\\jbraceyLaptop\\HDD\\Projects\\C#NET\\OpenGL\\WinOpenGL_ShaderToy\\ShaderToy_Components\\ShaderToy_Components.csproj": {
+    "C:\\inetpub\\GitHub\\WinOpenGL_ShaderToyNET\\ShaderToy_Components\\ShaderToy_Components.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\jbraceyLaptop\\HDD\\Projects\\C#NET\\OpenGL\\WinOpenGL_ShaderToy\\ShaderToy_Components\\ShaderToy_Components.csproj",
+        "projectUniqueName": "C:\\inetpub\\GitHub\\WinOpenGL_ShaderToyNET\\ShaderToy_Components\\ShaderToy_Components.csproj",
         "projectName": "ShaderToy_Components",
-        "projectPath": "C:\\jbraceyLaptop\\HDD\\Projects\\C#NET\\OpenGL\\WinOpenGL_ShaderToy\\ShaderToy_Components\\ShaderToy_Components.csproj",
+        "projectPath": "C:\\inetpub\\GitHub\\WinOpenGL_ShaderToyNET\\ShaderToy_Components\\ShaderToy_Components.csproj",
         "packagesPath": "C:\\Users\\jvipe\\.nuget\\packages\\",
-        "outputPath": "C:\\jbraceyLaptop\\HDD\\Projects\\C#NET\\OpenGL\\WinOpenGL_ShaderToy\\ShaderToy_Components\\obj\\",
+        "outputPath": "C:\\inetpub\\GitHub\\WinOpenGL_ShaderToyNET\\ShaderToy_Components\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "configFilePaths": [
