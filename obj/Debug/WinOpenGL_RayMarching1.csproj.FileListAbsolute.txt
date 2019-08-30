@@ -1,0 +1,17 @@
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\WinOpenGL_RayMarching1.exe
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\WinOpenGL_RayMarching1.pdb
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.dll
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.GLControl.dll
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.pdb
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.xml
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.GLControl.pdb
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\OpenTK.GLControl.xml
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.csprojAssemblyReference.cache
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.formMain.resources
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.Properties.Resources.resources
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.csproj.GenerateResource.cache
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.csproj.CoreCompileInputs.cache
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.csproj.CopyComplete
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.exe
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\obj\Debug\WinOpenGL_RayMarching1.pdb
+C:\jbraceyLaptop\HDD\Projects\C#NET\OpenGL\WinOpenGL_RayMarching1\bin\Debug\System.ValueTuple.dll
