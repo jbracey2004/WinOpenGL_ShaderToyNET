@@ -4,6 +4,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -161,15 +162,17 @@ namespace modProject
 			}
 			public clsVertexDescription Desc { private set; get; }
 			public string Name { set; get; }
-			public VertexAttribPointerType ElementGLType { get; set; }
+			private VertexAttribPointerType glElementType;
+			public VertexAttribPointerType ElementGLType { get { return glElementType; } set { glElementType = value; Desc.RaiseUpdated(); } }
 			public Type ElementType { get { return VertexTypes[ElementGLType]; } }
 			public int ElementSize { get { return Marshal.SizeOf(VertexTypes[ElementGLType]); } }
-			public int ElementCount { set; get; }
+			private int intElementCount;
+			public int ElementCount { set { intElementCount = value; Desc.RaiseUpdated(); } get { return intElementCount; } }
 			public int ComponentSize { get { return ElementSize * ElementCount; } }
 			public int ComponentOffset { get { return Desc.GetComponentOffset(this); } }
 			public string AttributeName { set; get; }
 			private int intIndex = 0;
-			public int Index { set { Desc.SetComponentIndex(this, value); } get { return intIndex; } }
+			public int Index { set { Desc.SetComponentIndex(this, value); Desc.RaiseUpdated(); } get { return intIndex; } }
 			public void Dispose()
 			{
 				Desc = null;
@@ -179,11 +182,16 @@ namespace modProject
 				return $"{Name} {{<{ElementGLType}> {((AttributeName != null)?($"Attr: {AttributeName}; "):"")}Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; Offset: {ComponentOffset}B; }}";
 			}
 		}
-		public class clsVertexDescription : IDisposable
+		public class clsVertexDescription : IDisposable, IList<clsVertexComponent>
 		{
 			private List<clsVertexComponent> aryComponents = new List<clsVertexComponent>();
 			public delegate void delegateUpdated();
 			public event delegateUpdated Updated;
+			internal void RaiseUpdated()
+			{
+				delegateUpdated evnt = new delegateUpdated(Updated);
+				evnt?.Invoke();
+			}
 			public clsVertexComponent this[int index]
 			{
 				get
@@ -194,22 +202,25 @@ namespace modProject
 				{
 					aryComponents[index] = value;
 					Sort();
+					RaiseUpdated();
 				}
 			}
-			public void AddComponent(VertexAttribPointerType glType, string Name, string AttributeName, int Components)
+			public void Add(VertexAttribPointerType glType, string Name, string AttributeName, int Components)
 			{
 				clsVertexComponent componentNew = new clsVertexComponent(this, glType, Name, AttributeName, Components);
 				componentNew.Index = aryComponents.Count;
 				aryComponents.Add(componentNew);
+				RaiseUpdated();
 			}
-			public void RemoveComponent(clsVertexComponent itm)
+			public void Remove(clsVertexComponent itm)
 			{
 				if (!aryComponents.Contains(itm)) return;
 				itm.Dispose();
 				aryComponents.Remove(itm);
 				Sort();
+				RaiseUpdated();
 			}
-			public int ComponentCount { get { return aryComponents.Count; } }
+			public int Count { get { return aryComponents.Count; } }
 			public int TotalVertexSize
 			{
 				get
@@ -222,6 +233,9 @@ namespace modProject
 					return 0;
 				}
 			}
+
+			public bool IsReadOnly => ((IList<clsVertexComponent>)aryComponents).IsReadOnly;
+
 			protected void Sort()
 			{
 				aryComponents.Sort((itmA, itmB) => (itmB.Index - itmA.Index));
@@ -248,6 +262,7 @@ namespace modProject
 				{
 					aryComponents[itr].Index = itr;
 				}
+				RaiseUpdated();
 			}
 			public void Dispose()
 			{
@@ -260,14 +275,153 @@ namespace modProject
 				foreach (clsVertexComponent itm in aryComponents) strRet += itm.Name + "; ";
 				return strRet;
 			}
+			public int IndexOf(clsVertexComponent item)
+			{
+				return aryComponents.IndexOf(item);
+			}
+			public void Insert(int index, clsVertexComponent item)
+			{
+				aryComponents.Insert(index, item);
+				item.Index = index;
+				Sort();
+				RaiseUpdated();
+			}
+			public void RemoveAt(int index)
+			{
+				aryComponents.RemoveAt(index);
+				Sort();
+				RaiseUpdated();
+			}
+			public void Add(clsVertexComponent item)
+			{
+				aryComponents.Add(item);
+				Sort();
+				RaiseUpdated();
+			}
+			public void Clear()
+			{
+				aryComponents.Clear();
+				RaiseUpdated();
+			}
+			public bool Contains(clsVertexComponent item)
+			{
+				return aryComponents.Contains(item);
+			}
+			public void CopyTo(clsVertexComponent[] array, int arrayIndex)
+			{
+				aryComponents.CopyTo(array, arrayIndex);
+			}
+			bool ICollection<clsVertexComponent>.Remove(clsVertexComponent item)
+			{
+				return aryComponents.Remove(item);
+			}
+			public IEnumerator<clsVertexComponent> GetEnumerator()
+			{
+				return aryComponents.GetEnumerator();
+			}
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return aryComponents.GetEnumerator();
+			}
 		}
-		public class clsVertexCollection : IDisposable
+		public class clsVertexCollectionEnumerator : IEnumerator<clsVertex>
+		{
+			public clsVertex Current { get; set; } = null;
+
+			object IEnumerator.Current => Current;
+
+			public IntPtr Data;
+			public clsVertexDescription Desc;
+			private int intIndex = 0;
+			public clsVertexCollectionEnumerator(IntPtr ptrData, clsVertexDescription refDesc)
+			{
+				Desc = refDesc;
+				Current = new clsVertex(ptrData, refDesc, 0);
+			}
+
+			public void Dispose()
+			{
+				Desc = null;
+				Current = null;
+			}
+
+			public bool MoveNext()
+			{
+				intIndex++;
+				try
+				{
+					Current = new clsVertex(Data, Desc, intIndex);
+					return true;
+				}
+				catch
+				{
+					intIndex--;
+					return false;
+				}
+				
+			}
+			public void Reset()
+			{
+				intIndex = 0;
+			}
+		}
+		public class clsVertex
+		{
+			public Dictionary<string, object[]> Components = new Dictionary<string, object[]>();
+			public clsVertex(IntPtr ptrData, clsVertexDescription desc, int index)
+			{
+				for (int compItr = 0; compItr < desc.Count; compItr++)
+				{
+					List<object> ary = new List<object>();
+					for (int elemItr = 0; elemItr < desc[compItr].ElementCount; elemItr++)
+					{
+						ary.Add(Marshal.PtrToStructure(ptrData + GetByteLocation(desc, index, compItr, elemItr), desc[compItr].ElementType));
+					}
+					Components.Add(desc[compItr].Name, ary.ToArray());
+				}
+			}
+			public object[] this[int index]
+			{
+				get
+				{
+					string[] componentnames = new string[Components.Keys.Count];
+					Components.Keys.CopyTo(componentnames, 0);
+					return Components[componentnames[index]];
+				}
+				set
+				{
+					string[] componentnames = new string[Components.Keys.Count];
+					Components.Keys.CopyTo(componentnames, 0);
+					value.CopyTo(Components[componentnames[index]], 0);
+				}
+			}
+			public object[] this[string ComponentName]
+			{
+				get
+				{
+					if(Components.ContainsKey(ComponentName)) return Components[ComponentName];
+					return null;
+				}
+				set
+				{
+					value.CopyTo(Components[ComponentName], 0);
+				}
+			}
+			public static int GetByteLocation(clsVertexDescription desc, int VertexIdx, int VertexComponentIdx, int VertexComponentElementIdx)
+			{
+				return VertexIdx * desc.TotalVertexSize +
+					desc[VertexComponentIdx].ComponentOffset +
+					desc[VertexComponentIdx].ElementSize * VertexComponentElementIdx;
+			}
+		}
+		public class clsVertexCollection : IDisposable, IList<clsVertex>
 		{
 			private IntPtr addrData;
 			public clsVertexCollection(clsVertexDescription refDesc)
 			{
 				addrData = Marshal.AllocHGlobal(0);
 				Desc = refDesc;
+				Desc.Updated += desc_Updated;
 			}
 			private clsVertexDescription refDesc;
 			public clsVertexDescription Desc
@@ -278,45 +432,96 @@ namespace modProject
 				}
 				set
 				{
-
+					refDesc.Updated -= desc_Updated;
+					value.Updated += desc_Updated;
+					refDesc = value;
+					desc_Updated();
 				}
 			}
-			public Array this[int index]
+
+			public int Count => throw new NotImplementedException();
+
+			public bool IsReadOnly => false;
+
+			public clsVertex this[int index]
 			{
 				get
 				{
-					List<KeyValuePair<string, Array>> objRet = new List<KeyValuePair<string, Array>>();
-					for(int compItr = 0; compItr < refDesc.ComponentCount; compItr++)
-					{
-						List<object> ary = new List<object>();
-						for(int elemItr = 0; elemItr < refDesc[compItr].ElementCount; elemItr++)
-						{
-							ary.Add(Marshal.PtrToStructure(addrData + GetByteLocation(refDesc, index, compItr, elemItr), refDesc[compItr].ElementType));
-						}
-						objRet.Add(new KeyValuePair<string, Array>(refDesc[compItr].Name, ary.ToArray()));
-					}
-					return objRet.ToArray();
+					return new clsVertex(addrData, refDesc, index);
 				}
 				set
 				{
-
+					for(int itr = 0; itr < value.Components.Count; itr++)
+					{
+						
+					}
 				}
 			}
-			public static int GetByteLocation(clsVertexDescription desc, int VertexIdx, int VertexComponentIdx, int VertexComponentElementIdx)
-			{
-				return VertexIdx * desc.TotalVertexSize + 
-					desc[VertexComponentIdx].ComponentOffset + 
-					desc[VertexComponentIdx].ElementSize*VertexComponentElementIdx;
-			}
+
 			private void desc_Updated()
 			{
 
 			}
 			public void Dispose()
 			{
-				Marshal.FreeHGlobal(addrData);
 				refDesc.Updated -= desc_Updated;
+				Marshal.FreeHGlobal(addrData);
 				refDesc = null;
+			}
+
+			IEnumerator<clsVertex> IEnumerable<clsVertex>.GetEnumerator()
+			{
+				throw new NotImplementedException();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				throw new NotImplementedException();
+			}
+
+			public int IndexOf(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void Insert(int index, clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void Add(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void Clear()
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool Contains(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void CopyTo(clsVertex[] array, int arrayIndex)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool Remove(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IEnumerator<clsVertex> GetEnumerator()
+			{
+				throw new NotImplementedException();
 			}
 		}
 		public clsVertexDescription VertexDescription { set; get; }
