@@ -367,7 +367,7 @@ namespace modProject
 		}
 		public class clsVertex
 		{
-			public Dictionary<string, object[]> Components = new Dictionary<string, object[]>();
+			private Dictionary<string, object[]> Components = new Dictionary<string, object[]>();
 			public clsVertex(IntPtr ptrData, clsVertexDescription desc, int index)
 			{
 				for (int compItr = 0; compItr < desc.Count; compItr++)
@@ -380,6 +380,7 @@ namespace modProject
 					Components.Add(desc[compItr].Name, ary.ToArray());
 				}
 			}
+			public int Count { get { return Components.Count; } }
 			public object[] this[int index]
 			{
 				get
@@ -439,7 +440,7 @@ namespace modProject
 				}
 			}
 
-			public int Count => throw new NotImplementedException();
+			public int Count { set; get; }
 
 			public bool IsReadOnly => false;
 
@@ -451,7 +452,7 @@ namespace modProject
 				}
 				set
 				{
-					for(int itr = 0; itr < value.Components.Count; itr++)
+					for(int itr = 0; itr < value.Count; itr++)
 					{
 						
 					}
@@ -471,57 +472,49 @@ namespace modProject
 
 			IEnumerator<clsVertex> IEnumerable<clsVertex>.GetEnumerator()
 			{
-				throw new NotImplementedException();
+				return new clsVertexCollectionEnumerator(addrData, refDesc);
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()
 			{
-				throw new NotImplementedException();
+				return new clsVertexCollectionEnumerator(addrData, refDesc);
 			}
 
 			public int IndexOf(clsVertex item)
 			{
 				throw new NotImplementedException();
 			}
-
 			public void Insert(int index, clsVertex item)
 			{
 				throw new NotImplementedException();
 			}
-
 			public void RemoveAt(int index)
 			{
 				throw new NotImplementedException();
 			}
-
 			public void Add(clsVertex item)
 			{
 				throw new NotImplementedException();
 			}
-
 			public void Clear()
 			{
 				throw new NotImplementedException();
 			}
-
 			public bool Contains(clsVertex item)
 			{
 				throw new NotImplementedException();
 			}
-
 			public void CopyTo(clsVertex[] array, int arrayIndex)
 			{
 				throw new NotImplementedException();
 			}
-
 			public bool Remove(clsVertex item)
 			{
 				throw new NotImplementedException();
 			}
-
 			public IEnumerator<clsVertex> GetEnumerator()
 			{
-				throw new NotImplementedException();
+				return new clsVertexCollectionEnumerator(addrData, refDesc);
 			}
 		}
 		public clsVertexDescription VertexDescription { set; get; }
