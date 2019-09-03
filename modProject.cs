@@ -7,10 +7,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using static modProject.clsProjectObject;
+using static modProject.modExtern;
 using static OpenTK.Platform.Utilities;
 
 namespace WinOpenGL_ShaderToy
@@ -52,6 +55,11 @@ namespace WinOpenGL_ShaderToy
 }
 namespace modProject
 {
+	public static class modExtern
+	{
+		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+		public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+	}
 	public class clsProject
 	{
 		public string Name { set; get; }
@@ -137,7 +145,7 @@ namespace modProject
 	}
 	public class clsGeometry : clsProjectObject
 	{
-		public class clsVertexComponent : IDisposable
+		public class clsVertexDescriptionComponent : IDisposable
 		{
 			public static Dictionary<VertexAttribPointerType, Type> VertexTypes = new Dictionary<VertexAttribPointerType, Type>()
 			{
@@ -152,16 +160,25 @@ namespace modProject
 				{VertexAttribPointerType.Float, typeof(float)},
 				{VertexAttribPointerType.Double, typeof(double)}
 			};
-			public clsVertexComponent(clsVertexDescription refDesc, VertexAttribPointerType glType, string strName, string strAttrName, int intElements) 
+			public clsVertexDescriptionComponent(clsVertexDescription refDesc, string strName, int intElements, object InitialValue)
+			{
+				Desc = refDesc;
+				Name = strName;
+				ElementGLType = VertexAttribPointerType.Byte;
+				ElementCount = intElements;
+				InitialElementValue = Convert.ChangeType(InitialValue, ElementType);
+			}
+			public clsVertexDescriptionComponent(clsVertexDescription refDesc, VertexAttribPointerType glType, string strName, int intElements, object InitialValue) 
 			{
 				Desc = refDesc;
 				ElementGLType = glType;
 				Name = strName;
-				AttributeName = strAttrName;
 				ElementCount = intElements;
+				InitialElementValue = Convert.ChangeType(InitialValue, ElementType);
 			}
 			public clsVertexDescription Desc { private set; get; }
 			public string Name { set; get; }
+			public object InitialElementValue { set; get; }
 			private VertexAttribPointerType glElementType;
 			public VertexAttribPointerType ElementGLType { get { return glElementType; } set { glElementType = value; Desc.RaiseUpdated(); } }
 			public Type ElementType { get { return VertexTypes[ElementGLType]; } }
@@ -169,8 +186,6 @@ namespace modProject
 			private int intElementCount;
 			public int ElementCount { set { intElementCount = value; Desc.RaiseUpdated(); } get { return intElementCount; } }
 			public int ComponentSize { get { return ElementSize * ElementCount; } }
-			public int ComponentOffset { get { return Desc.GetComponentOffset(this); } }
-			public string AttributeName { set; get; }
 			private int intIndex = 0;
 			public int Index { set { Desc.SetComponentIndex(this, value); Desc.RaiseUpdated(); } get { return intIndex; } }
 			public void Dispose()
@@ -179,12 +194,12 @@ namespace modProject
 			}
 			public override string ToString()
 			{
-				return $"{Name} {{<{ElementGLType}> {((AttributeName != null)?($"Attr: {AttributeName}; "):"")}Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; Offset: {ComponentOffset}B; }}";
+				return $"{Name} {{<{ElementGLType}> Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; }}";
 			}
 		}
-		public class clsVertexDescription : IDisposable, IList<clsVertexComponent>
+		public class clsVertexDescription : IDisposable, IList<clsVertexDescriptionComponent>
 		{
-			private List<clsVertexComponent> aryComponents = new List<clsVertexComponent>();
+			internal List<clsVertexDescriptionComponent> aryComponents = new List<clsVertexDescriptionComponent>();
 			public delegate void delegateUpdated();
 			public event delegateUpdated Updated;
 			internal void RaiseUpdated()
@@ -192,7 +207,7 @@ namespace modProject
 				delegateUpdated evnt = new delegateUpdated(Updated);
 				evnt?.Invoke();
 			}
-			public clsVertexComponent this[int index]
+			public clsVertexDescriptionComponent this[int index]
 			{
 				get
 				{
@@ -201,85 +216,25 @@ namespace modProject
 				set
 				{
 					aryComponents[index] = value;
+					value.Index = index;
 					Sort();
 					RaiseUpdated();
 				}
 			}
-			public void Add(VertexAttribPointerType glType, string Name, string AttributeName, int Components)
+			public void Add(VertexAttribPointerType glType, string Name, int Components, object InitialValue)
 			{
-				clsVertexComponent componentNew = new clsVertexComponent(this, glType, Name, AttributeName, Components);
+				clsVertexDescriptionComponent componentNew = new clsVertexDescriptionComponent(this, glType, Name, Components, InitialValue);
 				componentNew.Index = aryComponents.Count;
 				aryComponents.Add(componentNew);
 				RaiseUpdated();
 			}
-			public void Remove(clsVertexComponent itm)
+			public void Add(clsVertexDescriptionComponent item)
 			{
-				if (!aryComponents.Contains(itm)) return;
-				itm.Dispose();
-				aryComponents.Remove(itm);
+				aryComponents.Add(item);
 				Sort();
 				RaiseUpdated();
 			}
-			public int Count { get { return aryComponents.Count; } }
-			public int TotalVertexSize
-			{
-				get
-				{
-					int intRet = 0;
-					for(int itr = 0; itr < aryComponents.Count; itr++)
-					{
-						intRet += aryComponents[itr].ComponentSize;
-					}
-					return 0;
-				}
-			}
-
-			public bool IsReadOnly => ((IList<clsVertexComponent>)aryComponents).IsReadOnly;
-
-			protected void Sort()
-			{
-				aryComponents.Sort((itmA, itmB) => (itmB.Index - itmA.Index));
-			}
-			protected internal int GetComponentOffset(clsVertexComponent itm)
-			{
-				int intRet = 0;
-				for(int itr = 0; itr < aryComponents.Count; itr++)
-				{
-					if(aryComponents[itr] == itm)
-					{
-						return intRet;
-					}
-					intRet += aryComponents[itr].ComponentSize;
-				}
-				return 0;
-			}
-			protected internal void SetComponentIndex(clsVertexComponent itm, int index)
-			{
-				if (!aryComponents.Contains(itm)) return;
-				itm.Index = index;
-				Sort();
-				for (int itr = 0; itr < aryComponents.Count; itr++)
-				{
-					aryComponents[itr].Index = itr;
-				}
-				RaiseUpdated();
-			}
-			public void Dispose()
-			{
-				foreach (clsVertexComponent itm in aryComponents) itm.Dispose();
-				aryComponents.Clear();
-			}
-			public override string ToString()
-			{
-				string strRet = "";
-				foreach (clsVertexComponent itm in aryComponents) strRet += itm.Name + "; ";
-				return strRet;
-			}
-			public int IndexOf(clsVertexComponent item)
-			{
-				return aryComponents.IndexOf(item);
-			}
-			public void Insert(int index, clsVertexComponent item)
+			public void Insert(int index, clsVertexDescriptionComponent item)
 			{
 				aryComponents.Insert(index, item);
 				item.Index = index;
@@ -292,9 +247,11 @@ namespace modProject
 				Sort();
 				RaiseUpdated();
 			}
-			public void Add(clsVertexComponent item)
+			public void Remove(clsVertexDescriptionComponent itm)
 			{
-				aryComponents.Add(item);
+				if (!aryComponents.Contains(itm)) return;
+				itm.Dispose();
+				aryComponents.Remove(itm);
 				Sort();
 				RaiseUpdated();
 			}
@@ -303,19 +260,67 @@ namespace modProject
 				aryComponents.Clear();
 				RaiseUpdated();
 			}
-			public bool Contains(clsVertexComponent item)
+			public int Count { get { return aryComponents.Count; } }
+			public int TotalVertexSize
+			{
+				get
+				{
+					int intRet = 0;
+					for(int itr = 0; itr < aryComponents.Count; itr++)
+					{
+						intRet += aryComponents[itr].ComponentSize;
+					}
+					return intRet;
+				}
+			}
+
+			public bool IsReadOnly => ((IList<clsVertexDescriptionComponent>)aryComponents).IsReadOnly;
+
+			protected void Sort()
+			{
+				aryComponents.Sort((itmA, itmB) => (itmB.Index - itmA.Index));
+			}
+			protected internal int GetComponentOffset(clsVertexDescriptionComponent itm)
+			{
+				int intRet = 0;
+				for(int itr = 0; itr < aryComponents.Count; itr++)
+				{
+					if(aryComponents[itr] == itm)
+					{
+						return intRet;
+					}
+					intRet += aryComponents[itr].ComponentSize;
+				}
+				return 0;
+			}
+			protected internal void SetComponentIndex(clsVertexDescriptionComponent itm, int index)
+			{
+				if (!aryComponents.Contains(itm)) return;
+				itm.Index = index;
+				Sort();
+				for (int itr = 0; itr < aryComponents.Count; itr++)
+				{
+					aryComponents[itr].Index = itr;
+				}
+				RaiseUpdated();
+			}
+			public int IndexOf(clsVertexDescriptionComponent item)
+			{
+				return aryComponents.IndexOf(item);
+			}
+			public bool Contains(clsVertexDescriptionComponent item)
 			{
 				return aryComponents.Contains(item);
 			}
-			public void CopyTo(clsVertexComponent[] array, int arrayIndex)
+			public void CopyTo(clsVertexDescriptionComponent[] array, int arrayIndex)
 			{
 				aryComponents.CopyTo(array, arrayIndex);
 			}
-			bool ICollection<clsVertexComponent>.Remove(clsVertexComponent item)
+			bool ICollection<clsVertexDescriptionComponent>.Remove(clsVertexDescriptionComponent item)
 			{
 				return aryComponents.Remove(item);
 			}
-			public IEnumerator<clsVertexComponent> GetEnumerator()
+			public IEnumerator<clsVertexDescriptionComponent> GetEnumerator()
 			{
 				return aryComponents.GetEnumerator();
 			}
@@ -323,65 +328,53 @@ namespace modProject
 			{
 				return aryComponents.GetEnumerator();
 			}
-		}
-		public class clsVertexCollectionEnumerator : IEnumerator<clsVertex>
-		{
-			public clsVertex Current { get; set; } = null;
-
-			object IEnumerator.Current => Current;
-
-			public IntPtr Data;
-			public clsVertexDescription Desc;
-			private int intIndex = 0;
-			public clsVertexCollectionEnumerator(IntPtr ptrData, clsVertexDescription refDesc)
-			{
-				Desc = refDesc;
-				Current = new clsVertex(ptrData, refDesc, 0);
-			}
-
 			public void Dispose()
 			{
-				Desc = null;
-				Current = null;
+				foreach (clsVertexDescriptionComponent itm in aryComponents) itm.Dispose();
+				aryComponents.Clear();
 			}
-
-			public bool MoveNext()
+			public override string ToString()
 			{
-				intIndex++;
-				try
-				{
-					Current = new clsVertex(Data, Desc, intIndex);
-					return true;
-				}
-				catch
-				{
-					intIndex--;
-					return false;
-				}
-				
-			}
-			public void Reset()
-			{
-				intIndex = 0;
+				string strRet = "";
+				foreach (clsVertexDescriptionComponent itm in aryComponents) strRet += itm.Name + "; ";
+				return strRet;
 			}
 		}
 		public class clsVertex
 		{
-			private Dictionary<string, object[]> Components = new Dictionary<string, object[]>();
-			public clsVertex(IntPtr ptrData, clsVertexDescription desc, int index)
+			public clsVertexCollection VertexCollection { private set; get; }
+			public int Index { get { return ((VertexCollection != null) ? (VertexCollection.aryVertices.IndexOf(this)) : (-1)); } }
+			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { get { return ((VertexCollection != null) ? (VertexCollection.Data) : (null)); } }
+			public clsVertexDescription Desc { get { return ((VertexCollection != null) ? (VertexCollection.Desc) : (null)); } }
+			public int TotalSize { get { return ((Desc != null) ? (Desc.TotalVertexSize) : (0)); } }
+			public clsVertex(clsVertexCollection refCollection)
 			{
-				for (int compItr = 0; compItr < desc.Count; compItr++)
+				VertexCollection = refCollection;
+			}
+			public Dictionary<string, Array> Components
+			{
+				get
 				{
-					List<object> ary = new List<object>();
-					for (int elemItr = 0; elemItr < desc[compItr].ElementCount; elemItr++)
+					Dictionary<clsVertexDescriptionComponent, List<object>> data = Data;
+					clsVertexDescription desc = Desc;
+					int index = Index;
+					if (data == null) return null;
+					if (desc == null) return null;
+					if (index < 0) return null;
+					Dictionary<string, Array> ret = new Dictionary<string, Array>();
+					for (int compItr = 0; compItr < desc.Count; compItr++)
 					{
-						ary.Add(Marshal.PtrToStructure(ptrData + GetByteLocation(desc, index, compItr, elemItr), desc[compItr].ElementType));
+						object[] itm = new object[desc[compItr].ElementCount];
+						Data[desc[compItr]].CopyTo(index * desc[compItr].ElementCount, itm, 0, desc[compItr].ElementCount);
+						if (itm != null)
+						{
+							ret.Add(desc[compItr].Name, itm.ToArray());
+						}
 					}
-					Components.Add(desc[compItr].Name, ary.ToArray());
+					return ret;
 				}
 			}
-			public int Count { get { return Components.Count; } }
-			public object[] this[int index]
+			public Array this[int index]
 			{
 				get
 				{
@@ -394,9 +387,20 @@ namespace modProject
 					string[] componentnames = new string[Components.Keys.Count];
 					Components.Keys.CopyTo(componentnames, 0);
 					value.CopyTo(Components[componentnames[index]], 0);
+					if (Data != null && Desc != null)
+					{
+						clsVertexDescriptionComponent comp = Desc[index];
+						if (comp != null)
+						{
+							for (int itr = 0; itr < comp.ElementCount; itr++)
+							{
+								Data[comp][Index * comp.ElementCount + itr] = value.GetValue(itr);
+							}
+						}
+					}
 				}
 			}
-			public object[] this[string ComponentName]
+			public Array this[string ComponentName]
 			{
 				get
 				{
@@ -406,21 +410,41 @@ namespace modProject
 				set
 				{
 					value.CopyTo(Components[ComponentName], 0);
+					if (Data != null && Desc != null)
+					{
+						clsVertexDescriptionComponent comp = Desc.First(itm => itm.Name == ComponentName);
+						if(comp != null)
+						{
+							for (int itr = 0; itr < comp.ElementCount; itr++)
+							{
+								Data[comp][Index * comp.ElementCount + itr] = value.GetValue(itr);
+							}
+						}
+					}
 				}
 			}
-			public static int GetByteLocation(clsVertexDescription desc, int VertexIdx, int VertexComponentIdx, int VertexComponentElementIdx)
+			public override string ToString()
 			{
-				return VertexIdx * desc.TotalVertexSize +
-					desc[VertexComponentIdx].ComponentOffset +
-					desc[VertexComponentIdx].ElementSize * VertexComponentElementIdx;
+				string strRet = "";
+				foreach (KeyValuePair<string, Array> itm in Components)
+				{
+					strRet += $"{itm.Key}: ";
+					strRet += "{";
+					for(int itr = 0; itr < itm.Value.Length; itr++)
+					{
+						strRet += itm.Value.GetValue(itr) + $"{((itr < itm.Value.Length - 1)?(", "):(""))}";
+					}
+					strRet += "};";
+				}
+				return strRet;
 			}
 		}
-		public class clsVertexCollection : IDisposable, IList<clsVertex>
+		public class clsVertexCollection : IDisposable, IEnumerable<clsVertex>
 		{
-			private IntPtr addrData;
+			internal Dictionary<clsVertexDescriptionComponent, List<object>> Data = new Dictionary<clsVertexDescriptionComponent, List<object>>();
+			internal List<clsVertex> aryVertices = new List<clsVertex>();
 			public clsVertexCollection(clsVertexDescription refDesc)
-			{
-				addrData = Marshal.AllocHGlobal(0);
+			{	
 				Desc = refDesc;
 				Desc.Updated += desc_Updated;
 			}
@@ -433,14 +457,43 @@ namespace modProject
 				}
 				set
 				{
-					refDesc.Updated -= desc_Updated;
+					if (refDesc != null)
+					{
+						refDesc.Updated -= desc_Updated;
+					}
 					value.Updated += desc_Updated;
 					refDesc = value;
 					desc_Updated();
 				}
 			}
-
-			public int Count { set; get; }
+			private int intCount = 0;
+			public int Count
+			{
+				get { return intCount; }
+				set
+				{
+					foreach(KeyValuePair<clsVertexDescriptionComponent, List<object>> comp in Data)
+					{
+						List<object> itm = comp.Value;
+						ResizeList<object>(ref itm, value*comp.Key.ElementCount, idx => comp.Key.InitialElementValue);
+					}
+					ResizeList(ref aryVertices, value, idx => new clsVertex(this));
+					intCount = value;
+				}
+			}
+			public static void ResizeList<Typ>(ref List<Typ> ary, int newsize, Func<int, Typ> funcLamda)
+			{
+				int oldsize = ary.Count;
+				if (newsize > oldsize)
+				{
+					for (int itr = 0; itr < newsize - oldsize; itr++) ary.Add(funcLamda(oldsize + itr));
+				}
+				else if (newsize < oldsize)
+				{
+					ary.RemoveRange(oldsize, newsize - oldsize);
+				}
+			}
+			public int TotalSize { get { return intCount * refDesc.TotalVertexSize; } }
 
 			public bool IsReadOnly => false;
 
@@ -448,73 +501,82 @@ namespace modProject
 			{
 				get
 				{
-					return new clsVertex(addrData, refDesc, index);
+					return aryVertices[index];
 				}
 				set
 				{
-					for(int itr = 0; itr < value.Count; itr++)
+					foreach (clsVertexDescriptionComponent comp in refDesc)
 					{
-						
+						Array srcData = null;
+						srcData = value[comp.Name];
+						if (srcData != null)
+						{
+							for (int intElem = 0; intElem < comp.ElementCount; intElem++)
+							{
+								Data[comp][index * comp.ElementCount + intElem] = value[comp.Name].GetValue(intElem);
+							}
+						}
 					}
 				}
 			}
-
-			private void desc_Updated()
+			public clsVertex[] Items
 			{
-
+				get { return aryVertices.ToArray(); }
 			}
-			public void Dispose()
+			public void RemoveAt(int index)
 			{
-				refDesc.Updated -= desc_Updated;
-				Marshal.FreeHGlobal(addrData);
-				refDesc = null;
+				aryVertices.RemoveAt(index);
+				Count = aryVertices.Count;
+			}
+			public void Clear()
+			{
+				aryVertices.Clear();
+				Count = 0;
 			}
 
 			IEnumerator<clsVertex> IEnumerable<clsVertex>.GetEnumerator()
 			{
-				return new clsVertexCollectionEnumerator(addrData, refDesc);
+				return this.GetEnumerator();
 			}
-
 			IEnumerator IEnumerable.GetEnumerator()
 			{
-				return new clsVertexCollectionEnumerator(addrData, refDesc);
-			}
-
-			public int IndexOf(clsVertex item)
-			{
-				throw new NotImplementedException();
-			}
-			public void Insert(int index, clsVertex item)
-			{
-				throw new NotImplementedException();
-			}
-			public void RemoveAt(int index)
-			{
-				throw new NotImplementedException();
-			}
-			public void Add(clsVertex item)
-			{
-				throw new NotImplementedException();
-			}
-			public void Clear()
-			{
-				throw new NotImplementedException();
-			}
-			public bool Contains(clsVertex item)
-			{
-				throw new NotImplementedException();
-			}
-			public void CopyTo(clsVertex[] array, int arrayIndex)
-			{
-				throw new NotImplementedException();
-			}
-			public bool Remove(clsVertex item)
-			{
-				throw new NotImplementedException();
+				return this.GetEnumerator();
 			}
 			public IEnumerator<clsVertex> GetEnumerator()
 			{
-				return new clsVertexCollectionEnumerator(addrData, refDesc);
+				return aryVertices.GetEnumerator();
+			}
+
+			private void desc_Updated()
+			{
+				KeyValuePair<clsVertexDescriptionComponent, List<object>>[] aryComp = Data.ToArray();
+				for(int itr = 0; itr < aryComp.Length; itr++)
+				{
+					if(!refDesc.Contains(aryComp[itr].Key))
+					{
+						Data.Remove(aryComp[itr].Key);
+					}
+				}
+				for(int itr = 0; itr < refDesc.Count; itr++)
+				{
+					if (!Data.ContainsKey(refDesc[itr]))
+					{
+						object[] aryElements = ArrayList.Repeat(refDesc[itr].InitialElementValue, refDesc[itr].ElementCount*intCount).ToArray();
+						Data.Add(refDesc[itr], new List<object>((IEnumerable<object>)aryElements));
+					}
+				}
+			}
+			public void Dispose()
+			{
+				refDesc.Updated -= desc_Updated;
+				Count = 0;
+				Data.Clear();
+				Data = null;
+				refDesc = null;
+			}
+			public override string ToString()
+			{
+				return $"Count={intCount}";
 			}
 		}
 		public clsVertexDescription VertexDescription { set; get; }
@@ -523,6 +585,13 @@ namespace modProject
 		{
 			VertexDescription = new clsVertexDescription();
 			Vertices = new clsVertexCollection(VertexDescription);
+			VertexDescription.Add(VertexAttribPointerType.Float, "Position", 2, 0);
+			VertexDescription.Add(VertexAttribPointerType.UnsignedByte, "Color", 3, 255);
+			Vertices.Count = 4;
+			Vertices[0]["Position"] = new float[] { 0f, 0f };
+			Vertices[1]["Position"] = new float[] { 1f, 0f };
+			Vertices[2]["Position"] = new float[] { 1f, 1f };
+			Vertices[3]["Position"] = new float[] { 0f, 1f };
 			AddToCollection();
 		}
 		public override void Dispose()
