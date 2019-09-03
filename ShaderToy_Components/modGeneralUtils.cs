@@ -30,9 +30,9 @@ public class generalUtils
 		public double HistoryDuration = 10.0;
 		private Stopwatch tsInterval = new Stopwatch();
 		[Browsable(false)]
-		public List<(float, float)> Data { get; private set; } = new List<(float, float)> { };
+		public List<KeyValuePair<float, float>> Data { get; private set; } = new List<KeyValuePair<float, float>> { };
 		[Browsable(false)]
-		public List<(float, float)> Data_Sorted { get; private set; } = new List<(float, float)> { };
+		public List<KeyValuePair<float, float>> Data_Sorted { get; private set; } = new List<KeyValuePair<float, float>> { };
 		[Browsable(false)]
 		public List<float> Data_TimeStamps { get; private set; } = new List<float> { };
 		[Browsable(false)]
@@ -42,17 +42,17 @@ public class generalUtils
 		[TypeConverter(typeof(NumberConverter))]
 		public float Accumulated { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
-		public float TimeAccumulated { get { return (Data.Count > 0) ? Data[Data.Count - 1].Item1 : 0.0f; } }
+		public float TimeAccumulated { get { return (Data.Count > 0) ? Data[Data.Count - 1].Key : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float TimeSpan { get { return (Data.Count > 0) ? Data[Data.Count - 1].Item1 - Data[0].Item1 : 0.0f; } }
+		public float TimeSpan { get { return (Data.Count > 0) ? Data[Data.Count - 1].Key - Data[0].Key : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
 		public float DataAccumulated { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
 		public float Current { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
-		public float Longest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[Data_Sorted.Count - 1].Item2 : 0.0f; } }
+		public float Longest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[Data_Sorted.Count - 1].Value : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float Shortest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[0].Item2 : 0.0f; } }
+		public float Shortest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[0].Value : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
 		public float Average { get { return Accumulated / Count; } }
 		[TypeConverter(typeof(NumberConverter))]
@@ -66,11 +66,11 @@ public class generalUtils
 				int idxMid = (Data_Sorted.Count - 1) / 2;
 				if (Data_Sorted.Count % 2 == 0)
 				{
-					return (Data_Sorted[idxMid].Item2 + Data_Sorted[idxMid + 1].Item2) / 2;
+					return (Data_Sorted[idxMid].Value + Data_Sorted[idxMid + 1].Value) / 2;
 				}
 				else
 				{
-					return Data_Sorted[idxMid].Item2;
+					return Data_Sorted[idxMid].Value;
 				}
 			}
 		}
@@ -116,14 +116,14 @@ public class generalUtils
 				Accumulated += Current;
 				DataAccumulated += Current;
 				float xval = (!double.IsNaN(ts)) ? ts : Accumulated;
-				(float, float) itmNew = (xval, Current);
+				KeyValuePair<float, float> itmNew = new KeyValuePair<float, float>(xval, Current);
 				double historyCut = xval - HistoryDuration;
-				Data.RemoveAll(itm => itm.Item1 < historyCut);
-				Data_Sorted.RemoveAll(itm => { if (itm.Item1 < historyCut) { DataAccumulated -= itm.Item2; return true; } else { return false; } });
+				Data.RemoveAll(itm => itm.Key < historyCut);
+				Data_Sorted.RemoveAll(itm => { if (itm.Key < historyCut) { DataAccumulated -= itm.Value; return true; } else { return false; } });
 				Data_TimeStamps.RemoveAll(itm => itm < historyCut);
 				Data_Durations.RemoveRange(0, Data_Durations.Count - Data.Count);
 				Data_Rates.RemoveRange(0, Data_Rates.Count - Data.Count);
-				int idxNew = FindSortedInsert(Data_Sorted.ToArray(), itmNew, (itmAdding, itm) => Math.Sign(itmAdding.Item2 - itm.Item2));
+				int idxNew = FindSortedInsert(Data_Sorted.ToArray(), itmNew, (itmAdding, itm) => Math.Sign(itmAdding.Value - itm.Value));
 				Data.Add(itmNew);
 				Data_TimeStamps.Add(xval);
 				Data_Durations.Add(Current);
