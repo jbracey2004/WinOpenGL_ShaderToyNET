@@ -6,6 +6,7 @@ using OpenTK.Platform;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -606,9 +607,9 @@ namespace modProject
 		public class InfoLocation
 		{
 			public string FullString;
-			public int Line { get { return MatchParse().Item1; } }
-			public int Column { get { return MatchParse().Item2; } }
-			private (int, int) MatchParse()
+			public int Line { get { return MatchParse().Y; } }
+			public int Column { get { return MatchParse().X; } }
+			private Point MatchParse()
 			{
 				int retLine = -1;
 				int retColumn = -1;
@@ -620,7 +621,7 @@ namespace modProject
 					if(strLine!="") retLine = int.Parse(strLine);
 					if(strColumn!="") retColumn = int.Parse(strColumn);
 				}
-				return (retLine, retColumn);
+				return new Point(retColumn, retLine);
 			}
 			public InfoLocation()
 			{

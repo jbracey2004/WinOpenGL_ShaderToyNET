@@ -60,7 +60,6 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToy\obj\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToy\obj\Debug\WinOpenGL_ShaderToy.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WinOpenGL_ShaderToy.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.ValueTuple.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\FastColoredTextBox.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.dll
