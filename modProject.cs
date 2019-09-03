@@ -442,7 +442,7 @@ namespace modProject
 		}
 		public class clsVertexCollection : IDisposable, IEnumerable<clsVertex>
 		{
-			internal Dictionary<clsVertexDescriptionComponent, List<object>> Data = new Dictionary<clsVertexDescriptionComponent, List<object>>();
+			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { private set; get; } = new Dictionary<clsVertexDescriptionComponent, List<object>>();
 			internal List<clsVertex> aryVertices = new List<clsVertex>();
 			public clsVertexCollection(clsVertexDescription refDesc)
 			{	
