@@ -222,12 +222,13 @@ namespace modProject
 					RaiseUpdated();
 				}
 			}
-			public void Add(VertexAttribPointerType glType, string Name, int Components, object InitialValue)
+			public clsVertexDescriptionComponent Add(VertexAttribPointerType glType, string Name, int Components, object InitialValue)
 			{
 				clsVertexDescriptionComponent componentNew = new clsVertexDescriptionComponent(this, glType, Name, Components, InitialValue);
 				componentNew.Index = aryComponents.Count;
 				aryComponents.Add(componentNew);
 				RaiseUpdated();
+				return componentNew;
 			}
 			public void Add(clsVertexDescriptionComponent item)
 			{
@@ -405,11 +406,12 @@ namespace modProject
 			{
 				get
 				{
-					if(Components.ContainsKey(ComponentName)) return Components[ComponentName];
-					return null;
+					if (!Components.ContainsKey(ComponentName)) return null;
+					return Components[ComponentName];
 				}
 				set
 				{
+					if (!Components.ContainsKey(ComponentName)) return;
 					value.CopyTo(Components[ComponentName], 0);
 					if (Data != null && Desc != null)
 					{
@@ -512,10 +514,7 @@ namespace modProject
 						srcData = value[comp.Name];
 						if (srcData != null)
 						{
-							for (int intElem = 0; intElem < comp.ElementCount; intElem++)
-							{
-								Data[comp][index * comp.ElementCount + intElem] = value[comp.Name].GetValue(intElem);
-							}
+							WriteValue(index, comp, value[comp.Name]);
 						}
 					}
 				}
@@ -523,6 +522,49 @@ namespace modProject
 			public clsVertex[] Items
 			{
 				get { return aryVertices.ToArray(); }
+			}
+			public void Add(KeyValuePair<string, Array>[] value)
+			{
+				Count++;
+				SetKeyValuePairs(intCount - 1, value);
+			}
+			public void Add(KeyValuePair<string, Array>[][] values)
+			{
+				int intCountPrev = intCount;
+				Count += values.Length;
+				for(int itr = 0; itr < intCount-intCountPrev; itr++)
+				{
+					SetKeyValuePairs(intCount + itr, values[itr]);
+				}
+			}
+			private void SetKeyValuePairs(int index, KeyValuePair<string, Array>[] values)
+			{
+				for (int itrComp = 0; itrComp < values.Length; itrComp++)
+				{
+					SetKeyValuePair(index, values[itrComp]);
+				}
+			}
+			private void SetKeyValuePair(int index, KeyValuePair<string, Array> value)
+			{
+				clsVertexDescriptionComponent comp = null;
+				if(refDesc.Count > 0) comp = refDesc.First(itm => itm.Name == value.Key);
+				if (comp == null)
+				{
+					VertexAttribPointerType glType = VertexAttribPointerType.Float;
+					if (clsVertexDescriptionComponent.VertexTypes.ContainsValue(value.Value.GetValue(0).GetType()))
+					{
+						glType = clsVertexDescriptionComponent.VertexTypes.First(itm => itm.Value == value.Value.GetValue(0).GetType()).Key;
+					}
+					comp = refDesc.Add(glType, value.Key, value.Value.Length, (object)0);
+				}
+				WriteValue(index, comp, value.Value);
+			}
+			private void WriteValue(int index, clsVertexDescriptionComponent comp, Array value)
+			{
+				for (int intElem = 0; intElem < comp.ElementCount; intElem++)
+				{
+					Data[comp][index * comp.ElementCount + intElem] = value.GetValue(intElem);
+				}
 			}
 			public void RemoveAt(int index)
 			{
@@ -586,13 +628,6 @@ namespace modProject
 		{
 			VertexDescription = new clsVertexDescription();
 			Vertices = new clsVertexCollection(VertexDescription);
-			VertexDescription.Add(VertexAttribPointerType.Float, "Position", 2, 0);
-			VertexDescription.Add(VertexAttribPointerType.UnsignedByte, "Color", 3, 255);
-			Vertices.Count = 4;
-			Vertices[0]["Position"] = new float[] { 0f, 0f };
-			Vertices[1]["Position"] = new float[] { 1f, 0f };
-			Vertices[2]["Position"] = new float[] { 1f, 1f };
-			Vertices[3]["Position"] = new float[] { 0f, 1f };
 			AddToCollection();
 		}
 		public override void Dispose()
