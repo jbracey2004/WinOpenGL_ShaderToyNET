@@ -45,6 +45,10 @@
 			this.splitterTop = new System.Windows.Forms.Splitter();
 			this.panelTop = new System.Windows.Forms.Panel();
 			this.lblName = new System.Windows.Forms.Label();
+			this.datagridVertexDescriptions = new System.Windows.Forms.DataGridView();
+			this.columnComponentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.columnElementType = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.columnElementCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
@@ -53,6 +57,8 @@
 			this.groupGeometry.SuspendLayout();
 			this.panelBottom.SuspendLayout();
 			this.groupVertexDefinition.SuspendLayout();
+			this.panelVertexDefinition.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.datagridVertexDescriptions)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// panelMain
@@ -223,6 +229,7 @@
 			// panelVertexDefinition
 			// 
 			this.panelVertexDefinition.AutoScroll = true;
+			this.panelVertexDefinition.Controls.Add(this.datagridVertexDescriptions);
 			this.panelVertexDefinition.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelVertexDefinition.Location = new System.Drawing.Point(3, 18);
 			this.panelVertexDefinition.Name = "panelVertexDefinition";
@@ -264,6 +271,44 @@
 			this.lblName.Text = "Geometry";
 			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// datagridVertexDescriptions
+			// 
+			this.datagridVertexDescriptions.AllowUserToOrderColumns = true;
+			this.datagridVertexDescriptions.AllowUserToResizeRows = false;
+			this.datagridVertexDescriptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
+			this.datagridVertexDescriptions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.columnComponentName,
+            this.columnElementType,
+            this.columnElementCount});
+			this.datagridVertexDescriptions.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.datagridVertexDescriptions.Location = new System.Drawing.Point(0, 0);
+			this.datagridVertexDescriptions.Name = "datagridVertexDescriptions";
+			this.datagridVertexDescriptions.Size = new System.Drawing.Size(817, 76);
+			this.datagridVertexDescriptions.TabIndex = 0;
+			this.datagridVertexDescriptions.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridVertexDescriptions_CellContentClick);
+			this.datagridVertexDescriptions.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridVertexDescriptions_CellEndEdit);
+			this.datagridVertexDescriptions.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DatagridVertexDescriptions_DataError);
+			this.datagridVertexDescriptions.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DatagridVertexDescriptions_RowsAdded);
+			this.datagridVertexDescriptions.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DatagridVertexDescriptions_RowsRemoved);
+			// 
+			// columnComponentName
+			// 
+			this.columnComponentName.HeaderText = "Component Name";
+			this.columnComponentName.Name = "columnComponentName";
+			this.columnComponentName.Width = 142;
+			// 
+			// columnElementType
+			// 
+			this.columnElementType.HeaderText = "Element Type";
+			this.columnElementType.Name = "columnElementType";
+			this.columnElementType.Width = 98;
+			// 
+			// columnElementCount
+			// 
+			this.columnElementCount.HeaderText = "Element Count";
+			this.columnElementCount.Name = "columnElementCount";
+			this.columnElementCount.Width = 119;
+			// 
 			// frmGeometry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,6 +329,8 @@
 			this.groupGeometry.ResumeLayout(false);
 			this.panelBottom.ResumeLayout(false);
 			this.groupVertexDefinition.ResumeLayout(false);
+			this.panelVertexDefinition.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.datagridVertexDescriptions)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -306,5 +353,9 @@
 		private System.Windows.Forms.GroupBox groupVertexDefinition;
 		private System.Windows.Forms.Panel panelVertexDefinition;
 		private System.Windows.Forms.Panel panelTop;
+		private System.Windows.Forms.DataGridView datagridVertexDescriptions;
+		private System.Windows.Forms.DataGridViewTextBoxColumn columnComponentName;
+		private System.Windows.Forms.DataGridViewComboBoxColumn columnElementType;
+		private System.Windows.Forms.DataGridViewTextBoxColumn columnElementCount;
 	}
 }
