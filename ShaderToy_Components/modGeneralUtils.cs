@@ -6,6 +6,18 @@ using System.Globalization;
 
 public class generalUtils
 {
+	public static void ResizeList<Typ>(ref List<Typ> ary, int newsize, Func<int, Typ> funcLamda)
+	{
+		int oldsize = ary.Count;
+		if (newsize > oldsize)
+		{
+			for (int itr = 0; itr < newsize - oldsize; itr++) ary.Add(funcLamda(oldsize + itr));
+		}
+		else if (newsize < oldsize)
+		{
+			ary.RemoveRange(oldsize, newsize - oldsize);
+		}
+	}
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)

@@ -74,7 +74,6 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.xml
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\ShaderToy_Components.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csprojAssemblyReference.cache
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.frmGeometry.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.frmProgram.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.frmRender.resources
@@ -87,3 +86,4 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csproj.Co
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csproj.CopyComplete
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.pdb
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csprojAssemblyReference.cache

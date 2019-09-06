@@ -47,8 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Users\jvipe\Downloads\OpenTK\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
-    <Reference Include="ShaderToy_Components">
-      <HintPath>ShaderToy_Components\bin\Release\ShaderToy_Components.dll</HintPath>
+    <Reference Include="ShaderToy_Components, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ShaderToy_Components\bin\Debug\ShaderToy_Components.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

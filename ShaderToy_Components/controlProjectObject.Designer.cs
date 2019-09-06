@@ -62,6 +62,7 @@ namespace ShaderToy_Components
 			this.txtName.Name = "txtName";
 			this.txtName.Size = new System.Drawing.Size(157, 22);
 			this.txtName.TabIndex = 1;
+			this.txtName.TextChanged += new System.EventHandler(this.TxtName_TextChanged);
 			// 
 			// controlProjectObject
 			// 
@@ -74,6 +75,7 @@ namespace ShaderToy_Components
 			this.Size = new System.Drawing.Size(739, 510);
 			this.HandleCreated += new System.EventHandler(this.FrmProjectObject_HandleCreated);
 			this.HandleDestroyed += new System.EventHandler(this.FrmProjectObject_HandleDestroyed);
+			this.Disposed += new System.EventHandler(this.FrmProjectObject_Disposed);
 			this.panelStatus.ResumeLayout(false);
 			this.panelStatus.PerformLayout();
 			this.ResumeLayout(false);

@@ -18,6 +18,7 @@ using System.Diagnostics;
 using static generalUtils;
 using static clsHPTimer;
 using static WinOpenGL_ShaderToy.clsCollapsePanel;
+
 namespace WinOpenGL_ShaderToy
 {
 	public partial class frmGeometry : DockContent

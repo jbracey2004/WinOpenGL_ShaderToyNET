@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using static modProject.clsProjectObject;
 using static modProject.modExtern;
+using static generalUtils;
 using static OpenTK.Platform.Utilities;
 
 namespace WinOpenGL_ShaderToy
@@ -490,18 +491,6 @@ namespace modProject
 					intCount = value;
 				}
 			}
-			public static void ResizeList<Typ>(ref List<Typ> ary, int newsize, Func<int, Typ> funcLamda)
-			{
-				int oldsize = ary.Count;
-				if (newsize > oldsize)
-				{
-					for (int itr = 0; itr < newsize - oldsize; itr++) ary.Add(funcLamda(oldsize + itr));
-				}
-				else if (newsize < oldsize)
-				{
-					ary.RemoveRange(oldsize, newsize - oldsize);
-				}
-			}
 			public int TotalSize { get { return intCount * refDesc.TotalVertexSize; } }
 
 			public bool IsReadOnly => false;
@@ -628,12 +617,127 @@ namespace modProject
 				return $"Count={intCount}";
 			}
 		}
+		public class clsTriangleCollection : IDisposable, IList<uint[]>
+		{
+			private List<uint> aryIndices;
+			public uint[] Indices { get => aryIndices.ToArray(); }
+			public clsTriangleCollection(List<uint> refaryIndices)
+			{
+				aryIndices = refaryIndices;
+			}
+			public void Dispose()
+			{
+				aryIndices = null;
+			}
+			public int Count
+			{
+				set
+				{ 
+					ResizeList<uint>(ref aryIndices, value * 3, idx => 0);
+				}
+				get => (int)(aryIndices.Count/3);
+			}
+
+			public bool IsReadOnly => false;
+
+			public uint[] this[int index]
+			{
+				get
+				{
+					uint[] ret = new uint[3];
+					aryIndices.CopyTo(index*3, ret, 0, 3);
+					return ret;
+				}
+				set
+				{
+					for(int itr = 0; itr < 3; itr++)
+					{
+						aryIndices[index * 3 + itr] = value[itr]; 
+					}
+				}
+			}
+			public uint[][] Items
+			{
+				get
+				{
+					List<uint[]> ret = new List<uint[]>();
+					for(int itr = 0; itr < Count; itr++)
+					{
+						ret.Add(this[itr]);
+					}
+					return ret.ToArray();
+				}
+			}
+
+			public int IndexOf(uint[] item)
+			{
+				return Items.ToList().FindIndex(itm => (
+					itm[0] == item[0] &&
+					itm[1] == item[1] &&
+					itm[2] == item[2]
+				));
+			}
+
+			public void Insert(int index, uint[] item)
+			{
+				for(int itr = item.Length-1; itr >= 0; itr--)
+				{
+					aryIndices.Insert(index * 3, item[itr]);
+				}
+			}
+
+			public void RemoveAt(int index)
+			{
+				for (int itr = 0; itr < 3; itr++) aryIndices.RemoveAt(index * 3);
+			}
+
+			public void Add(uint[] item)
+			{
+				aryIndices.AddRange(item);
+			}
+
+			public void Clear()
+			{
+				aryIndices.Clear();
+			}
+
+			public bool Contains(uint[] item)
+			{
+				return IndexOf(item) >= 0;
+			}
+
+			public void CopyTo(uint[][] array, int arrayIndex)
+			{
+				for(int itr = 0; itr < array.Length; itr++)
+				{
+					for (int itrN = 0; itrN < 3; itrN++)  aryIndices[arrayIndex * 3 + itr] = array[itr][itrN];
+				}
+			}
+
+			public bool Remove(uint[] item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public IEnumerator<uint[]> GetEnumerator()
+			{
+				return (IEnumerator<uint[]>)Items.GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return Items.GetEnumerator();
+			}
+		} 
 		public clsVertexDescription VertexDescription { set; get; }
 		public clsVertexCollection Vertices { set; get; }
+		public clsTriangleCollection Triangles { set; get; }
+		private List<uint> aryIndices = new List<uint>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
 		{
 			VertexDescription = new clsVertexDescription();
 			Vertices = new clsVertexCollection(VertexDescription);
+			Triangles = new clsTriangleCollection(aryIndices);
 			AddToCollection();
 		}
 		public override void Dispose()
