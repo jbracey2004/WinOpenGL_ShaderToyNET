@@ -249,6 +249,12 @@ namespace modProject
 				Sort();
 				RaiseUpdated();
 			}
+			public void Remove(string name)
+			{
+				aryComponents.RemoveAll(itm => itm.Name == name);
+				Sort();
+				RaiseUpdated();
+			}
 			public void Remove(clsVertexDescriptionComponent itm)
 			{
 				if (!aryComponents.Contains(itm)) return;

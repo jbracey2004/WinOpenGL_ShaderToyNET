@@ -173,7 +173,7 @@ namespace WinOpenGL_ShaderToy
 
 		private void DatagridVertexDescriptions_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
-
+				Geometry.VertexDescription.RemoveAt(e.RowIndex);
 		}
 
 		private void DatagridVertexDescriptions_CellEndEdit(object sender, DataGridViewCellEventArgs e)
