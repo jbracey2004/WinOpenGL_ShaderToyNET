@@ -14,9 +14,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using static modProject.clsProjectObject;
-using static modProject.modExtern;
 using static generalUtils;
 using static OpenTK.Platform.Utilities;
+using System.ComponentModel;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -57,11 +57,6 @@ namespace WinOpenGL_ShaderToy
 }
 namespace modProject
 {
-	public static class modExtern
-	{
-		[DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
-		public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
-	}
 	public class clsProject
 	{
 		public string Name { set; get; }
@@ -147,6 +142,7 @@ namespace modProject
 	}
 	public class clsGeometry : clsProjectObject
 	{
+		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
 			public static Dictionary<VertexAttribPointerType, Type> VertexTypes = new Dictionary<VertexAttribPointerType, Type>()
@@ -178,6 +174,7 @@ namespace modProject
 				ElementCount = intElements;
 				InitialElementValue = Convert.ChangeType(InitialValue, ElementType);
 			}
+			[Browsable(false)]
 			public clsVertexDescription Desc { private set; get; }
 			public string Name { set; get; }
 			public object InitialElementValue { set; get; }
@@ -188,8 +185,17 @@ namespace modProject
 			private int intElementCount;
 			public int ElementCount { set { intElementCount = value; Desc.RaiseUpdated(); } get { return intElementCount; } }
 			public int ComponentSize { get { return ElementSize * ElementCount; } }
-			private int intIndex = 0;
-			public int Index { set { Desc.SetComponentIndex(this, value); Desc.RaiseUpdated(); } get { return intIndex; } }
+			public int Index
+			{
+				set
+				{
+					if (Desc == null) return;
+					if (Index == value) return;
+					Desc.SetComponentIndex(this, value);
+					Desc.RaiseUpdated();
+				}
+				get { return Desc.IndexOf(this); }
+			}
 			public void Dispose()
 			{
 				Desc = null;
@@ -199,6 +205,7 @@ namespace modProject
 				return $"{Name} {{<{ElementGLType}> Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; }}";
 			}
 		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescription : IDisposable, IList<clsVertexDescriptionComponent>
 		{
 			internal List<clsVertexDescriptionComponent> aryComponents = new List<clsVertexDescriptionComponent>();
@@ -219,14 +226,12 @@ namespace modProject
 				{
 					aryComponents[index] = value;
 					value.Index = index;
-					Sort();
 					RaiseUpdated();
 				}
 			}
 			public clsVertexDescriptionComponent Add(VertexAttribPointerType glType, string Name, int Components, object InitialValue)
 			{
 				clsVertexDescriptionComponent componentNew = new clsVertexDescriptionComponent(this, glType, Name, Components, InitialValue);
-				componentNew.Index = aryComponents.Count;
 				aryComponents.Add(componentNew);
 				RaiseUpdated();
 				return componentNew;
@@ -234,26 +239,22 @@ namespace modProject
 			public void Add(clsVertexDescriptionComponent item)
 			{
 				aryComponents.Add(item);
-				Sort();
 				RaiseUpdated();
 			}
 			public void Insert(int index, clsVertexDescriptionComponent item)
 			{
 				aryComponents.Insert(index, item);
 				item.Index = index;
-				Sort();
 				RaiseUpdated();
 			}
 			public void RemoveAt(int index)
 			{
 				aryComponents.RemoveAt(index);
-				Sort();
 				RaiseUpdated();
 			}
 			public void Remove(string name)
 			{
 				aryComponents.RemoveAll(itm => itm.Name == name);
-				Sort();
 				RaiseUpdated();
 			}
 			public void Remove(clsVertexDescriptionComponent itm)
@@ -261,7 +262,6 @@ namespace modProject
 				if (!aryComponents.Contains(itm)) return;
 				itm.Dispose();
 				aryComponents.Remove(itm);
-				Sort();
 				RaiseUpdated();
 			}
 			public void Clear()
@@ -283,12 +283,9 @@ namespace modProject
 				}
 			}
 
+			[Browsable(false)]
 			public bool IsReadOnly => ((IList<clsVertexDescriptionComponent>)aryComponents).IsReadOnly;
 
-			protected void Sort()
-			{
-				aryComponents.Sort((itmA, itmB) => (itmB.Index - itmA.Index));
-			}
 			protected internal int GetComponentOffset(clsVertexDescriptionComponent itm)
 			{
 				int intRet = 0;
@@ -304,13 +301,8 @@ namespace modProject
 			}
 			protected internal void SetComponentIndex(clsVertexDescriptionComponent itm, int index)
 			{
-				if (!aryComponents.Contains(itm)) return;
-				itm.Index = index;
-				Sort();
-				for (int itr = 0; itr < aryComponents.Count; itr++)
-				{
-					aryComponents[itr].Index = itr;
-				}
+				if(aryComponents.Contains(itm)) aryComponents.Remove(itm);
+				aryComponents.Insert(Math.Min(index, aryComponents.Count), itm);
 				RaiseUpdated();
 			}
 			public int IndexOf(clsVertexDescriptionComponent item)
@@ -349,11 +341,15 @@ namespace modProject
 				return strRet;
 			}
 		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertex
 		{
+			[Browsable(false)]
 			public clsVertexCollection VertexCollection { private set; get; }
 			public int Index { get { return ((VertexCollection != null) ? (VertexCollection.aryVertices.IndexOf(this)) : (-1)); } }
+			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { get { return ((VertexCollection != null) ? (VertexCollection.Data) : (null)); } }
+			[Browsable(false)]
 			public clsVertexDescription Desc { get { return ((VertexCollection != null) ? (VertexCollection.Desc) : (null)); } }
 			public int TotalSize { get { return ((Desc != null) ? (Desc.TotalVertexSize) : (0)); } }
 			public clsVertex(clsVertexCollection refCollection)
@@ -374,7 +370,7 @@ namespace modProject
 					for (int compItr = 0; compItr < desc.Count; compItr++)
 					{
 						object[] itm = new object[desc[compItr].ElementCount];
-						Data[desc[compItr]].CopyTo(index * desc[compItr].ElementCount, itm, 0, desc[compItr].ElementCount);
+						data[desc[compItr]].CopyTo(index * desc[compItr].ElementCount, itm, 0, desc[compItr].ElementCount);
 						if (itm != null)
 						{
 							ret.Add(desc[compItr].Name, itm.ToArray());
@@ -449,8 +445,10 @@ namespace modProject
 				return strRet;
 			}
 		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexCollection : IDisposable, IEnumerable<clsVertex>
 		{
+			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { private set; get; } = new Dictionary<clsVertexDescriptionComponent, List<object>>();
 			internal List<clsVertex> aryVertices = new List<clsVertex>();
 			public clsVertexCollection(clsVertexDescription refDesc)
@@ -459,6 +457,7 @@ namespace modProject
 				Desc.Updated += desc_Updated;
 			}
 			private clsVertexDescription refDesc;
+			[Browsable(false)]
 			public clsVertexDescription Desc
 			{
 				get
@@ -493,8 +492,10 @@ namespace modProject
 			}
 			public int TotalSize { get { return intCount * refDesc.TotalVertexSize; } }
 
+			[Browsable(false)]
 			public bool IsReadOnly => false;
 
+			[TypeConverter(typeof(ExpandableObjectConverter))]
 			public clsVertex this[int index]
 			{
 				get
@@ -514,6 +515,7 @@ namespace modProject
 					}
 				}
 			}
+			//[TypeConverter(typeof(ArrayConverter))]
 			public clsVertex[] Items
 			{
 				get { return aryVertices.ToArray(); }
@@ -617,6 +619,7 @@ namespace modProject
 				return $"Count={intCount}";
 			}
 		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsTriangleCollection : IDisposable, IList<uint[]>
 		{
 			private List<uint> aryIndices;
@@ -638,6 +641,7 @@ namespace modProject
 				get => (int)(aryIndices.Count/3);
 			}
 
+			[Browsable(false)]
 			public bool IsReadOnly => false;
 
 			public uint[] this[int index]
@@ -716,7 +720,10 @@ namespace modProject
 
 			public bool Remove(uint[] item)
 			{
-				throw new NotImplementedException();
+				int idx = IndexOf(item);
+				if (idx < 0) return false;
+				RemoveAt(idx);
+				return true;
 			}
 
 			public IEnumerator<uint[]> GetEnumerator()
@@ -727,6 +734,11 @@ namespace modProject
 			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return Items.GetEnumerator();
+			}
+
+			public override string ToString()
+			{
+				return $"Count={Count}";
 			}
 		} 
 		public clsVertexDescription VertexDescription { set; get; }

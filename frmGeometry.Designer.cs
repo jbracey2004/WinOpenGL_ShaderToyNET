@@ -38,23 +38,26 @@
 			this.panelRight = new System.Windows.Forms.Panel();
 			this.groupGeometry = new System.Windows.Forms.GroupBox();
 			this.panelGeometry = new System.Windows.Forms.Panel();
+			this.propsGeometry = new System.Windows.Forms.PropertyGrid();
 			this.splitterBottom = new System.Windows.Forms.Splitter();
 			this.panelBottom = new System.Windows.Forms.Panel();
 			this.groupVertexDefinition = new System.Windows.Forms.GroupBox();
 			this.panelVertexDefinition = new System.Windows.Forms.Panel();
-			this.splitterTop = new System.Windows.Forms.Splitter();
-			this.panelTop = new System.Windows.Forms.Panel();
-			this.lblName = new System.Windows.Forms.Label();
 			this.datagridVertexDescriptions = new System.Windows.Forms.DataGridView();
+			this.columnIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnComponentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnElementType = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.columnElementCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.splitterTop = new System.Windows.Forms.Splitter();
+			this.panelTop = new System.Windows.Forms.Panel();
+			this.lblName = new System.Windows.Forms.Label();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
 			this.panelCollapse.SuspendLayout();
 			this.panelRight.SuspendLayout();
 			this.groupGeometry.SuspendLayout();
+			this.panelGeometry.SuspendLayout();
 			this.panelBottom.SuspendLayout();
 			this.groupVertexDefinition.SuspendLayout();
 			this.panelVertexDefinition.SuspendLayout();
@@ -183,11 +186,20 @@
 			// panelGeometry
 			// 
 			this.panelGeometry.BackColor = System.Drawing.Color.Transparent;
+			this.panelGeometry.Controls.Add(this.propsGeometry);
 			this.panelGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelGeometry.Location = new System.Drawing.Point(3, 18);
 			this.panelGeometry.Name = "panelGeometry";
 			this.panelGeometry.Size = new System.Drawing.Size(243, 321);
 			this.panelGeometry.TabIndex = 1;
+			// 
+			// propsGeometry
+			// 
+			this.propsGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propsGeometry.Location = new System.Drawing.Point(0, 0);
+			this.propsGeometry.Name = "propsGeometry";
+			this.propsGeometry.Size = new System.Drawing.Size(243, 321);
+			this.propsGeometry.TabIndex = 0;
 			// 
 			// splitterBottom
 			// 
@@ -236,6 +248,50 @@
 			this.panelVertexDefinition.Size = new System.Drawing.Size(817, 76);
 			this.panelVertexDefinition.TabIndex = 2;
 			// 
+			// datagridVertexDescriptions
+			// 
+			this.datagridVertexDescriptions.AllowUserToOrderColumns = true;
+			this.datagridVertexDescriptions.AllowUserToResizeRows = false;
+			this.datagridVertexDescriptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+			this.datagridVertexDescriptions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.columnIndex,
+            this.columnComponentName,
+            this.columnElementType,
+            this.columnElementCount});
+			this.datagridVertexDescriptions.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.datagridVertexDescriptions.Location = new System.Drawing.Point(0, 0);
+			this.datagridVertexDescriptions.Name = "datagridVertexDescriptions";
+			this.datagridVertexDescriptions.Size = new System.Drawing.Size(817, 76);
+			this.datagridVertexDescriptions.TabIndex = 0;
+			this.datagridVertexDescriptions.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridVertexDescriptions_CellEndEdit);
+			this.datagridVertexDescriptions.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DatagridVertexDescriptions_DataError);
+			this.datagridVertexDescriptions.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DatagridVertexDescriptions_RowsAdded);
+			this.datagridVertexDescriptions.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DatagridVertexDescriptions_RowsRemoved);
+			// 
+			// columnIndex
+			// 
+			this.columnIndex.HeaderText = "Index";
+			this.columnIndex.Name = "columnIndex";
+			this.columnIndex.Width = 65;
+			// 
+			// columnComponentName
+			// 
+			this.columnComponentName.HeaderText = "Component Name";
+			this.columnComponentName.Name = "columnComponentName";
+			this.columnComponentName.Width = 142;
+			// 
+			// columnElementType
+			// 
+			this.columnElementType.HeaderText = "Element Type";
+			this.columnElementType.Name = "columnElementType";
+			this.columnElementType.Width = 98;
+			// 
+			// columnElementCount
+			// 
+			this.columnElementCount.HeaderText = "Element Count";
+			this.columnElementCount.Name = "columnElementCount";
+			this.columnElementCount.Width = 119;
+			// 
 			// splitterTop
 			// 
 			this.splitterTop.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -271,44 +327,6 @@
 			this.lblName.Text = "Geometry";
 			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// datagridVertexDescriptions
-			// 
-			this.datagridVertexDescriptions.AllowUserToOrderColumns = true;
-			this.datagridVertexDescriptions.AllowUserToResizeRows = false;
-			this.datagridVertexDescriptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
-			this.datagridVertexDescriptions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.columnComponentName,
-            this.columnElementType,
-            this.columnElementCount});
-			this.datagridVertexDescriptions.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.datagridVertexDescriptions.Location = new System.Drawing.Point(0, 0);
-			this.datagridVertexDescriptions.Name = "datagridVertexDescriptions";
-			this.datagridVertexDescriptions.Size = new System.Drawing.Size(817, 76);
-			this.datagridVertexDescriptions.TabIndex = 0;
-			this.datagridVertexDescriptions.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridVertexDescriptions_CellContentClick);
-			this.datagridVertexDescriptions.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridVertexDescriptions_CellEndEdit);
-			this.datagridVertexDescriptions.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DatagridVertexDescriptions_DataError);
-			this.datagridVertexDescriptions.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DatagridVertexDescriptions_RowsAdded);
-			this.datagridVertexDescriptions.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DatagridVertexDescriptions_RowsRemoved);
-			// 
-			// columnComponentName
-			// 
-			this.columnComponentName.HeaderText = "Component Name";
-			this.columnComponentName.Name = "columnComponentName";
-			this.columnComponentName.Width = 142;
-			// 
-			// columnElementType
-			// 
-			this.columnElementType.HeaderText = "Element Type";
-			this.columnElementType.Name = "columnElementType";
-			this.columnElementType.Width = 98;
-			// 
-			// columnElementCount
-			// 
-			this.columnElementCount.HeaderText = "Element Count";
-			this.columnElementCount.Name = "columnElementCount";
-			this.columnElementCount.Width = 119;
-			// 
 			// frmGeometry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,6 +345,7 @@
 			this.panelCollapse.ResumeLayout(false);
 			this.panelRight.ResumeLayout(false);
 			this.groupGeometry.ResumeLayout(false);
+			this.panelGeometry.ResumeLayout(false);
 			this.panelBottom.ResumeLayout(false);
 			this.groupVertexDefinition.ResumeLayout(false);
 			this.panelVertexDefinition.ResumeLayout(false);
@@ -354,6 +373,8 @@
 		private System.Windows.Forms.Panel panelVertexDefinition;
 		private System.Windows.Forms.Panel panelTop;
 		private System.Windows.Forms.DataGridView datagridVertexDescriptions;
+		private System.Windows.Forms.PropertyGrid propsGeometry;
+		private System.Windows.Forms.DataGridViewTextBoxColumn columnIndex;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnComponentName;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnElementType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnElementCount;

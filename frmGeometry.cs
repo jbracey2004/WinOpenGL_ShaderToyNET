@@ -18,6 +18,7 @@ using System.Diagnostics;
 using static generalUtils;
 using static clsHPTimer;
 using static WinOpenGL_ShaderToy.clsCollapsePanel;
+using static modProject.clsGeometry;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -28,25 +29,29 @@ namespace WinOpenGL_ShaderToy
 		private clsCollapsePanel containerMain;
 		private Stopwatch timeRun;
 		private infoFramePerformance tsRender;
-		private bool bolDataGridInit = false;
+		private bool bolDataGridReady = false;
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{
 			containerMain = new clsCollapsePanel(panelCollapse);
 			containerMain.CollapseStateChanged += new CollapseStateChangeHandler(containerMain_CollapseChange);
 			containerMain.CollapseDistanceChanged += new CollapseStateChangeHandler(containerMain_CollapseDistanceChange);
 			DataGridViewComboBoxColumn rowCombo = ((DataGridViewComboBoxColumn)datagridVertexDescriptions.Columns["columnElementType"]);
-			for(int itr = 0; itr < clsGeometry.clsVertexDescriptionComponent.VertexTypes.Keys.Count; itr++)
+			for (int itr = 0; itr < clsGeometry.clsVertexDescriptionComponent.VertexTypes.Keys.Count; itr++)
 			{
 				rowCombo.Items.Add(clsGeometry.clsVertexDescriptionComponent.VertexTypes.Keys.ElementAt(itr).ToString());
 			}
-			for(int itr = 0; itr < Geometry.VertexDescription.Count; itr++)
+			for (int itr = 0; itr < Geometry.VertexDescription.Count; itr++)
 			{
-				datagridVertexDescriptions.Rows.Add(
-					Geometry.VertexDescription[itr].Name, 
-					Geometry.VertexDescription[itr].ElementGLType.ToString(), 
+				int idxrow = datagridVertexDescriptions.Rows.Add(
+					Geometry.VertexDescription[itr].Index,
+					Geometry.VertexDescription[itr].Name,
+					Geometry.VertexDescription[itr].ElementGLType.ToString(),
 					Geometry.VertexDescription[itr].ElementCount);
+				DataGridViewRow row = datagridVertexDescriptions.Rows[idxrow];
+				row.Tag = Geometry.VertexDescription[itr];
 			}
-			bolDataGridInit = true;
+			propsGeometry.SelectedObject = new { Vertices = Geometry.Vertices, Triangles = Geometry.Triangles };
+			bolDataGridReady = true;
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
 			glRender.HandleCreated += new EventHandler(glRender_HandleCreated);
@@ -165,35 +170,60 @@ namespace WinOpenGL_ShaderToy
 
 		private void DatagridVertexDescriptions_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
 		{
-			if (!bolDataGridInit) return;
+			if (!bolDataGridReady) return;
+			bolDataGridReady = false;
+			clsVertexDescriptionComponent compNew = Geometry.VertexDescription.Add(VertexAttribPointerType.Byte, "", 1, (object)0);
 			DataGridViewRow rowNew = datagridVertexDescriptions.Rows[e.RowIndex-1];
-			rowNew.Cells["columnElementType"].Value = VertexAttribPointerType.Byte.ToString();
-			rowNew.Cells["columnElementCount"].Value = "1";
-			Geometry.VertexDescription.Add(VertexAttribPointerType.Byte, "", 1, (object)0);
+			rowNew.Tag = compNew;
+			rowNew.Cells["columnIndex"].Value = compNew.Index.ToString();
+			rowNew.Cells["columnElementType"].Value = compNew.ElementGLType.ToString();
+			rowNew.Cells["columnElementCount"].Value = compNew.ElementCount.ToString();
+			propsGeometry.Refresh();
+			bolDataGridReady = true;
 		}
 
 		private void DatagridVertexDescriptions_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
-				Geometry.VertexDescription.RemoveAt(e.RowIndex);
+			List<clsVertexDescriptionComponent> aryToDelete = new List<clsVertexDescriptionComponent>();
+			foreach(clsVertexDescriptionComponent vrt in Geometry.VertexDescription)
+			{
+				bool bolFound = false;
+				for (int itr = 0; itr < datagridVertexDescriptions.Rows.Count; itr++)
+				{
+					DataGridViewRow row = datagridVertexDescriptions.Rows[itr];
+					int vrtIdx = -1;
+					string strIdx = (string)(row.Cells["columnIndex"].Value ?? " ");
+					if (strIdx != null) int.TryParse(strIdx, out vrtIdx);
+					if (vrt.Index == vrtIdx) { bolFound = true; break; }
+				}
+				if (!bolFound) aryToDelete.Add(vrt);
+			}
+			for (int itr = 0; itr < aryToDelete.Count; itr++) Geometry.VertexDescription.Remove(aryToDelete[itr]);
+			propsGeometry.Refresh();
 		}
 
 		private void DatagridVertexDescriptions_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
-			clsGeometry.clsVertexDescriptionComponent vrt = Geometry.VertexDescription[e.RowIndex];
+			if (!bolDataGridReady) return;
 			DataGridViewRow rowData = datagridVertexDescriptions.Rows[e.RowIndex];
+			clsVertexDescriptionComponent vrt = rowData.Tag as clsVertexDescriptionComponent;
+			if (vrt == null) return;
+			vrt.Index = int.Parse(rowData.Cells["columnIndex"].Value.ToString());
 			vrt.Name = (string)rowData.Cells["columnComponentName"].Value;
-			vrt.ElementGLType = (VertexAttribPointerType)Enum.Parse(typeof(VertexAttribPointerType),(string)rowData.Cells["columnElementType"].Value);
-			vrt.ElementCount = int.Parse((string)rowData.Cells["columnElementCount"].Value);
-		}
-
-		private void DatagridVertexDescriptions_CellContentClick(object sender, DataGridViewCellEventArgs e)
-		{
-
+			vrt.ElementGLType = (VertexAttribPointerType)Enum.Parse(typeof(VertexAttribPointerType), rowData.Cells["columnElementType"].Value.ToString());
+			vrt.ElementCount = int.Parse(rowData.Cells["columnElementCount"].Value.ToString());
+			for (int itrRow = 0; itrRow < datagridVertexDescriptions.Rows.Count; itrRow++)
+			{
+				DataGridViewRow rowItr = datagridVertexDescriptions.Rows[itrRow];
+				clsVertexDescriptionComponent vrtItr = rowItr.Tag as clsVertexDescriptionComponent;
+				if (vrtItr != null) rowItr.Cells["columnIndex"].Value = vrtItr.Index.ToString();
+			}
+			propsGeometry.Refresh();
 		}
 
 		private void DatagridVertexDescriptions_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
-			Console.WriteLine($"Vertex Description: DataError Row{e.RowIndex} Column{e.ColumnIndex}");
+			Console.WriteLine($"Vertex Description: DataError {{{e.Exception}}} - Row{e.RowIndex} Column{e.ColumnIndex}");
 		}
 	}
 }
