@@ -342,40 +342,106 @@ namespace modProject
 			}
 		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertex
+		public class clsVertexProperty : IEnumerable<Array>
+		{
+			[Browsable(false)]
+			public clsVertex Vertex { private set; get; }
+			[Browsable(false)]
+			public int VertexDataIndex { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Index) : (-1)); }
+			[Browsable(false)]
+			public int VertexDataSize { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.TotalSize) : (-1)); }
+			[Browsable(false)]
+			public int VertexDataOffset { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Index*Vertex.TotalSize) : (-1)); }
+			[Browsable(false)]
+			public string ComponentName { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Desc[intComponentIndex].Name) : ("")); }
+			[Browsable(false)]
+			public int ElementSize { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Desc[intComponentIndex].ElementSize) : (0)); }
+			[Browsable(false)]
+			public int ElementCount { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Desc[intComponentIndex].ElementCount) : (0)); }
+			[Browsable(false)]
+			public int ElementOffset { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Index*ElementCount) : (0)); }
+			[Browsable(false)]
+			public List<object> ComponentData { get => ((Vertex != null) ? (Vertex.Data[Vertex.Desc[intComponentIndex]]) : (null)); }
+			private int intComponentIndex;
+			public clsVertexProperty(clsVertex refVertex, int intComponent)
+			{
+				Vertex = refVertex;
+				intComponentIndex = intComponent;
+			}
+			[NotifyParentProperty(true)]
+			public object this[int index]
+			{
+				get
+				{
+					return ComponentData[Vertex.Index*ElementCount + index];
+				}
+				set
+				{
+					ComponentData[Vertex.Index * ElementCount + index] = value;
+				}
+			}
+			[NotifyParentProperty(true)]
+			public object[] Elements
+			{
+				get
+				{
+					object[] ret = new object[ElementCount];
+					for (int itr = 0; itr < ElementCount; itr++)
+					{
+						ret[itr] = ComponentData[Vertex.Index*ElementCount + itr];
+					}
+					return ret;
+				}
+				set
+				{
+					for (int itr = 0; itr < ElementCount; itr++)
+					{
+						if (itr < value.Length) ComponentData[itr] = value[itr];
+					}
+				}
+			}
+			public IEnumerator<Array> GetEnumerator()
+			{
+				return new clsVertexEnumerator(Vertex);
+			}
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return (IEnumerator<Array>)(new clsVertexEnumerator(Vertex));
+			}
+			public override string ToString()
+			{
+				string strComponents = "";
+				int dSt = ElementOffset; int dLen = ElementCount;
+				for(int dItr = 0; dItr < dLen; dItr++)
+				{
+					strComponents += $"{ComponentData[dSt + dItr]}{((dItr < dLen-1)?(", "):(""))}";
+				}
+				return $"{ComponentName}: ({strComponents})";
+			}
+		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
+		public class clsVertex 
 		{
 			[Browsable(false)]
 			public clsVertexCollection VertexCollection { private set; get; }
+			[Browsable(false)]
 			public int Index { get { return ((VertexCollection != null) ? (VertexCollection.aryVertices.IndexOf(this)) : (-1)); } }
 			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { get { return ((VertexCollection != null) ? (VertexCollection.Data) : (null)); } }
 			[Browsable(false)]
 			public clsVertexDescription Desc { get { return ((VertexCollection != null) ? (VertexCollection.Desc) : (null)); } }
+			[Browsable(false)]
 			public int TotalSize { get { return ((Desc != null) ? (Desc.TotalVertexSize) : (0)); } }
 			public clsVertex(clsVertexCollection refCollection)
 			{
 				VertexCollection = refCollection;
 			}
-			public Dictionary<string, Array> Components
+			public clsVertexProperty[] Components
 			{
 				get
 				{
-					Dictionary<clsVertexDescriptionComponent, List<object>> data = Data;
-					clsVertexDescription desc = Desc;
-					int index = Index;
-					if (data == null) return null;
-					if (desc == null) return null;
-					if (index < 0) return null;
-					Dictionary<string, Array> ret = new Dictionary<string, Array>();
-					for (int compItr = 0; compItr < desc.Count; compItr++)
-					{
-						object[] itm = new object[desc[compItr].ElementCount];
-						data[desc[compItr]].CopyTo(index * desc[compItr].ElementCount, itm, 0, desc[compItr].ElementCount);
-						if (itm != null)
-						{
-							ret.Add(desc[compItr].Name, itm.ToArray());
-						}
-					}
+					clsVertexProperty[] ret = new clsVertexProperty[Desc.Count];
+					for (int itr = 0; itr < Desc.Count; itr++) ret[itr] = new clsVertexProperty(this, itr);
 					return ret;
 				}
 			}
@@ -383,25 +449,20 @@ namespace modProject
 			{
 				get
 				{
-					string[] componentnames = new string[Components.Keys.Count];
-					Components.Keys.CopyTo(componentnames, 0);
-					return Components[componentnames[index]];
+					clsVertexDescriptionComponent comp = Desc[index];
+					int elemLen = comp.ElementCount;
+					object[] ret = new Object[elemLen];
+					Data[comp].CopyTo(Index * elemLen, ret, 0, elemLen);
+					return ret;
 				}
 				set
 				{
-					string[] componentnames = new string[Components.Keys.Count];
-					Components.Keys.CopyTo(componentnames, 0);
-					value.CopyTo(Components[componentnames[index]], 0);
-					if (Data != null && Desc != null)
+					clsVertexDescriptionComponent comp = Desc[index];
+					int elemLen = comp.ElementCount;
+					int elemSt = Index * elemLen;
+					for(int elemItr = 0; elemItr < elemLen; elemItr++)
 					{
-						clsVertexDescriptionComponent comp = Desc[index];
-						if (comp != null)
-						{
-							for (int itr = 0; itr < comp.ElementCount; itr++)
-							{
-								Data[comp][Index * comp.ElementCount + itr] = value.GetValue(itr);
-							}
-						}
+						Data[comp][elemSt + elemItr] = value.GetValue(elemItr);
 					}
 				}
 			}
@@ -409,44 +470,86 @@ namespace modProject
 			{
 				get
 				{
-					if (!Components.ContainsKey(ComponentName)) return null;
-					return Components[ComponentName];
+					int intRet = Components.ToList().FindIndex(itm => itm.ComponentName == ComponentName);
+					return (intRet >= 0) ? (this[intRet]) : (null);
 				}
 				set
 				{
-					if (!Components.ContainsKey(ComponentName)) return;
-					value.CopyTo(Components[ComponentName], 0);
-					if (Data != null && Desc != null)
-					{
-						clsVertexDescriptionComponent comp = Desc.First(itm => itm.Name == ComponentName);
-						if(comp != null)
-						{
-							for (int itr = 0; itr < comp.ElementCount; itr++)
-							{
-								Data[comp][Index * comp.ElementCount + itr] = value.GetValue(itr);
-							}
-						}
-					}
+					int intComp = Components.ToList().FindIndex(itm => itm.ComponentName == ComponentName);
+					if (intComp < 0) return;
+					this[intComp] = value;
 				}
 			}
 			public override string ToString()
 			{
 				string strRet = "";
-				foreach (KeyValuePair<string, Array> itm in Components)
+				for(int itr = 0; itr < Components.Length; itr++)
 				{
-					strRet += $"{itm.Key}: ";
-					strRet += "{";
-					for(int itr = 0; itr < itm.Value.Length; itr++)
-					{
-						strRet += itm.Value.GetValue(itr) + $"{((itr < itm.Value.Length - 1)?(", "):(""))}";
-					}
-					strRet += "};";
+					strRet += Components[itr].ToString() + "; ";
 				}
 				return strRet;
 			}
 		}
+		public class clsVertexEnumerator : IEnumerator<Array>
+		{
+			private int intIndex = -1;
+			public clsVertex Vertex { private set; get; }
+			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { get => ((Vertex != null) ? (Vertex.Data) : (null)); }
+			public clsVertexDescription Desc { get => ((Vertex != null)?(Vertex.Desc):(null)); }
+			public Array Current
+			{
+				get
+				{
+					if(intIndex >=0 && intIndex < Desc.Count)
+					{
+						clsVertexDescriptionComponent comp = Desc[intIndex];
+						List<object> dat = Data[comp];
+						object[] aryRet = new object[comp.ElementCount];
+						for(int elemItr = 0; elemItr < comp.ElementCount; elemItr++)
+						{
+							aryRet[elemItr] = dat[Vertex.Index*comp.ElementCount + elemItr];
+						}
+						return aryRet;
+					} else
+					{
+						return null;
+					}
+				}
+			}
+			object IEnumerator.Current { get => (IEnumerable)(Current); }
+			public clsVertexEnumerator(clsVertex refVertex)
+			{
+				Vertex = refVertex;
+			}
+			public void Dispose()
+			{
+				Vertex = null;
+				intIndex = -1;
+			}
+			public bool MoveNext()
+			{
+				intIndex++;
+				return intIndex < Desc.Count;
+			}
+			public void Reset()
+			{
+				intIndex = -1;
+			}
+		}
+		public class clsVertexCollectionConverter : ExpandableObjectConverter
+		{
+			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+			{
+				PropertyDescriptorCollection ret = base.GetProperties(context, value, attributes);
+				return ret;
+			}
+		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertexCollection : IDisposable, IEnumerable<clsVertex>
+		public class clsVertexCollection : IDisposable, ICollection<clsVertex>
 		{
 			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { private set; get; } = new Dictionary<clsVertexDescriptionComponent, List<object>>();
@@ -458,6 +561,7 @@ namespace modProject
 			}
 			private clsVertexDescription refDesc;
 			[Browsable(false)]
+			[NotifyParentProperty(true)]
 			public clsVertexDescription Desc
 			{
 				get
@@ -476,6 +580,7 @@ namespace modProject
 				}
 			}
 			private int intCount = 0;
+			[NotifyParentProperty(true)]
 			public int Count
 			{
 				get { return intCount; }
@@ -490,12 +595,13 @@ namespace modProject
 					intCount = value;
 				}
 			}
+			[Browsable(false)]
 			public int TotalSize { get { return intCount * refDesc.TotalVertexSize; } }
 
 			[Browsable(false)]
 			public bool IsReadOnly => false;
 
-			[TypeConverter(typeof(ExpandableObjectConverter))]
+			//[TypeConverter(typeof(ExpandableObjectConverter))]
 			public clsVertex this[int index]
 			{
 				get
@@ -617,6 +723,26 @@ namespace modProject
 			public override string ToString()
 			{
 				return $"Count={intCount}";
+			}
+
+			public void Add(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool Contains(clsVertex item)
+			{
+				throw new NotImplementedException();
+			}
+
+			public void CopyTo(clsVertex[] array, int arrayIndex)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool Remove(clsVertex item)
+			{
+				throw new NotImplementedException();
 			}
 		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]

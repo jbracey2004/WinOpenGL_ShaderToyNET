@@ -15,7 +15,7 @@ public class generalUtils
 		}
 		else if (newsize < oldsize)
 		{
-			ary.RemoveRange(oldsize, newsize - oldsize);
+			ary.RemoveRange(newsize, oldsize - newsize);
 		}
 	}
 	public class NumberConverter : DoubleConverter

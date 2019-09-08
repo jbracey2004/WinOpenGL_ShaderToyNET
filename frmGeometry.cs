@@ -181,7 +181,6 @@ namespace WinOpenGL_ShaderToy
 			propsGeometry.Refresh();
 			bolDataGridReady = true;
 		}
-
 		private void DatagridVertexDescriptions_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
 			List<clsVertexDescriptionComponent> aryToDelete = new List<clsVertexDescriptionComponent>();
@@ -201,7 +200,6 @@ namespace WinOpenGL_ShaderToy
 			for (int itr = 0; itr < aryToDelete.Count; itr++) Geometry.VertexDescription.Remove(aryToDelete[itr]);
 			propsGeometry.Refresh();
 		}
-
 		private void DatagridVertexDescriptions_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			if (!bolDataGridReady) return;
@@ -220,7 +218,6 @@ namespace WinOpenGL_ShaderToy
 			}
 			propsGeometry.Refresh();
 		}
-
 		private void DatagridVertexDescriptions_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
 			Console.WriteLine($"Vertex Description: DataError {{{e.Exception}}} - Row{e.RowIndex} Column{e.ColumnIndex}");
