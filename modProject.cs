@@ -17,6 +17,7 @@ using static modProject.clsProjectObject;
 using static generalUtils;
 using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -142,6 +143,261 @@ namespace modProject
 	}
 	public class clsGeometry : clsProjectObject
 	{
+		public class VertexCollectionConverter : ArrayConverter
+		{
+			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+			{
+				PropertyDescriptorCollection props = new PropertyDescriptorCollection(new PropertyDescriptor[] { });
+				clsVertexCollection aryVrt = value as clsVertexCollection;
+				if(aryVrt != null)
+				{
+					props.Add(new MemberPropertyDescriptor(typeof(int), typeof(int), "Count"));
+					for(int vrtItr = 0; vrtItr < aryVrt.Count; vrtItr++)
+					{
+						props.Add(new ArrayPropertyDescriptor(typeof(clsVertex), typeof(clsVertex), vrtItr));
+					}
+				}
+				return props;
+			}
+			private class MemberPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private string strName = ""; 
+				public MemberPropertyDescriptor(Type componentType, Type elementType, string Name) : base(componentType, Name, elementType, null)
+				{
+					strName = Name;
+				}
+				public override object GetValue(object instance)
+				{
+					object objRet = null;
+					Type propTyp = instance.GetType().GetProperty(strName).PropertyType;
+					PropertyInfo prop = instance.GetType().GetProperty(strName, propTyp);
+					objRet = Convert.ChangeType(prop.GetValue(instance, null), propTyp);
+					return objRet;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					Type propTyp = instance.GetType().GetProperty(strName).PropertyType;
+					PropertyInfo prop = instance.GetType().GetProperty(strName, propTyp);
+					prop.SetValue(instance, Convert.ChangeType(value,propTyp), null);
+					OnValueChanged(instance, EventArgs.Empty);
+				}
+			}
+			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private int index;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index) : base(arrayType, "[" + index + "]", elementType, null)
+				{
+					this.index = index;
+				}
+				public override object GetValue(object instance)
+				{
+					clsVertexCollection ary = instance as clsVertexCollection;
+					if (ary != null)
+					{
+						if (ary.Count > index)
+						{
+							return ary[index];
+						}
+					}
+					return null;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					clsVertexCollection ary = instance as clsVertexCollection;
+					if (ary != null)
+					{
+						if (ary.Count > index)
+						{
+							ary[index] = (clsVertex)value;
+							OnValueChanged(instance, EventArgs.Empty);
+						}
+					}
+				}
+			}
+		}
+		public class VertexConverter : ArrayConverter
+		{
+			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+			{
+				PropertyDescriptorCollection props = new PropertyDescriptorCollection(new PropertyDescriptor[] { });
+				clsVertex aryVrt = value as clsVertex;
+				if (aryVrt != null)
+				{
+					clsVertexProperty[] propVrt = aryVrt.Components;
+					if(propVrt != null)
+					{
+						for (int vrtItr = 0; vrtItr < propVrt.Length; vrtItr++)
+						{
+							props.Add(new ArrayPropertyDescriptor(typeof(clsVertexProperty), typeof(clsVertexProperty), propVrt[vrtItr].ComponentName, vrtItr));
+						}
+					}
+				}
+				return props;
+			}
+			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private int index;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, string strName, int index) : base(arrayType, strName, elementType, null)
+				{
+					this.index = index;
+				}
+				public override object GetValue(object instance)
+				{
+					clsVertex ary = instance as clsVertex;
+					if (ary != null)
+					{
+						if (ary.Components.Length > index)
+						{
+							return ary.Components[index];
+						}
+					}
+					return null;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					clsVertex ary = instance as clsVertex;
+					if (ary != null)
+					{
+						if (ary.Components.Length > index)
+						{
+							ary.Components[index] = (clsVertexProperty)value;
+							OnValueChanged(instance, EventArgs.Empty);
+						}
+					}
+				}
+			}
+		}
+		public class VertexPropertyConverter : ArrayConverter
+		{
+			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+			{
+				PropertyDescriptor[] props = null;
+				clsVertexProperty vrt = value as clsVertexProperty;
+				if (vrt != null)
+				{
+					Array valueArray = (Array)vrt.Elements;
+					int length = valueArray.GetLength(0);
+					props = new PropertyDescriptor[length];
+					Type arrayType = vrt.ElementType;
+					Type elementType = vrt.ElementType;
+					for (int i = 0; i < length; i++)
+					{
+						props[i] = new ArrayPropertyDescriptor(arrayType, elementType, i, attributes);
+					}
+				}
+				return new PropertyDescriptorCollection(props);
+			}
+			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private int index;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index, Attribute[] attr) : base(arrayType, "[" + index + "]", elementType, attr)
+				{
+					this.index = index;
+				}
+				public override object GetValue(object instance)
+				{
+					clsVertexProperty vrt = instance as clsVertexProperty;
+					if (vrt != null)
+					{
+						return vrt[index];
+					}
+					return null;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					clsVertexProperty vrt = instance as clsVertexProperty;
+					if (vrt != null)
+					{
+						vrt[index] = value;
+						OnValueChanged(instance, EventArgs.Empty);
+					}
+				}
+			}
+			public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Type sourceType)
+			{
+				if (sourceType == typeof(string))
+					return true;
+				else
+					return base.CanConvertFrom(context, sourceType);
+			}
+			public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+			{
+				if (destinationType == typeof(ICollection<object>))
+					return true;
+				else
+					return base.CanConvertTo(context, destinationType);
+			}
+			public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+			{
+				if (value.GetType() == typeof(string))
+				{
+					string strName = context.PropertyDescriptor.DisplayName;
+					clsVertex vrt = context.Instance as clsVertex;
+					if (vrt != null)
+					{
+						clsVertexDescriptionComponent comp = vrt.Desc.First(itm => itm.Name == strName);
+						if(comp != null)
+						{
+							string[] vals = (value as string).Split(',');
+							//return GetList(vals, comp.ElementType);
+						}
+					}
+				}
+				return base.ConvertFrom(context, culture, value);
+			}
+			private object GetList(string[] vals, Type Typ)
+			{
+				List<object> tVals = new List<object>();
+				foreach (string val in vals)
+				{
+					try
+					{
+						object tVal = Convert.ChangeType(val, Typ);
+						tVals.Add(tVal);
+					}
+					catch
+					{
+						tVals.Add(Typ);
+					}
+				}
+				return tVals.ToArray();
+			}
+			public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+			{
+				if (destinationType == typeof(string))
+				{
+					clsVertexProperty vrt = value as clsVertexProperty;
+					Type Typ = vrt.ElementType;
+					if(vrt != null)
+					{
+						ICollection collection = vrt.Elements as ICollection;
+						if (collection != null)
+						{
+							List<string> vals = new List<string>();
+							foreach (object val in collection)
+							{
+								object objVal = Convert.ChangeType(val, Typ);
+								vals.Add(objVal.ToString());
+							}
+							return string.Join(", ", vals.ToArray());
+						}
+					}
+				}
+				return base.ConvertTo(context, culture, value, destinationType);
+			}
+		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
@@ -284,7 +540,7 @@ namespace modProject
 			}
 
 			[Browsable(false)]
-			public bool IsReadOnly => ((IList<clsVertexDescriptionComponent>)aryComponents).IsReadOnly;
+			public bool IsReadOnly => false;
 
 			protected internal int GetComponentOffset(clsVertexDescriptionComponent itm)
 			{
@@ -341,8 +597,8 @@ namespace modProject
 				return strRet;
 			}
 		}
-		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertexProperty : IEnumerable<Array>
+		[TypeConverter(typeof(VertexPropertyConverter))]
+		public class clsVertexProperty
 		{
 			[Browsable(false)]
 			public clsVertex Vertex { private set; get; }
@@ -361,6 +617,10 @@ namespace modProject
 			[Browsable(false)]
 			public int ElementOffset { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Index*ElementCount) : (0)); }
 			[Browsable(false)]
+			public VertexAttribPointerType ElementGLType { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Desc[intComponentIndex].ElementGLType) : ((VertexAttribPointerType)0)); }
+			[Browsable(false)]
+			public Type ElementType { get => ((Vertex != null && intComponentIndex >= 0) ? (Vertex.Desc[intComponentIndex].ElementType) : (null)); }
+			[Browsable(false)]
 			public List<object> ComponentData { get => ((Vertex != null) ? (Vertex.Data[Vertex.Desc[intComponentIndex]]) : (null)); }
 			private int intComponentIndex;
 			public clsVertexProperty(clsVertex refVertex, int intComponent)
@@ -368,19 +628,17 @@ namespace modProject
 				Vertex = refVertex;
 				intComponentIndex = intComponent;
 			}
-			[NotifyParentProperty(true)]
 			public object this[int index]
 			{
 				get
 				{
-					return ComponentData[Vertex.Index*ElementCount + index];
+					return Convert.ChangeType(ComponentData[Vertex.Index*ElementCount + index], ElementType);
 				}
 				set
 				{
-					ComponentData[Vertex.Index * ElementCount + index] = value;
+					ComponentData[Vertex.Index * ElementCount + index] = Convert.ChangeType(value, ElementType);
 				}
 			}
-			[NotifyParentProperty(true)]
 			public object[] Elements
 			{
 				get
@@ -388,7 +646,7 @@ namespace modProject
 					object[] ret = new object[ElementCount];
 					for (int itr = 0; itr < ElementCount; itr++)
 					{
-						ret[itr] = ComponentData[Vertex.Index*ElementCount + itr];
+						ret[itr] = Convert.ChangeType(ComponentData[Vertex.Index*ElementCount + itr], ElementType);
 					}
 					return ret;
 				}
@@ -396,17 +654,9 @@ namespace modProject
 				{
 					for (int itr = 0; itr < ElementCount; itr++)
 					{
-						if (itr < value.Length) ComponentData[itr] = value[itr];
+						if (itr < value.Length) ComponentData[Vertex.Index*ElementCount + itr] = Convert.ChangeType(value[itr], ElementType);
 					}
 				}
-			}
-			public IEnumerator<Array> GetEnumerator()
-			{
-				return new clsVertexEnumerator(Vertex);
-			}
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return (IEnumerator<Array>)(new clsVertexEnumerator(Vertex));
 			}
 			public override string ToString()
 			{
@@ -419,8 +669,8 @@ namespace modProject
 				return $"{ComponentName}: ({strComponents})";
 			}
 		}
-		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertex 
+		[TypeConverter(typeof(VertexConverter))]
+		public class clsVertex
 		{
 			[Browsable(false)]
 			public clsVertexCollection VertexCollection { private set; get; }
@@ -445,7 +695,7 @@ namespace modProject
 					return ret;
 				}
 			}
-			public Array this[int index]
+			public object[] this[int index]
 			{
 				get
 				{
@@ -466,7 +716,7 @@ namespace modProject
 					}
 				}
 			}
-			public Array this[string ComponentName]
+			public object[] this[string ComponentName]
 			{
 				get
 				{
@@ -490,66 +740,8 @@ namespace modProject
 				return strRet;
 			}
 		}
-		public class clsVertexEnumerator : IEnumerator<Array>
-		{
-			private int intIndex = -1;
-			public clsVertex Vertex { private set; get; }
-			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { get => ((Vertex != null) ? (Vertex.Data) : (null)); }
-			public clsVertexDescription Desc { get => ((Vertex != null)?(Vertex.Desc):(null)); }
-			public Array Current
-			{
-				get
-				{
-					if(intIndex >=0 && intIndex < Desc.Count)
-					{
-						clsVertexDescriptionComponent comp = Desc[intIndex];
-						List<object> dat = Data[comp];
-						object[] aryRet = new object[comp.ElementCount];
-						for(int elemItr = 0; elemItr < comp.ElementCount; elemItr++)
-						{
-							aryRet[elemItr] = dat[Vertex.Index*comp.ElementCount + elemItr];
-						}
-						return aryRet;
-					} else
-					{
-						return null;
-					}
-				}
-			}
-			object IEnumerator.Current { get => (IEnumerable)(Current); }
-			public clsVertexEnumerator(clsVertex refVertex)
-			{
-				Vertex = refVertex;
-			}
-			public void Dispose()
-			{
-				Vertex = null;
-				intIndex = -1;
-			}
-			public bool MoveNext()
-			{
-				intIndex++;
-				return intIndex < Desc.Count;
-			}
-			public void Reset()
-			{
-				intIndex = -1;
-			}
-		}
-		public class clsVertexCollectionConverter : ExpandableObjectConverter
-		{
-			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
-			{
-				return true;
-			}
-			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
-			{
-				PropertyDescriptorCollection ret = base.GetProperties(context, value, attributes);
-				return ret;
-			}
-		}
-		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertexCollection : IDisposable, ICollection<clsVertex>
+		[TypeConverter(typeof(VertexCollectionConverter))]
+		public class clsVertexCollection : IDisposable, IList<clsVertex>
 		{
 			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { private set; get; } = new Dictionary<clsVertexDescriptionComponent, List<object>>();
@@ -601,7 +793,6 @@ namespace modProject
 			[Browsable(false)]
 			public bool IsReadOnly => false;
 
-			//[TypeConverter(typeof(ExpandableObjectConverter))]
 			public clsVertex this[int index]
 			{
 				get
@@ -621,7 +812,6 @@ namespace modProject
 					}
 				}
 			}
-			//[TypeConverter(typeof(ArrayConverter))]
 			public clsVertex[] Items
 			{
 				get { return aryVertices.ToArray(); }
@@ -679,20 +869,6 @@ namespace modProject
 				aryVertices.Clear();
 				Count = 0;
 			}
-
-			IEnumerator<clsVertex> IEnumerable<clsVertex>.GetEnumerator()
-			{
-				return this.GetEnumerator();
-			}
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return this.GetEnumerator();
-			}
-			public IEnumerator<clsVertex> GetEnumerator()
-			{
-				return aryVertices.GetEnumerator();
-			}
-
 			private void desc_Updated()
 			{
 				KeyValuePair<clsVertexDescriptionComponent, List<object>>[] aryComp = Data.ToArray();
@@ -709,6 +885,10 @@ namespace modProject
 					{
 						object[] aryElements = ArrayList.Repeat(refDesc[itr].InitialElementValue, refDesc[itr].ElementCount*intCount).ToArray();
 						Data.Add(refDesc[itr], new List<object>((IEnumerable<object>)aryElements));
+					} else
+					{
+						List<object> ary = Data[refDesc[itr]];
+						ResizeList(ref ary, refDesc[itr].ElementCount * intCount, idx => refDesc[itr].InitialElementValue);
 					}
 				}
 			}
@@ -725,24 +905,44 @@ namespace modProject
 				return $"Count={intCount}";
 			}
 
+			public int IndexOf(clsVertex item)
+			{
+				return ((IList<clsVertex>)aryVertices).IndexOf(item);
+			}
+
+			public void Insert(int index, clsVertex item)
+			{
+				((IList<clsVertex>)aryVertices).Insert(index, item);
+			}
+
 			public void Add(clsVertex item)
 			{
-				throw new NotImplementedException();
+				((IList<clsVertex>)aryVertices).Add(item);
 			}
 
 			public bool Contains(clsVertex item)
 			{
-				throw new NotImplementedException();
+				return ((IList<clsVertex>)aryVertices).Contains(item);
 			}
 
 			public void CopyTo(clsVertex[] array, int arrayIndex)
 			{
-				throw new NotImplementedException();
+				((IList<clsVertex>)aryVertices).CopyTo(array, arrayIndex);
 			}
 
 			public bool Remove(clsVertex item)
 			{
-				throw new NotImplementedException();
+				return ((IList<clsVertex>)aryVertices).Remove(item);
+			}
+
+			public IEnumerator<clsVertex> GetEnumerator()
+			{
+				return ((IList<clsVertex>)aryVertices).GetEnumerator();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return ((IList<clsVertex>)aryVertices).GetEnumerator();
 			}
 		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
