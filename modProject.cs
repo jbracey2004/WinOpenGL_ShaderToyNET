@@ -152,23 +152,29 @@ namespace modProject
 			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 			{
 				PropertyDescriptorCollection props = new PropertyDescriptorCollection(new PropertyDescriptor[] { });
+				PropertyDescriptor propNew = null;
 				clsVertexCollection aryVrt = value as clsVertexCollection;
 				if(aryVrt != null)
 				{
-					props.Add(new MemberPropertyDescriptor(typeof(int), typeof(int), "Count"));
-					for(int vrtItr = 0; vrtItr < aryVrt.Count; vrtItr++)
+					List<Attribute> attrs = new List<Attribute>(attributes);
+					attrs.Add(new NotifyParentPropertyAttribute(true));
+					propNew = new MemberPropertyDescriptor(typeof(int), typeof(int), "Count", "[Count]", attrs.ToArray());
+					props.Add(propNew);
+					string strFormat = new string('0', aryVrt.Count.ToString().Length);
+					for (int vrtItr = 0; vrtItr < aryVrt.Count; vrtItr++)
 					{
-						props.Add(new ArrayPropertyDescriptor(typeof(clsVertex), typeof(clsVertex), vrtItr));
+						props.Add(new ArrayPropertyDescriptor(typeof(clsVertex), typeof(clsVertex), vrtItr, $"v[{vrtItr.ToString(strFormat)}]", attributes));
 					}
 				}
 				return props;
 			}
 			private class MemberPropertyDescriptor : SimplePropertyDescriptor
 			{
-				private string strName = ""; 
-				public MemberPropertyDescriptor(Type componentType, Type elementType, string Name) : base(componentType, Name, elementType, null)
+				private string strName = "";
+				public override bool SupportsChangeEvents => true;
+				public MemberPropertyDescriptor(Type componentType, Type elementType, string Name, string strLabel, Attribute[] attr) : base(componentType, strLabel, elementType, attr)
 				{
-					strName = Name;
+					this.strName = Name;
 				}
 				public override object GetValue(object instance)
 				{
@@ -182,14 +188,15 @@ namespace modProject
 				{
 					Type propTyp = instance.GetType().GetProperty(strName).PropertyType;
 					PropertyInfo prop = instance.GetType().GetProperty(strName, propTyp);
-					prop.SetValue(instance, Convert.ChangeType(value,propTyp), null);
+					prop.SetValue(instance, Convert.ChangeType(value, propTyp), null);
 					OnValueChanged(instance, EventArgs.Empty);
 				}
 			}
 			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
 			{
 				private int index;
-				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index) : base(arrayType, "[" + index + "]", elementType, null)
+				public override bool SupportsChangeEvents => true;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index, string strLabel, Attribute[] attr) : base(arrayType, strLabel, elementType, attr)
 				{
 					this.index = index;
 				}
@@ -236,7 +243,7 @@ namespace modProject
 					{
 						for (int vrtItr = 0; vrtItr < propVrt.Length; vrtItr++)
 						{
-							props.Add(new ArrayPropertyDescriptor(typeof(clsVertexProperty), typeof(clsVertexProperty), propVrt[vrtItr].ComponentName, vrtItr));
+							props.Add(new ArrayPropertyDescriptor(typeof(clsVertexProperty), typeof(clsVertexProperty), propVrt[vrtItr].ComponentName, vrtItr, attributes));
 						}
 					}
 				}
@@ -245,7 +252,8 @@ namespace modProject
 			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
 			{
 				private int index;
-				public ArrayPropertyDescriptor(Type arrayType, Type elementType, string strName, int index) : base(arrayType, strName, elementType, null)
+				public override bool SupportsChangeEvents => true;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, string strName, int index, Attribute[] attr) : base(arrayType, strName, elementType, attr)
 				{
 					this.index = index;
 				}
@@ -302,6 +310,7 @@ namespace modProject
 			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
 			{
 				private int index;
+				public override bool SupportsChangeEvents => true;
 				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index, Attribute[] attr) : base(arrayType, "[" + index + "]", elementType, attr)
 				{
 					this.index = index;
@@ -351,13 +360,15 @@ namespace modProject
 						if(comp != null)
 						{
 							string[] vals = (value as string).Split(',');
-							//return GetList(vals, comp.ElementType);
+							object[] ary = GetList(vals, comp.ElementType);
+							vrt.Components[comp.Index].Elements = ary;
+							return vrt.Components[comp.Index];
 						}
 					}
 				}
 				return base.ConvertFrom(context, culture, value);
 			}
-			private object GetList(string[] vals, Type Typ)
+			private object[] GetList(string[] vals, Type Typ)
 			{
 				List<object> tVals = new List<object>();
 				foreach (string val in vals)
@@ -396,6 +407,89 @@ namespace modProject
 					}
 				}
 				return base.ConvertTo(context, culture, value, destinationType);
+			}
+		}
+		public class TriagnelCollectionConverter : ArrayConverter
+		{
+			public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+			{
+				return true;
+			}
+			public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+			{
+				PropertyDescriptorCollection props = new PropertyDescriptorCollection(new PropertyDescriptor[] { });
+				PropertyDescriptor propNew = null;
+				clsTriangleCollection aryTri = value as clsTriangleCollection;
+				if (aryTri != null)
+				{
+					List<Attribute> attrs = new List<Attribute>(attributes);
+					attrs.Add(new NotifyParentPropertyAttribute(true));
+					propNew = new MemberPropertyDescriptor(typeof(int), typeof(int), "Count", "[Count]", attrs.ToArray());
+					props.Add(propNew);
+					string strFormat = new string('0', aryTri.Count.ToString().Length);
+					for (int triItr = 0; triItr < aryTri.Count; triItr++)
+					{
+						props.Add(new ArrayPropertyDescriptor(typeof(uint[]), typeof(uint[]), triItr, $"t[{triItr.ToString(strFormat)}]", attributes));
+					}
+				}
+				return props;
+			}
+			private class MemberPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private string strName = "";
+				public override bool SupportsChangeEvents => true;
+				public MemberPropertyDescriptor(Type componentType, Type elementType, string Name, string strLabel, Attribute[] attr) : base(componentType, strLabel, elementType, attr)
+				{
+					this.strName = Name;
+				}
+				public override object GetValue(object instance)
+				{
+					object objRet = null;
+					Type propTyp = instance.GetType().GetProperty(strName).PropertyType;
+					PropertyInfo prop = instance.GetType().GetProperty(strName, propTyp);
+					objRet = Convert.ChangeType(prop.GetValue(instance, null), propTyp);
+					return objRet;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					Type propTyp = instance.GetType().GetProperty(strName).PropertyType;
+					PropertyInfo prop = instance.GetType().GetProperty(strName, propTyp);
+					prop.SetValue(instance, Convert.ChangeType(value, propTyp), null);
+					OnValueChanged(instance, EventArgs.Empty);
+				}
+			}
+			private class ArrayPropertyDescriptor : SimplePropertyDescriptor
+			{
+				private int index;
+				public override bool SupportsChangeEvents => true;
+				public ArrayPropertyDescriptor(Type arrayType, Type elementType, int index, string strLabel, Attribute[] attr) : base(arrayType, strLabel, elementType, attr)
+				{
+					this.index = index;
+				}
+				public override object GetValue(object instance)
+				{
+					clsTriangleCollection ary = instance as clsTriangleCollection;
+					if (ary != null)
+					{
+						if (ary.Count > index)
+						{
+							return ary[index];
+						}
+					}
+					return null;
+				}
+				public override void SetValue(object instance, object value)
+				{
+					clsTriangleCollection ary = instance as clsTriangleCollection;
+					if (ary != null)
+					{
+						if (ary.Count > index)
+						{
+							ary[index] = (uint[])value;
+							OnValueChanged(instance, EventArgs.Empty);
+						}
+					}
+				}
 			}
 		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
@@ -945,7 +1039,7 @@ namespace modProject
 				return ((IList<clsVertex>)aryVertices).GetEnumerator();
 			}
 		}
-		[TypeConverter(typeof(ExpandableObjectConverter))]
+		[TypeConverter(typeof(TriagnelCollectionConverter))]
 		public class clsTriangleCollection : IDisposable, IList<uint[]>
 		{
 			private List<uint> aryIndices;

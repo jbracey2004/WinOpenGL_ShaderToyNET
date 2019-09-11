@@ -222,5 +222,10 @@ namespace WinOpenGL_ShaderToy
 		{
 			Console.WriteLine($"Vertex Description: DataError {{{e.Exception}}} - Row{e.RowIndex} Column{e.ColumnIndex}");
 		}
+
+		private void PropsGeometry_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+		{
+			propsGeometry.Refresh();
+		}
 	}
 }

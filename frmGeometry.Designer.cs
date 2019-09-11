@@ -200,6 +200,7 @@
 			this.propsGeometry.Name = "propsGeometry";
 			this.propsGeometry.Size = new System.Drawing.Size(243, 321);
 			this.propsGeometry.TabIndex = 0;
+			this.propsGeometry.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropsGeometry_PropertyValueChanged);
 			// 
 			// splitterBottom
 			// 
