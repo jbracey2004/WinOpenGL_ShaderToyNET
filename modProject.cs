@@ -429,7 +429,7 @@ namespace modProject
 					string strFormat = new string('0', aryTri.Count.ToString().Length);
 					for (int triItr = 0; triItr < aryTri.Count; triItr++)
 					{
-						props.Add(new ArrayPropertyDescriptor(typeof(uint[]), typeof(uint[]), triItr, $"t[{triItr.ToString(strFormat)}]", attributes));
+						props.Add(new ArrayPropertyDescriptor(typeof(clsTriangle), typeof(clsTriangle), triItr, $"t[{triItr.ToString(strFormat)}]", attributes));
 					}
 				}
 				return props;
@@ -485,7 +485,7 @@ namespace modProject
 					{
 						if (ary.Count > index)
 						{
-							ary[index] = (uint[])value;
+							ary[index] = (clsTriangle)value;
 							OnValueChanged(instance, EventArgs.Empty);
 						}
 					}
@@ -840,9 +840,11 @@ namespace modProject
 			[Browsable(false)]
 			public Dictionary<clsVertexDescriptionComponent, List<object>> Data { private set; get; } = new Dictionary<clsVertexDescriptionComponent, List<object>>();
 			internal List<clsVertex> aryVertices = new List<clsVertex>();
-			public clsVertexCollection(clsVertexDescription refDesc)
-			{	
-				Desc = refDesc;
+			internal clsGeometry Geometry { private set; get; }
+			public clsVertexCollection(clsGeometry refGeometry)
+			{
+				Geometry = refGeometry;
+				Desc = refGeometry.VertexDescription;
 				Desc.Updated += desc_Updated;
 			}
 			private clsVertexDescription refDesc;
@@ -1040,22 +1042,28 @@ namespace modProject
 			}
 		}
 		[TypeConverter(typeof(TriagnelCollectionConverter))]
-		public class clsTriangleCollection : IDisposable, IList<uint[]>
+		public class clsTriangleCollection : IDisposable, IList<clsTriangle>
 		{
-			private List<uint> aryIndices;
+			internal List<uint> aryIndices = new List<uint>();
+			internal List<clsTriangle> aryTriangles = new List<clsTriangle>();
+			internal clsGeometry Geometry { private set; get; }
 			public uint[] Indices { get => aryIndices.ToArray(); }
-			public clsTriangleCollection(List<uint> refaryIndices)
+			public clsTriangleCollection(clsGeometry refGeometry)
 			{
-				aryIndices = refaryIndices;
+				Geometry = refGeometry;
 			}
 			public void Dispose()
 			{
+				aryIndices.Clear();
 				aryIndices = null;
+				aryTriangles.Clear();
+				aryTriangles = null;
 			}
 			public int Count
 			{
 				set
-				{ 
+				{
+					ResizeList(ref aryTriangles, value, idx => new clsTriangle(this));
 					ResizeList<uint>(ref aryIndices, value * 3, idx => 0);
 				}
 				get => (int)(aryIndices.Count/3);
@@ -1064,81 +1072,74 @@ namespace modProject
 			[Browsable(false)]
 			public bool IsReadOnly => false;
 
-			public uint[] this[int index]
+			public clsTriangle this[int index]
 			{
 				get
 				{
-					uint[] ret = new uint[3];
-					aryIndices.CopyTo(index*3, ret, 0, 3);
-					return ret;
+					return aryTriangles[index];
 				}
 				set
 				{
-					for(int itr = 0; itr < 3; itr++)
-					{
-						aryIndices[index * 3 + itr] = value[itr]; 
-					}
+					aryIndices[index * 3 + 0] = value.v_Id0;
+					aryIndices[index * 3 + 1] = value.v_Id1;
+					aryIndices[index * 3 + 2] = value.v_Id2;
 				}
 			}
-			public uint[][] Items
+			[Browsable(false)]
+			public clsTriangle[] Items
 			{
 				get
 				{
-					List<uint[]> ret = new List<uint[]>();
-					for(int itr = 0; itr < Count; itr++)
-					{
-						ret.Add(this[itr]);
-					}
-					return ret.ToArray();
+					return aryTriangles.ToArray();
 				}
 			}
 
-			public int IndexOf(uint[] item)
+			public int IndexOf(clsTriangle item)
 			{
-				return Items.ToList().FindIndex(itm => (
-					itm[0] == item[0] &&
-					itm[1] == item[1] &&
-					itm[2] == item[2]
-				));
+				return aryTriangles.IndexOf(item);
 			}
 
-			public void Insert(int index, uint[] item)
+			public void Insert(int index, clsTriangle item)
 			{
-				for(int itr = item.Length-1; itr >= 0; itr--)
-				{
-					aryIndices.Insert(index * 3, item[itr]);
-				}
+				aryIndices.Insert(index * 3, item.v_Id2);
+				aryIndices.Insert(index * 3, item.v_Id1);
+				aryIndices.Insert(index * 3, item.v_Id0);
+				ResizeList(ref aryTriangles, aryIndices.Count/3, idx => new clsTriangle(this));
 			}
 
 			public void RemoveAt(int index)
 			{
 				for (int itr = 0; itr < 3; itr++) aryIndices.RemoveAt(index * 3);
+				ResizeList(ref aryTriangles, aryIndices.Count / 3, idx => new clsTriangle(this));
 			}
 
-			public void Add(uint[] item)
+			public void Add(clsTriangle item)
 			{
-				aryIndices.AddRange(item);
+				aryIndices.AddRange(item.Items);
+				ResizeList(ref aryTriangles, aryIndices.Count / 3, idx => new clsTriangle(this));
 			}
 
 			public void Clear()
 			{
 				aryIndices.Clear();
+				aryTriangles.Clear();
 			}
 
-			public bool Contains(uint[] item)
+			public bool Contains(clsTriangle item)
 			{
 				return IndexOf(item) >= 0;
 			}
 
-			public void CopyTo(uint[][] array, int arrayIndex)
+			public void CopyTo(clsTriangle[] array, int arrayIndex)
 			{
 				for(int itr = 0; itr < array.Length; itr++)
 				{
-					for (int itrN = 0; itrN < 3; itrN++)  aryIndices[arrayIndex * 3 + itr] = array[itr][itrN];
+					uint[] ary = array[itr].Items;
+					for (int itrN = 0; itrN < 3; itrN++)  aryIndices[arrayIndex * 3 + itr] = ary[itrN];
 				}
 			}
 
-			public bool Remove(uint[] item)
+			public bool Remove(clsTriangle item)
 			{
 				int idx = IndexOf(item);
 				if (idx < 0) return false;
@@ -1146,9 +1147,9 @@ namespace modProject
 				return true;
 			}
 
-			public IEnumerator<uint[]> GetEnumerator()
+			public IEnumerator<clsTriangle> GetEnumerator()
 			{
-				return (IEnumerator<uint[]>)Items.GetEnumerator();
+				return (IEnumerator<clsTriangle>)Items.GetEnumerator();
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()
@@ -1160,22 +1161,101 @@ namespace modProject
 			{
 				return $"Count={Count}";
 			}
-		} 
+		}
+		[TypeConverter(typeof(ExpandableObjectConverter))]
+		public class clsTriangle
+		{
+			public uint v_Id0 { get => (Data != null && Index >= 0) ? (Data[Index * 3 + 0]) : (0);
+								   set { if (Data != null && Index >= 0) Data[Index * 3 + 0] = value; } }
+			public uint v_Id1 { get => (Data != null && Index >= 0) ? (Data[Index * 3 + 1]) : (0);
+								   set { if (Data != null && Index >= 0) Data[Index * 3 + 1] = value; } }
+			public uint v_Id2 { get => (Data != null && Index >= 0) ? (Data[Index * 3 + 2]) : (0);
+								   set { if (Data != null && Index >= 0) Data[Index * 3 + 2] = value; } }
+			[Browsable(false)]
+			public List<uint> Data { get => (Collection != null)?(Collection.aryIndices):(null); }
+			[Browsable(false)]
+			public int Index { get => (Collection != null) ? (Collection.IndexOf(this)) : (-1); }
+			[Browsable(false)]
+			public clsTriangleCollection Collection { private set; get; }
+			public clsTriangle(clsTriangleCollection refCollection)
+			{
+				Collection = refCollection;
+			}
+			public uint this[int index]
+			{
+				get
+				{
+					if (index == 0) return v_Id0;
+					if (index == 1) return v_Id1;
+					if (index == 2) return v_Id2;
+					return 0;
+				}
+				set
+				{
+					if (index == 0) v_Id0 = value;
+					if (index == 1) v_Id1 = value;
+					if (index == 2) v_Id2 = value;
+				}
+			}
+			[Browsable(false)]
+			public uint[] Items
+			{
+				get
+				{
+					return new uint[] { v_Id0, v_Id1, v_Id2 };
+				}
+				set
+				{
+					if (value.Length >= 1) v_Id0 = value[0];
+					if (value.Length >= 2) v_Id1 = value[1];
+					if (value.Length >= 3) v_Id2 = value[2];
+				}
+			}
+			public override string ToString()
+			{
+				string strFormat = new string('0', Collection.Geometry.Vertices.Count.ToString().Length);
+				return $"v[{v_Id0.ToString(strFormat)}], v[{v_Id1.ToString(strFormat)}], v[{v_Id2.ToString(strFormat)}]";
+			}
+		}
 		public clsVertexDescription VertexDescription { set; get; }
 		public clsVertexCollection Vertices { set; get; }
 		public clsTriangleCollection Triangles { set; get; }
-		private List<uint> aryIndices = new List<uint>();
+		public List<int> glBuffers = new List<int>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
 		{
 			VertexDescription = new clsVertexDescription();
-			Vertices = new clsVertexCollection(VertexDescription);
-			Triangles = new clsTriangleCollection(aryIndices);
+			Vertices = new clsVertexCollection(this);
+			Triangles = new clsTriangleCollection(this);
+			glUpdateBuffers();
 			AddToCollection();
+		}
+		public void glUpdateBuffers()
+		{
+			if (VertexDescription.Count > glBuffers.Count)
+			{
+				int intDiff = VertexDescription.Count - glBuffers.Count;
+				int[] intBuffersNew = new int[intDiff];
+				GL.CreateBuffers(intDiff, intBuffersNew);
+				glBuffers.AddRange(intBuffersNew);
+			}
+			if(VertexDescription.Count < glBuffers.Count)
+			{
+				int[] ary = glBuffers.ToArray();
+				int intDiff = glBuffers.Count - VertexDescription.Count;
+				GL.DeleteBuffers(intDiff, ary);
+				glBuffers.RemoveRange(VertexDescription.Count, intDiff);
+			}
 		}
 		public override void Dispose()
 		{
+			Triangles.Dispose();
+			Triangles = null;
+			Vertices.Dispose();
+			Vertices = null;
 			VertexDescription.Dispose();
 			VertexDescription = null;
+			GL.DeleteBuffers(glBuffers.Count, glBuffers.ToArray());
+			glBuffers.Clear();
 			base.Dispose();
 		}
 	}

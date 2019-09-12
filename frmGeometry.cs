@@ -179,6 +179,7 @@ namespace WinOpenGL_ShaderToy
 			rowNew.Cells["columnElementType"].Value = compNew.ElementGLType.ToString();
 			rowNew.Cells["columnElementCount"].Value = compNew.ElementCount.ToString();
 			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
 			bolDataGridReady = true;
 		}
 		private void DatagridVertexDescriptions_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -199,6 +200,7 @@ namespace WinOpenGL_ShaderToy
 			}
 			for (int itr = 0; itr < aryToDelete.Count; itr++) Geometry.VertexDescription.Remove(aryToDelete[itr]);
 			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
 		}
 		private void DatagridVertexDescriptions_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
@@ -217,6 +219,7 @@ namespace WinOpenGL_ShaderToy
 				if (vrtItr != null) rowItr.Cells["columnIndex"].Value = vrtItr.Index.ToString();
 			}
 			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
 		}
 		private void DatagridVertexDescriptions_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
@@ -226,6 +229,7 @@ namespace WinOpenGL_ShaderToy
 		private void PropsGeometry_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
 		}
 	}
 }
