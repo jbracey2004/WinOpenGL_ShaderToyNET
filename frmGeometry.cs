@@ -19,6 +19,7 @@ using static generalUtils;
 using static clsHPTimer;
 using static WinOpenGL_ShaderToy.clsCollapsePanel;
 using static modProject.clsGeometry;
+using System.Text.RegularExpressions;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -51,6 +52,7 @@ namespace WinOpenGL_ShaderToy
 				row.Tag = Geometry.VertexDescription[itr];
 			}
 			propsGeometry.SelectedObject = new { Vertices = Geometry.Vertices, Triangles = Geometry.Triangles };
+			UpdatePositionAttrList();
 			bolDataGridReady = true;
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
@@ -64,6 +66,30 @@ namespace WinOpenGL_ShaderToy
 		{
 			tsRender = null;
 			panelMain.ProjectObject = null;
+		}
+		private class propsVertexDescriptionComponentItem
+		{
+			public clsVertexDescriptionComponent Component { get; set; }
+			public propsVertexDescriptionComponentItem(clsVertexDescriptionComponent itm) { Component = itm; }
+			public override string ToString() => (Component !=null) ? $"{Component.Index}: {Component.Name} <{Component.ElementGLType} {Component.ElementCount}>" : "[None]";
+		}
+		private void UpdatePositionAttrList()
+		{
+			propsVertexDescriptionComponentItem itm = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
+			lstPositionAttr.Items.Clear();
+			lstPositionAttr.SelectedIndex = lstPositionAttr.Items.Add("[None]");
+			foreach(clsVertexDescriptionComponent comp in Geometry.VertexDescription)
+			{
+				if(comp.ElementType == typeof(float) || comp.ElementType == typeof(double))
+				{
+					if (comp.ElementCount == 2 || comp.ElementCount == 3)
+					{
+						propsVertexDescriptionComponentItem itmNew = new propsVertexDescriptionComponentItem(comp);
+						lstPositionAttr.Items.Add(itmNew);
+						if (itm != null && itm.Component == comp) lstPositionAttr.SelectedItem = itmNew;
+					}
+				}
+			}
 		}
 		private propsSplitter containerMain_SplitterOpposite(propsSplitter objSplitter, clsCollapsePanel objPanel)
 		{
@@ -162,7 +188,31 @@ namespace WinOpenGL_ShaderToy
 			tsRender.StartInterval();
 			glRender.MakeCurrent();
 			GL.Clear(ClearBufferMask.ColorBufferBit);
-			GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
+			if(itmBuff != null)
+			{
+				clsVertexDescriptionComponent comp = itmBuff.Component;
+				GL.Enable(EnableCap.Blend);
+				GL.Enable(EnableCap.ProgramPointSize);
+				GL.Enable(EnableCap.PointSmooth);
+				GL.PointSize(16);
+				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+				GL.MatrixMode(MatrixMode.Projection);
+				GL.LoadIdentity();
+				GL.Ortho(0, 1, 0, 1, -1, 1);
+				GL.Color4(Color.FromArgb(108, ForeColor));
+				GL.EnableClientState(ArrayCap.VertexArray);
+				GL.EnableClientState(ArrayCap.IndexArray);
+				GL.BindBuffer(BufferTarget.ArrayBuffer, Geometry.glBuffers[comp.Index]);
+				GL.VertexPointer(comp.ElementCount, clsVertexDescriptionComponent.VertexPointerTypes[comp.ElementGLType], comp.ComponentSize, 0);
+				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Geometry.glIndexBuffer);
+				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+				GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+				GL.DisableClientState(ArrayCap.IndexArray);
+				GL.Color4(ForeColor);
+				GL.DrawArrays(PrimitiveType.Points, 0, Geometry.Vertices.Count);
+				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+			}
 			glRender.Context.SwapBuffers();
 			tsRender.SampleInterval((float)timeRun.Elapsed.TotalSeconds);
 			tsRender.StopInterval();
@@ -180,6 +230,8 @@ namespace WinOpenGL_ShaderToy
 			rowNew.Cells["columnElementCount"].Value = compNew.ElementCount.ToString();
 			propsGeometry.Refresh();
 			Geometry.glUpdateBuffers();
+			UpdatePositionAttrList();
+			glRender.Invalidate();
 			bolDataGridReady = true;
 		}
 		private void DatagridVertexDescriptions_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -201,6 +253,8 @@ namespace WinOpenGL_ShaderToy
 			for (int itr = 0; itr < aryToDelete.Count; itr++) Geometry.VertexDescription.Remove(aryToDelete[itr]);
 			propsGeometry.Refresh();
 			Geometry.glUpdateBuffers();
+			UpdatePositionAttrList();
+			glRender.Invalidate();
 		}
 		private void DatagridVertexDescriptions_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
@@ -220,16 +274,23 @@ namespace WinOpenGL_ShaderToy
 			}
 			propsGeometry.Refresh();
 			Geometry.glUpdateBuffers();
+			UpdatePositionAttrList();
+			glRender.Invalidate();
 		}
 		private void DatagridVertexDescriptions_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
 			Console.WriteLine($"Vertex Description: DataError {{{e.Exception}}} - Row{e.RowIndex} Column{e.ColumnIndex}");
 		}
-
 		private void PropsGeometry_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			propsGeometry.Refresh();
 			Geometry.glUpdateBuffers();
+			glRender.Invalidate();
+		}
+
+		private void LstPositionAttr_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			glRender.Invalidate();
 		}
 	}
 }

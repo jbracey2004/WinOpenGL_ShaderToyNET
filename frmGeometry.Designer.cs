@@ -51,6 +51,8 @@
 			this.splitterTop = new System.Windows.Forms.Splitter();
 			this.panelTop = new System.Windows.Forms.Panel();
 			this.lblName = new System.Windows.Forms.Label();
+			this.lblPositionAttr = new System.Windows.Forms.Label();
+			this.lstPositionAttr = new System.Windows.Forms.ComboBox();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
@@ -91,6 +93,8 @@
 			// 
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
+			this.panelMain.Status.Controls.Add(this.lblPositionAttr);
+			this.panelMain.Status.Controls.Add(this.lstPositionAttr);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 457);
 			this.panelMain.Status.Name = "Status";
@@ -328,6 +332,28 @@
 			this.lblName.Text = "Geometry";
 			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// lblPositionAttr
+			// 
+			this.lblPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblPositionAttr.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblPositionAttr.Location = new System.Drawing.Point(239, 0);
+			this.lblPositionAttr.Name = "lblPositionAttr";
+			this.lblPositionAttr.Size = new System.Drawing.Size(109, 29);
+			this.lblPositionAttr.TabIndex = 4;
+			this.lblPositionAttr.Text = "Position Attribute";
+			this.lblPositionAttr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lstPositionAttr
+			// 
+			this.lstPositionAttr.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lstPositionAttr.FormattingEnabled = true;
+			this.lstPositionAttr.Location = new System.Drawing.Point(354, 3);
+			this.lstPositionAttr.Name = "lstPositionAttr";
+			this.lstPositionAttr.Size = new System.Drawing.Size(190, 24);
+			this.lstPositionAttr.TabIndex = 5;
+			this.lstPositionAttr.SelectedIndexChanged += new System.EventHandler(this.LstPositionAttr_SelectedIndexChanged);
+			// 
 			// frmGeometry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,5 +405,7 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnComponentName;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnElementType;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnElementCount;
+		private System.Windows.Forms.Label lblPositionAttr;
+		private System.Windows.Forms.ComboBox lstPositionAttr;
 	}
 }

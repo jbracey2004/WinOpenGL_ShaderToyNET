@@ -18,6 +18,12 @@ public class generalUtils
 			ary.RemoveRange(newsize, oldsize - newsize);
 		}
 	}
+	public static Typ[] ObjectArrayAsType<Typ>(object[] ary)
+	{
+		Typ[] aryRet = new Typ[ary.Length];
+		ary.CopyTo(aryRet, 0);
+		return aryRet;
+	}
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)

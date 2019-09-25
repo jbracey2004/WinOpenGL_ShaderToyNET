@@ -7,13 +7,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using static modProject.clsProjectObject;
+using static WinOpenGL_ShaderToy.ProjectDef;
 using static generalUtils;
 using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
@@ -495,6 +494,8 @@ namespace modProject
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
+			public delegate void delegateBufferData(object[] ary, int ElementSize, BufferTarget BufferType, BufferUsageHint BufferUsage);
+			public delegate void delegateBufferSubData(object[] ary, int ElementSize, BufferTarget BufferType);
 			public static Dictionary<VertexAttribPointerType, Type> VertexTypes = new Dictionary<VertexAttribPointerType, Type>()
 			{
 				{VertexAttribPointerType.Byte, typeof(sbyte)},
@@ -507,6 +508,44 @@ namespace modProject
 				{VertexAttribPointerType.Fixed, typeof(Single)},
 				{VertexAttribPointerType.Float, typeof(float)},
 				{VertexAttribPointerType.Double, typeof(double)}
+			};
+			public static Dictionary<VertexAttribPointerType, VertexPointerType> VertexPointerTypes = new Dictionary<VertexAttribPointerType, VertexPointerType>()
+			{
+				{VertexAttribPointerType.Byte, VertexPointerType.Short},
+				{VertexAttribPointerType.Short, VertexPointerType.Short},
+				{VertexAttribPointerType.UnsignedShort, VertexPointerType.Short},
+				{VertexAttribPointerType.Int, VertexPointerType.Int},
+				{VertexAttribPointerType.UnsignedInt, VertexPointerType.Int},
+				{VertexAttribPointerType.HalfFloat, VertexPointerType.HalfFloat},
+				{VertexAttribPointerType.Fixed, VertexPointerType.Float},
+				{VertexAttribPointerType.Float, VertexPointerType.Float},
+				{VertexAttribPointerType.Double, VertexPointerType.Double}
+			};
+			public static Dictionary<VertexAttribPointerType, delegateBufferData> VertexSetDataDelegate = new Dictionary<VertexAttribPointerType, delegateBufferData>()
+			{
+				{VertexAttribPointerType.Byte, (ary, size, buff, usage) => {GL.BufferData<sbyte>(buff, ary.Length * size, ObjectArrayAsType<sbyte>(ary), usage); } },
+				{VertexAttribPointerType.UnsignedByte, (ary, size, buff, usage) => {GL.BufferData<byte>(buff, ary.Length * size, ObjectArrayAsType<byte>(ary), usage); }},
+				{VertexAttribPointerType.Short, (ary, size, buff, usage) => {GL.BufferData<short>(buff, ary.Length * size, ObjectArrayAsType<short>(ary), usage); }},
+				{VertexAttribPointerType.UnsignedShort, (ary, size, buff, usage) => {GL.BufferData<ushort>(buff, ary.Length * size, ObjectArrayAsType<ushort>(ary), usage); }},
+				{VertexAttribPointerType.Int, (ary, size, buff, usage) => {GL.BufferData<int>(buff, ary.Length * size, ObjectArrayAsType<int>(ary), usage); }},
+				{VertexAttribPointerType.UnsignedInt, (ary, size, buff, usage) => {GL.BufferData<uint>(buff, ary.Length * size, ObjectArrayAsType<uint>(ary), usage); }},
+				{VertexAttribPointerType.HalfFloat, (ary, size, buff, usage) => {GL.BufferData<Half>(buff, ary.Length * size, ObjectArrayAsType<Half>(ary), usage); }},
+				{VertexAttribPointerType.Fixed, (ary, size, buff, usage) => {GL.BufferData<Single>(buff, ary.Length * size, ObjectArrayAsType<Single>(ary), usage); }},
+				{VertexAttribPointerType.Float, (ary, size, buff, usage) => {GL.BufferData<float>(buff, ary.Length * size, ObjectArrayAsType<float>(ary), usage); }},
+				{VertexAttribPointerType.Double, (ary, size, buff, usage) => {GL.BufferData<double>(buff, ary.Length * size, ObjectArrayAsType<double>(ary), usage); }}
+			};
+			public static Dictionary<VertexAttribPointerType, delegateBufferSubData> VertexSetSubDataDelegate = new Dictionary<VertexAttribPointerType, delegateBufferSubData>()
+			{
+				{VertexAttribPointerType.Byte, (ary, size, buff) => {GL.BufferSubData<sbyte>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<sbyte>(ary)); } },
+				{VertexAttribPointerType.UnsignedByte, (ary, size, buff) => {GL.BufferSubData<byte>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<byte>(ary)); }},
+				{VertexAttribPointerType.Short, (ary, size, buff) => {GL.BufferSubData<short>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<short>(ary)); }},
+				{VertexAttribPointerType.UnsignedShort, (ary, size, buff) => {GL.BufferSubData<ushort>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<ushort>(ary)); }},
+				{VertexAttribPointerType.Int, (ary, size, buff) => {GL.BufferSubData<int>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<int>(ary)); }},
+				{VertexAttribPointerType.UnsignedInt, (ary, size, buff) => {GL.BufferSubData<uint>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<uint>(ary)); }},
+				{VertexAttribPointerType.HalfFloat, (ary, size, buff) => {GL.BufferSubData<Half>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<Half>(ary)); }},
+				{VertexAttribPointerType.Fixed, (ary, size, buff) => {GL.BufferSubData<Single>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<Single>(ary)); }},
+				{VertexAttribPointerType.Float, (ary, size, buff) => {GL.BufferSubData<float>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<float>(ary)); }},
+				{VertexAttribPointerType.Double, (ary, size, buff) => {GL.BufferSubData<double>(buff, (IntPtr)0, (IntPtr)(ary.Length * size), ObjectArrayAsType<double>(ary)); }}
 			};
 			public clsVertexDescriptionComponent(clsVertexDescription refDesc, string strName, int intElements, object InitialValue)
 			{
@@ -527,13 +566,14 @@ namespace modProject
 			[Browsable(false)]
 			public clsVertexDescription Desc { private set; get; }
 			public string Name { set; get; }
-			public object InitialElementValue { set; get; }
+			public object InitialElementValue { set; get; } = 0;
 			private VertexAttribPointerType glElementType;
-			public VertexAttribPointerType ElementGLType { get { return glElementType; } set { glElementType = value; Desc.RaiseUpdated(); } }
+			public VertexAttribPointerType ElementGLType { get => glElementType;
+				set { glElementType = value; InitialElementValue = Convert.ChangeType(InitialElementValue, ElementType);  Desc.RaiseUpdated(); } }
 			public Type ElementType { get { return VertexTypes[ElementGLType]; } }
 			public int ElementSize { get { return Marshal.SizeOf(VertexTypes[ElementGLType]); } }
 			private int intElementCount;
-			public int ElementCount { set { intElementCount = value; Desc.RaiseUpdated(); } get { return intElementCount; } }
+			public int ElementCount { set { intElementCount = value; Desc.RaiseUpdated(); } get => intElementCount; }
 			public int ComponentSize { get { return ElementSize * ElementCount; } }
 			public int Index
 			{
@@ -970,21 +1010,19 @@ namespace modProject
 				KeyValuePair<clsVertexDescriptionComponent, List<object>>[] aryComp = Data.ToArray();
 				for(int itr = 0; itr < aryComp.Length; itr++)
 				{
-					if(!refDesc.Contains(aryComp[itr].Key))
-					{
-						Data.Remove(aryComp[itr].Key);
-					}
+					if (!refDesc.Contains(aryComp[itr].Key)) Data.Remove(aryComp[itr].Key);
 				}
 				for(int itr = 0; itr < refDesc.Count; itr++)
 				{
 					if (!Data.ContainsKey(refDesc[itr]))
 					{
-						object[] aryElements = ArrayList.Repeat(refDesc[itr].InitialElementValue, refDesc[itr].ElementCount*intCount).ToArray();
+						object[] aryElements = ArrayList.Repeat(Convert.ChangeType(refDesc[itr].InitialElementValue, refDesc[itr].ElementType), refDesc[itr].ElementCount*intCount).ToArray();
 						Data.Add(refDesc[itr], new List<object>((IEnumerable<object>)aryElements));
 					} else
 					{
 						List<object> ary = Data[refDesc[itr]];
-						ResizeList(ref ary, refDesc[itr].ElementCount * intCount, idx => refDesc[itr].InitialElementValue);
+						for (int iItm = 0; iItm < ary.Count; iItm++) ary[iItm] = Convert.ChangeType(ary[iItm], aryComp[itr].Key.ElementType);
+						ResizeList(ref ary, refDesc[itr].ElementCount * intCount, idx => Convert.ChangeType(refDesc[itr].InitialElementValue, refDesc[itr].ElementType));
 					}
 				}
 			}
@@ -1220,17 +1258,20 @@ namespace modProject
 		public clsVertexDescription VertexDescription { set; get; }
 		public clsVertexCollection Vertices { set; get; }
 		public clsTriangleCollection Triangles { set; get; }
+		public int glIndexBuffer = -1;
 		public List<int> glBuffers = new List<int>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
 		{
 			VertexDescription = new clsVertexDescription();
 			Vertices = new clsVertexCollection(this);
 			Triangles = new clsTriangleCollection(this);
+			glIndexBuffer = GL.GenBuffer();
 			glUpdateBuffers();
 			AddToCollection();
 		}
 		public void glUpdateBuffers()
 		{
+			glContext_Main.MakeCurrent(infoWindow);
 			if (VertexDescription.Count > glBuffers.Count)
 			{
 				int intDiff = VertexDescription.Count - glBuffers.Count;
@@ -1242,8 +1283,22 @@ namespace modProject
 			{
 				int[] ary = glBuffers.ToArray();
 				int intDiff = glBuffers.Count - VertexDescription.Count;
-				GL.DeleteBuffers(intDiff, ary);
+				for(int itr = VertexDescription.Count; itr < glBuffers.Count; itr++) GL.DeleteBuffer(ary[itr]);
 				glBuffers.RemoveRange(VertexDescription.Count, intDiff);
+			}
+			GL.BindBuffer(BufferTarget.ElementArrayBuffer, glIndexBuffer);
+			GL.BufferData<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint) * Triangles.Indices.Length, Triangles.Indices.ToArray(), BufferUsageHint.DynamicDraw);
+			//GL.BufferSubData<uint>(BufferTarget.ElementArrayBuffer, (IntPtr)0, (IntPtr)(sizeof(uint) * Triangles.Indices.Length), Triangles.Indices.ToArray());
+			GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+			for(int itrBuff = 0; itrBuff < glBuffers.Count; itrBuff++)
+			{
+				int intBuff = glBuffers[itrBuff];
+				clsVertexDescriptionComponent desc = VertexDescription[itrBuff];
+				object[] ary = Vertices.Data[desc].ToArray();
+				GL.BindBuffer(BufferTarget.ArrayBuffer, intBuff);
+				clsVertexDescriptionComponent.VertexSetDataDelegate[desc.ElementGLType](ary, desc.ComponentSize, BufferTarget.ArrayBuffer, BufferUsageHint.DynamicDraw);
+				//clsVertexDescriptionComponent.VertexSetSubDataDelegate[desc.ElementGLType](ary, desc.ComponentSize, BufferTarget.ArrayBuffer);
+				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 			}
 		}
 		public override void Dispose()
