@@ -1265,6 +1265,15 @@ namespace modProject
 			VertexDescription = new clsVertexDescription();
 			Vertices = new clsVertexCollection(this);
 			Triangles = new clsTriangleCollection(this);
+			VertexDescription.Add(VertexAttribPointerType.Float, "Position", 3, 0);
+			Vertices.Count = 4;
+			Vertices[0]["Position"] = new object[] { -1f, -1f, 0f };
+			Vertices[1]["Position"] = new object[] { 1f, -1f, 0f };
+			Vertices[2]["Position"] = new object[] { 1f, 1f, 0f };
+			Vertices[3]["Position"] = new object[] { -1f, 1f, 0f };
+			Triangles.Count = 2;
+			Triangles[0].Items = new uint[] { 0, 1, 2 };
+			Triangles[1].Items = new uint[] { 2, 3, 0 };
 			glIndexBuffer = GL.GenBuffer();
 			glUpdateBuffers();
 			AddToCollection();

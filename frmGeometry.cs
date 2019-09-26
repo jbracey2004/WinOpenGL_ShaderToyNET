@@ -199,7 +199,7 @@ namespace WinOpenGL_ShaderToy
 				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 				GL.MatrixMode(MatrixMode.Projection);
 				GL.LoadIdentity();
-				GL.Ortho(0, 1, 0, 1, -1, 1);
+				GL.Frustum(-1, 1, -1, 1, -1, 1);
 				GL.Color4(Color.FromArgb(108, ForeColor));
 				GL.EnableClientState(ArrayCap.VertexArray);
 				GL.EnableClientState(ArrayCap.IndexArray);
