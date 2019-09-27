@@ -1022,18 +1022,14 @@ namespace modProject
 					} else
 					{
 						object[] ary = Data[compI].ToArray();
-						int strideOld = ary.Length/intCount;
+						int strideOld = ary.Length/Math.Max(intCount, 1);
 						int strideNew = compI.ElementCount;
-						int strideMax = Math.Min(strideOld, strideNew);
 						Data[compI].Clear();
 						for(int iItm = 0; iItm < intCount; iItm++) {
 							for(int iElem = 0; iElem < strideNew; iElem++) {
-								Data[compI].Add( ((iElem < strideMax)?(ary[iItm*strideOld + iElem):(Convert.ChangeType(compI.InitialElementValue))) );
+								Data[compI].Add( ((iElem < strideOld)?(ary[iItm*strideOld + iElem]):(compI.InitialElementValue)) );
 							}
 						}
-						//List<object> ary = Data[compI];
-						//for (int iItm = 0; iItm < ary.Count; iItm++) ary[iItm] = Convert.ChangeType(ary[iItm], aryComp[itr].Key.ElementType);
-						//ResizeList(ref ary, compI.ElementCount * intCount, idx => Convert.ChangeType(compI.InitialElementValue, compI.ElementType));
 					}
 				}
 			}
