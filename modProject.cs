@@ -1014,15 +1014,26 @@ namespace modProject
 				}
 				for(int itr = 0; itr < refDesc.Count; itr++)
 				{
-					if (!Data.ContainsKey(refDesc[itr]))
+					clsVertexDescriptionComponent compI = refDesc[itr];
+					if (!Data.ContainsKey(compI))
 					{
-						object[] aryElements = ArrayList.Repeat(Convert.ChangeType(refDesc[itr].InitialElementValue, refDesc[itr].ElementType), refDesc[itr].ElementCount*intCount).ToArray();
-						Data.Add(refDesc[itr], new List<object>((IEnumerable<object>)aryElements));
+						object[] aryElements = ArrayList.Repeat(Convert.ChangeType(compI.InitialElementValue, compI.ElementType), compI.ElementCount*intCount).ToArray();
+						Data.Add(compI, new List<object>((IEnumerable<object>)aryElements));
 					} else
 					{
-						List<object> ary = Data[refDesc[itr]];
-						for (int iItm = 0; iItm < ary.Count; iItm++) ary[iItm] = Convert.ChangeType(ary[iItm], aryComp[itr].Key.ElementType);
-						ResizeList(ref ary, refDesc[itr].ElementCount * intCount, idx => Convert.ChangeType(refDesc[itr].InitialElementValue, refDesc[itr].ElementType));
+						object[] ary = Data[compI].ToArray();
+						int strideOld = ary.Length/intCount;
+						int strideNew = compI.ElementCount;
+						int strideMax = Math.Min(strideOld, strideNew);
+						Data[compI].Clear();
+						for(int iItm = 0; iItm < intCount; iItm++) {
+							for(int iElem = 0; iElem < strideNew; iElem++) {
+								Data[compI].Add( ((iElem < strideMax)?(ary[iItm*strideOld + iElem):(Convert.ChangeType(compI.InitialElementValue))) );
+							}
+						}
+						//List<object> ary = Data[compI];
+						//for (int iItm = 0; iItm < ary.Count; iItm++) ary[iItm] = Convert.ChangeType(ary[iItm], aryComp[itr].Key.ElementType);
+						//ResizeList(ref ary, compI.ElementCount * intCount, idx => Convert.ChangeType(compI.InitialElementValue, compI.ElementType));
 					}
 				}
 			}
