@@ -77,6 +77,7 @@ namespace WinOpenGL_ShaderToy
 			{
 				Shader.Type = (ShaderType)Enum.Parse(typeof(ShaderType), Regex.Replace(lstShaderType.Text, @"Arb\z", ""));
 				Shader.Name = clsProjectObject.NextFreeName(Shader.ToFullString(""), Shader.Name, Shader);
+				Compile();
 			}
 		}
 		private void ChkAutoCompile_CheckedChanged(object sender, EventArgs e)
@@ -134,8 +135,7 @@ namespace WinOpenGL_ShaderToy
 					if (itm.Level == "ERROR" && !chkCompileErrors.Checked) return false;
 					if (itm.Level == "WARNING" && !chkCompileWarnings.Checked) return false;
 					return true;
-				}
-				);
+				});
 			}
 		}
 		private void ChkCompileErrors_CheckedChanged(object sender, EventArgs e)

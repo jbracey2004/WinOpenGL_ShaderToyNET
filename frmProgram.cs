@@ -7,6 +7,7 @@ using static clsHPTimer;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using static modProject.clsGeometry;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -14,18 +15,20 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmProgram(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsProgram Program { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsProgram; } }
-		private clsHPTimer timerUpdateShaderList;
+		private clsHPTimer timerUpdateLists;
 		private clsHPTimer timerAutoLink;
 		private void FrmProgram_Load(object sender, EventArgs e)
 		{
 			lstLink.AllowDrop = true;
-			UpdateShaderList();
+			columnShaderInputName.Tag = lstShaderInputs;
+			columnShaderUniform.Tag = lstShaderUniform;
+			UpdateLists();
 			LinkShaders();
-			timerUpdateShaderList = new clsHPTimer(this);
-			timerUpdateShaderList.Interval = 1000.0;
-			timerUpdateShaderList.SleepInterval = 500;
-			timerUpdateShaderList.IntervalEnd += new HPIntervalEventHandler(timerUpdateShaderList_EndInterval);
-			timerUpdateShaderList.Start();
+			timerUpdateLists = new clsHPTimer(this);
+			timerUpdateLists.Interval = 1000.0;
+			timerUpdateLists.SleepInterval = 500;
+			timerUpdateLists.IntervalEnd += new HPIntervalEventHandler(timerUpdateLists_EndInterval);
+			timerUpdateLists.Start();
 			timerAutoLink = new clsHPTimer(this);
 			timerAutoLink.Interval = 4000.0;
 			timerAutoLink.SleepInterval = 500;
@@ -36,13 +39,20 @@ namespace WinOpenGL_ShaderToy
 		{
 			timerAutoLink.Stop();
 			timerAutoLink = null;
-			timerUpdateShaderList.Stop();
-			timerUpdateShaderList = null;
+			timerUpdateLists.Stop();
+			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
 		}
-		private void timerUpdateShaderList_EndInterval(object sender, HPIntervalEventArgs e)
+		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
+		{
+			UpdateLists();
+		}
+		private void UpdateLists()
 		{
 			UpdateShaderList();
+			UpdateGeometryList();
+			UpdateShaderInputList();
+			UpdateShaderUniformList();
 		}
 		private void timerAutoLink_EndInterval(object sender, HPIntervalEventArgs e)
 		{
@@ -51,6 +61,13 @@ namespace WinOpenGL_ShaderToy
 				LinkShaders();
 			}
 		}
+		/*private class propsShaderVariableItem
+		{
+			public clsShader Shader { get; set; }
+			public string Name { get; set; }
+			public propsShaderVariableItem(clsShader itm, string varName) { Shader = itm; Name = varName; }
+			public override string ToString() => (Shader != null) ? $"{Shader.ToString()}.{Name}" : "[None]";
+		}*/
 		private void UpdateShaderList()
 		{
 			if(Program != null)
@@ -86,6 +103,72 @@ namespace WinOpenGL_ShaderToy
 				lstLink.Invalidate();
 			}
 		}
+		private void UpdateGeometryList()
+		{
+			bolGeometryList_Ready = false;
+			lstGeometry.Items.Clear();
+			lstGeometry.Items.Add("[None]");
+			lstGeometry.SelectedIndex = 0;
+			lstGeometry.Items.AddRange(projectMain.ProjectObjects.FindAll(itm => itm.ProjectObjType == ProjectObjectTypes.Geometry).ToArray());
+			if(Program != null)
+			{
+				if(Program.Geometry != null)
+				{
+					if (lstGeometry.Items.Contains(Program.Geometry))
+					{
+						lstGeometry.SelectedItem = Program.Geometry;
+					}
+				}
+			}
+			bolGeometryList_Ready = true;
+		}
+		private void UpdateShaderInputList()
+		{
+			lstShaderInputs.Items.Clear();
+			if(Program != null)
+			{
+				if(Program.Shaders.Count > 0)
+				{
+					clsShader itm = Program.Shaders[0];
+					foreach (string strVar in itm.Inputs)
+					{
+						//propsShaderVariableItem propsVar = new propsShaderVariableItem(itm, strVar);
+						if (!lstShaderInputs.Items.Contains(strVar))
+						{
+							lstShaderInputs.Items.Add(strVar);
+						}
+					}
+				}
+			}
+		}
+		private void UpdateShaderUniformList()
+		{
+			lstShaderUniform.Items.Clear();
+			if (Program != null)
+			{
+				foreach (clsShader itm in Program.Shaders)
+				{
+					foreach (string strVar in itm.Uniforms)
+					{
+						//propsShaderVariableItem propsVar = new propsShaderVariableItem(itm, strVar);
+						if (!lstShaderUniform.Items.Contains(strVar))
+						{
+							lstShaderUniform.Items.Add(strVar);
+						}
+					}
+				}
+			}
+		}
+		private bool bolGeometryList_Ready = true;
+		private void LstGeometry_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (!bolGeometryList_Ready) return;
+			if(Program != null)
+			{
+				clsGeometry geomSelected = lstGeometry.SelectedItem as clsGeometry;
+				Program.Geometry = geomSelected;
+			}
+		}
 		private void LinkShaders()
 		{
 			if (Program != null)
@@ -116,8 +199,9 @@ namespace WinOpenGL_ShaderToy
 				else if (Program.LinkInfo.WarningMessages.Length > 0)
 				{
 					lblLinkStatus.ForeColor = Color.Blue;
-					lblLinkStatus.Text = "Link Status: Linked* See Messages.";
-				} else if (Program.LinkInfo.AllMessages.Length > 0)
+					lblLinkStatus.Text = "Link Status: Linkd* See Messages.";
+				}
+				else if (Program.LinkInfo.AllMessages.Length > 0)
 				{
 					lblLinkStatus.ForeColor = Color.Blue;
 					lblLinkStatus.Text = "Link Status: Linked* See Messages.";
@@ -125,7 +209,7 @@ namespace WinOpenGL_ShaderToy
 				else
 				{
 					lblLinkStatus.ForeColor = Color.Green;
-					lblLinkStatus.Text = "Link Status: Linked. Good.";
+					lblLinkStatus.Text = "Link Status: Linkd. Good.";
 				}
 				chkLinkErrors.Text = $"Errors: {Program.LinkInfo.ErrorMessages.Length}";
 				chkLinkWarnings.Text = $"Warnings: {Program.LinkInfo.WarningMessages.Length}";
@@ -346,6 +430,65 @@ namespace WinOpenGL_ShaderToy
 				}
 				UpdateShaderList();
 			}
+		}
+
+		private void DatagridLinks_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+		{
+			DataGridView datagrid = sender as DataGridView;
+			if (datagrid == null) return;
+			TextBox txtControl = e.Control as TextBox;
+			if (txtControl == null) return;
+			DataGridViewCell cellCurrent = datagrid.CurrentCell;
+			if (cellCurrent == null) return;
+			DataGridViewColumn columnCurrent = datagrid.Columns[cellCurrent.ColumnIndex];
+			ListBox lstSource = columnCurrent.Tag as ListBox;
+			if (lstSource == null) return;
+			txtControl.AutoCompleteMode = AutoCompleteMode.Suggest;
+			txtControl.AutoCompleteSource = AutoCompleteSource.CustomSource;
+			if(txtControl.AutoCompleteCustomSource == null)
+			{
+				txtControl.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+			} else
+			{
+				txtControl.AutoCompleteCustomSource.Clear();
+			}
+			foreach(object itm in lstSource.Items)
+			{
+				txtControl.AutoCompleteCustomSource.Add(itm.ToString());
+			}
+		}
+
+		private void DatagridInputLinks_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+		{
+
+		}
+		private void DatagridUniformLinks_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+		{
+
+		}
+
+		private void DatagridInputLinks_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+		{
+
+		}
+		private void DatagridUniformLinks_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+		{
+
+		}
+
+		private void DatagridInputLinks_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		{
+
+		}
+
+		private void DatagridUniformLinks_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		{
+
+		}
+
+		private void DatagridLinks_EditingControlShowing(object sender, DataGridViewCellEventArgs e)
+		{
+
 		}
 	}
 }

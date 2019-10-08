@@ -37,7 +37,7 @@ namespace modProject
 		}
 		public virtual string ToFullString(string name)
 		{
-			return ProjectObjType.ToString() + ((name != null && name != "")?("_"+name):(""));
+			return ProjectObjType.ToString() + "_"+name;
 		}
 		public override string ToString()
 		{

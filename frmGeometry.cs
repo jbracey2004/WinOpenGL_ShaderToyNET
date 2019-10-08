@@ -28,6 +28,7 @@ namespace WinOpenGL_ShaderToy
 		public frmGeometry(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsGeometry Geometry { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsGeometry; } }
 		private Matrix4 matxView = Matrix4.Identity;
+		private Matrix4 matxProjection = Matrix4.Identity;
 		private clsCollapsePanel containerMain;
 		private Stopwatch timeRun;
 		private infoFramePerformance tsRender;
@@ -169,17 +170,13 @@ namespace WinOpenGL_ShaderToy
 			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
 			if (itmBuff != null)
 			{
-				GL.MatrixMode(MatrixMode.Projection);
-				GL.LoadIdentity();
-				Matrix4 matxProjection = Matrix4.Identity;
 				if(itmBuff.Component.ElementCount >= 3)
 				{
-					matxProjection = Matrix4.CreatePerspectiveFieldOfView((float)(1.0 / 3.0 * Math.PI), glRender.AspectRatio, 0.0001f, 1000f);
+					matxProjection = Matrix4.CreatePerspectiveFieldOfView((float)((1.0 / 3.0) * Math.PI), glRender.AspectRatio, 0.0001f, 1000f);
 				} else
 				{
 					matxProjection = Matrix4.CreateOrthographic(2, 2, -1, 1);
 				}
-				GL.LoadMatrix(ref matxProjection);
 			}
 			GL.ClearColor(glRender.BackColor);
 			glRender.Invalidate();
@@ -212,6 +209,8 @@ namespace WinOpenGL_ShaderToy
 				GL.Enable(EnableCap.PointSmooth);
 				GL.PointSize(16);
 				GL.LineWidth(2);
+				GL.MatrixMode(MatrixMode.Projection);
+				GL.LoadMatrix(ref matxProjection);
 				GL.MatrixMode(MatrixMode.Modelview);
 				GL.LoadIdentity();
 				if (itmBuff.Component.ElementCount >= 3) GL.LoadMatrix(ref matxView);

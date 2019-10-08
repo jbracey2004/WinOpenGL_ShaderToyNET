@@ -17,6 +17,7 @@ using static generalUtils;
 using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
 using System.Reflection;
+using static modProject.clsGeometry;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -68,7 +69,7 @@ namespace modProject
 		public ShaderType Type { set; get; } = ShaderType.VertexShader;
 		public string Path { set; get; }
 		public string Source { set; get; }
-		public string[] Lines { get { return (Source+"\n").Split(); } }
+		public string[] Lines { get { return Regex.Split(Source+" ","\r\n"); } }
 		public int glID { private set; get; } = -1;
 		public clsInfoString CompileInfo { private set; get; } = new clsInfoString();
 		public clsShader(ShaderType typ) : base(ProjectObjectTypes.Shader)
@@ -77,6 +78,20 @@ namespace modProject
 			glID = GL.CreateShader(Type);
 			AddToCollection();
 		}
+		public string[] Inputs { get => parseRefLinks(Source, "in|attribute"); }
+		public string[] Outputs { get => parseRefLinks(Source, "out|varying"); }
+		public string[] Uniforms { get => parseRefLinks(Source, "uniform"); }
+		private static string[] parseRefLinks(string str, string prefix)
+		{
+			List<string> ret = new List<string>();
+			string strTmp = Regex.Replace(str, @"\{(\s|.)+\}", "{...};");
+			strTmp = Regex.Replace(strTmp, @"\((\s|.)+\)", "(...)");
+			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d+)\s+(?<name>\w+)")))
+			{
+				ret.Add(match.Groups["name"].Value);
+			}
+			return ret.ToArray();
+		} 
 		public void LoadSourceFromFile(string pathFile)
 		{
 			Source = System.IO.File.ReadAllText(pathFile);
@@ -108,7 +123,9 @@ namespace modProject
 	}
 	public class clsProgram : clsProjectObject
 	{
-		public List<clsShader> Shaders { set; get; } = new List<clsShader>() { };
+		public List<clsShader> Shaders { private set; get; } = new List<clsShader>() { };
+		public clsGeometry Geometry { set; get; } = null;
+		public List<KeyValuePair<string, clsVertexDescriptionComponent>> InputLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
 		public int glID { private set; get; } = -1;
 		public clsInfoString LinkInfo { private set; get; }
 		public clsProgram() : base(ProjectObjectTypes.Program)
@@ -1341,11 +1358,11 @@ namespace modProject
 			{
 				int retLine = -1;
 				int retColumn = -1;
-				MatchCollection matches = Regex.Matches(FullString, @"\b(?<Line>\d{1,})\:(?<Column>\d{1,})\b");
+				MatchCollection matches = Regex.Matches(FullString, @"(?<column>\d+)\((?<line>\d+)\)");
 				if(matches.Count > 0)
 				{
-					string strLine = matches[0].Groups["Line"].Value;
-					string strColumn = matches[0].Groups["Column"].Value;
+					string strLine = matches[0].Groups["line"].Value;
+					string strColumn = matches[0].Groups["column"].Value;
 					if(strLine!="") retLine = int.Parse(strLine);
 					if(strColumn!="") retColumn = int.Parse(strColumn);
 				}
@@ -1383,19 +1400,26 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\A[A-Z]+\b");
-					return (matches.Count > 0) ? (matches[0].Value) : ("");
+					MatchCollection matches = Regex.Matches(FullString, @"\:\s+(?<msglevel>\w+)\s(?<msgnum>\w\d+)\:");
+					return (matches.Count > 0) ? (matches[0].Groups["msglevel"].Value).ToUpper() : ("");
 				}
 			}
 			public InfoLocation Location
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\b\d{1,}\:\d{1,}\b");
-					return (matches.Count > 0) ? (new InfoLocation(matches[0].Value)) : (new InfoLocation());
+					MatchCollection matches = Regex.Matches(FullString, @"\b(?<location>(?<column>\d+)\((?<line>\d+)\))\s+\:");
+					return (matches.Count > 0) ? (new InfoLocation(matches[0].Groups["location"].Value)) : (new InfoLocation());
 				}
 			}
-			public string Message { get { return FullString.Replace(Level+":", "").Replace(Location.FullString+":", "").Trim(); } }
+			public string Message
+			{
+				get
+				{
+					MatchCollection matches = Regex.Matches(FullString, @"\w\d+\:(\w|\W)+");
+					return (matches.Count > 0) ? (matches[0].Value) : FullString;
+				}
+			}
 			public override bool Equals(object obj)
 			{
 				return base.Equals(obj);
@@ -1414,21 +1438,21 @@ namespace modProject
 		{
 			get
 			{
-				return Array.ConvertAll(Array.FindAll(Info.Split('\n'),str => str != ""), str => new InfoMessage(str));
+				return Array.ConvertAll(Array.FindAll(Info.Split('\n'), str => str != ""), str => new InfoMessage(str));
 			}
 		}
 		public InfoMessage[] WarningMessages
 		{
 			get
 			{
-				return Array.FindAll(AllMessages, str => str.FullString.StartsWith("WARNING"));
+				return Array.FindAll(AllMessages, str => str.Level == "WARNING");
 			}
 		}
 		public InfoMessage[] ErrorMessages
 		{
 			get
 			{
-				return Array.FindAll(AllMessages, str => str.FullString.StartsWith("ERROR"));
+				return Array.FindAll(AllMessages, str => str.Level == "ERROR");
 			}
 		}
 		public clsInfoString()

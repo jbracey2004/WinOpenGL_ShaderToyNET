@@ -114,6 +114,8 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtSource
 			// 
+			this.txtSource.AllowSeveralTextStyleDrawing = true;
+			this.txtSource.AutoCompleteBrackets = true;
 			this.txtSource.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -135,6 +137,7 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtSource.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSource.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtSource.IsReplaceMode = false;
 			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.txtSource.LeftBracket = '(';
@@ -147,8 +150,11 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.RightBracket2 = '}';
 			this.txtSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
 			this.txtSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtSource.ServiceColors")));
+			this.txtSource.ShowCaretWhenInactive = true;
+			this.txtSource.ShowFoldingLines = true;
 			this.txtSource.Size = new System.Drawing.Size(713, 381);
 			this.txtSource.TabIndex = 0;
+			this.txtSource.TextAreaBorder = FastColoredTextBoxNS.TextAreaBorderType.Shadow;
 			this.txtSource.Zoom = 100;
 			this.txtSource.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.TxtSource_TextChanged);
 			// 
