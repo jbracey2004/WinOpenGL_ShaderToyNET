@@ -87,3 +87,4 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csproj.Co
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.csprojAssemblyReference.cache
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\Debug\WinOpenGL_ShaderToy.frmUniforms.resources

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 public class generalUtils
 {
@@ -21,9 +23,71 @@ public class generalUtils
 	public static Typ[] ObjectArrayAsType<Typ>(object[] ary)
 	{
 		Typ[] aryRet = new Typ[ary.Length];
-		ary.CopyTo(aryRet, 0);
+		if (ary.Length <= 0)
+		{
+			ary.CopyTo(aryRet, 0);
+			return aryRet;
+		}
+		for(int i = 0; i < aryRet.Length; i++)
+		{
+			aryRet[i] = (Typ)(ConvertToType(ary[i], typeof(Typ)));
+		}
 		return aryRet;
 	}
+	public static object ConvertToType(object value, Type typNew)
+	{
+		Type typOld = value.GetType();
+		if (typOld == typNew) return value;
+		if (value == null) return Convert.ChangeType(0, typNew);
+		double[] rangeNew = RangeOfType(typNew);
+		double[] rangeOld = RangeOfType(typOld);
+		object NewValue;
+		if (rangeNew[0] >= 0 || rangeOld[0] >= 0)
+		{
+			double valueTOld = RangeTValue(value, rangeOld[0], rangeOld[1]);
+			NewValue = RangeLerpValue(valueTOld, rangeNew[0], rangeNew[1]);
+		} else
+		{
+			string strValue = value.ToString();
+			double fdValue;
+			if(double.TryParse(strValue, out fdValue))
+			{
+				if (fdValue >= rangeNew[1]) fdValue = rangeNew[1];
+				if (fdValue <= rangeNew[0]) fdValue = rangeNew[0];
+				NewValue = fdValue;
+			} else
+			{
+				NewValue = 0;
+			}
+		}
+		return Convert.ChangeType(NewValue, typNew);
+	}
+	public static double[] RangeOfType(Type Typ)
+	{
+		double[] ret = new double[2] {double.NaN, double.NaN};
+		FieldInfo fieldMin = Typ.GetField("MinValue");
+		FieldInfo fieldMax = Typ.GetField("MaxValue");
+		object objMin = fieldMin?.GetValue(null);
+		object objMax = fieldMax?.GetValue(null);
+		string strMin = (objMin != null) ? objMin.ToString() : " ";
+		string strMax = (objMax != null) ? objMax.ToString() : " ";
+		double.TryParse(strMin, out ret[0]);
+		double.TryParse(strMax, out ret[1]);
+		return ret;
+	}
+	public static double RangeTValue(object value, double min, double max)
+	{
+		double dValue = double.NaN;
+		if (value == null) return double.NaN;
+		if (!double.TryParse(value.ToString(), out dValue)) return double.NaN;
+		return (double)(dValue - min) / (double)(max - min);
+	}
+	public static double RangeLerpValue(object t, double min, double max)
+	{
+		double dValue = double.NaN;
+		if (!double.TryParse(t.ToString(), out dValue)) return double.NaN;
+		return dValue*(double)(max - min) + min;
+	} 
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)

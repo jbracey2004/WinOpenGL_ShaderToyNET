@@ -13,6 +13,7 @@ namespace WinOpenGL_ShaderToy
 			InitializeComponent();
 		}
 		private DockContent windowProject;
+		private DockContent windowUniformInputs;
 		private void FormMain_Load(object sender, EventArgs e)
 		{
 			formMain = this;
@@ -20,6 +21,7 @@ namespace WinOpenGL_ShaderToy
 			dockMainPanel = this.dockMain;
 			projectMain = new clsProject();
 			windowProject = new frmProject(projectMain);
+			windowUniformInputs = new frmUniforms();
 			if (menuProject.Checked)
 			{
 				windowProject.Show(dockMain, DockState.DockRight);
@@ -47,6 +49,9 @@ namespace WinOpenGL_ShaderToy
 			windowProject.HideOnClose = false;
 			windowProject.Close();
 			windowProject = null;
+			windowUniformInputs.HideOnClose = false;
+			windowUniformInputs.Close();
+			windowUniformInputs = null;
 		}
 		private void MenuWindows_Closing(object sender, ToolStripDropDownClosingEventArgs e)
 		{
@@ -63,6 +68,16 @@ namespace WinOpenGL_ShaderToy
 			} else
 			{
 				windowProject.Hide();
+			}
+		}
+		private void MenuUniformInputs_CheckedChanged(object sender, EventArgs e)
+		{
+			if(menuUniformInputs.Checked)
+			{
+				windowUniformInputs.Show(dockMain);
+			} else
+			{
+				windowUniformInputs.Hide();
 			}
 		}
 	}

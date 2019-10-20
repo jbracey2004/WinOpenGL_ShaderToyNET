@@ -18,6 +18,7 @@ using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
 using System.Reflection;
 using static modProject.clsGeometry;
+using static modProject.clsUniformSet;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -64,6 +65,44 @@ namespace modProject
 		public string Path { set; get; }
 		public List<clsProjectObject> ProjectObjects { set; get; } = new List<clsProjectObject>() { };
 	}
+	public class clsUniformSet
+	{
+		public enum UniformType
+		{
+			Int, Float, Double,
+			Int2, Float2, Double2,
+			Int3, Float3, Double3,
+			Int4, Float4, Double4,
+			Matrix2, Matrix2x3, Matrix2x4,
+			Matrix3, Matrix3x2, Matrix3x4,
+			Matrix4, Matrix4x3, Matrix4x2
+		}
+		public delegate void delegateUniform(int glUniformLocation, int Count, object[] dat);
+		public static Dictionary<UniformType, delegateUniform> UniformBindDelegate = new Dictionary<UniformType, delegateUniform>()
+		{ 
+			{UniformType.Int, (glUniform,  intCount,intDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float,  (glUniform, intCount, floatDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double, (glUniform, intCount, doubleDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int2, (glUniform, intCount, intDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float2,  (glUniform, intCount, floatDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double2, (glUniform, intCount, doubleDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int3, (glUniform, intCount, intDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float3,  (glUniform, intCount, floatDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double3, (glUniform, intCount, doubleDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int4, (glUniform, intCount, intDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float4,  (glUniform, intCount, floatDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double4, (glUniform, intCount, doubleDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Matrix2, (glUniform, intCount, matxDat) => {Matrix2 matx = (Matrix2)matxDat[0]; GL.UniformMatrix2(glUniform, false, ref matx); } },
+			{UniformType.Matrix2x3, (glUniform, intCount, matxDat) => {Matrix2x3 matx = (Matrix2x3)matxDat[0]; GL.UniformMatrix2x3(glUniform, false, ref matx); }},
+			{UniformType.Matrix2x4, (glUniform, intCount, matxDat) => {Matrix2x4 matx = (Matrix2x4)matxDat[0]; GL.UniformMatrix2x4(glUniform, false, ref matx); }},
+			{UniformType.Matrix3, (glUniform, intCount, matxDat) => {Matrix3 matx = (Matrix3)matxDat[0]; GL.UniformMatrix3(glUniform, false, ref matx); }},
+			{UniformType.Matrix3x2, (glUniform, intCount, matxDat) => {Matrix3x2 matx = (Matrix3x2)matxDat[0]; GL.UniformMatrix3x2(glUniform, false, ref matx); }},
+			{UniformType.Matrix3x4, (glUniform, intCount, matxDat) => {Matrix3x4 matx = (Matrix3x4)matxDat[0]; GL.UniformMatrix3x4(glUniform, false, ref matx); }},
+			{UniformType.Matrix4, (glUniform, intCount, matxDat) => {Matrix4 matx = (Matrix4)matxDat[0]; GL.UniformMatrix4(glUniform, false, ref matx); }},
+			{UniformType.Matrix4x3, (glUniform, intCount, matxDat) => {Matrix4x3 matx = (Matrix4x3)matxDat[0]; GL.UniformMatrix4x3(glUniform, false, ref matx); }},
+			{UniformType.Matrix4x2, (glUniform, intCount, matxDat) => {Matrix4x2 matx = (Matrix4x2)matxDat[0]; GL.UniformMatrix4x2(glUniform, false, ref matx); }}
+		};
+	}
 	public class clsShader : clsProjectObject
 	{
 		public ShaderType Type { set; get; } = ShaderType.VertexShader;
@@ -86,7 +125,7 @@ namespace modProject
 			List<string> ret = new List<string>();
 			string strTmp = Regex.Replace(str, @"\{(\s|.)+\}", "{...};");
 			strTmp = Regex.Replace(strTmp, @"\((\s|.)+\)", "(...)");
-			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d+)\s+(?<name>\w+)")))
+			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d{{0,}})\s+(?<name>\w+)")))
 			{
 				ret.Add(match.Groups["name"].Value);
 			}
@@ -1042,9 +1081,10 @@ namespace modProject
 						int strideOld = ary.Length/Math.Max(intCount, 1);
 						int strideNew = compI.ElementCount;
 						Data[compI].Clear();
+						Type typNew = compI.ElementType;
 						for(int iItm = 0; iItm < intCount; iItm++) {
 							for(int iElem = 0; iElem < strideNew; iElem++) {
-								Data[compI].Add( ((iElem < strideOld)?(ary[iItm*strideOld + iElem]):(compI.InitialElementValue)) );
+								Data[compI].Add( ((iElem < strideOld)?(ConvertToType(ary[iItm * strideOld + iElem], typNew)) : (compI.InitialElementValue)) );
 							}
 						}
 					}

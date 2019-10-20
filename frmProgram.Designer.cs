@@ -47,14 +47,16 @@
 			this.panelListsGeometry = new System.Windows.Forms.Panel();
 			this.panelListShaderInputs = new System.Windows.Forms.Panel();
 			this.lstShaderInputs = new System.Windows.Forms.ListBox();
-			this.panelListGeometry = new System.Windows.Forms.Panel();
-			this.lstGeometry = new System.Windows.Forms.ComboBox();
-			this.lblGeometry = new System.Windows.Forms.Label();
 			this.panelUniforms = new System.Windows.Forms.GroupBox();
 			this.datagridUniformLinks = new System.Windows.Forms.DataGridView();
 			this.columnShaderUniform = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnUniformExpression = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.lstShaderUniform = new System.Windows.Forms.ListBox();
+			this.panelLinkGeometry = new System.Windows.Forms.GroupBox();
+			this.lstVertexDescription = new System.Windows.Forms.ListBox();
+			this.panelGeometryList = new System.Windows.Forms.Panel();
+			this.lstGeometry = new System.Windows.Forms.ComboBox();
+			this.lblGeometry = new System.Windows.Forms.Label();
 			this.splitterLinkStatus = new System.Windows.Forms.Splitter();
 			this.panelLinkStatus = new System.Windows.Forms.Panel();
 			this.dataLinkStatus = new System.Windows.Forms.DataGridView();
@@ -79,9 +81,10 @@
 			((System.ComponentModel.ISupportInitialize)(this.datagridInputLinks)).BeginInit();
 			this.panelListsGeometry.SuspendLayout();
 			this.panelListShaderInputs.SuspendLayout();
-			this.panelListGeometry.SuspendLayout();
 			this.panelUniforms.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformLinks)).BeginInit();
+			this.panelLinkGeometry.SuspendLayout();
+			this.panelGeometryList.SuspendLayout();
 			this.panelLinkStatus.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dataLinkStatus)).BeginInit();
 			this.panelLinkStatusHead.SuspendLayout();
@@ -101,7 +104,7 @@
 			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
-			this.panelMain.Content.Size = new System.Drawing.Size(748, 544);
+			this.panelMain.Content.Size = new System.Drawing.Size(748, 639);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
@@ -111,7 +114,7 @@
 			clsDesigner1.Name = "ProjectObject";
 			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
-			this.panelMain.Size = new System.Drawing.Size(748, 574);
+			this.panelMain.Size = new System.Drawing.Size(748, 669);
 			// 
 			// panelMain.Status
 			// 
@@ -119,7 +122,7 @@
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.gadgetLink);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelMain.Status.Location = new System.Drawing.Point(0, 544);
+			this.panelMain.Status.Location = new System.Drawing.Point(0, 639);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(748, 30);
 			this.panelMain.Status.TabIndex = 3;
@@ -130,16 +133,18 @@
 			this.layoutMain.ColumnCount = 1;
 			this.layoutMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.layoutMain.Controls.Add(this.panelLinkShaders, 0, 0);
-			this.layoutMain.Controls.Add(this.panelAttributes, 0, 1);
-			this.layoutMain.Controls.Add(this.panelUniforms, 0, 2);
+			this.layoutMain.Controls.Add(this.panelAttributes, 0, 2);
+			this.layoutMain.Controls.Add(this.panelUniforms, 0, 3);
+			this.layoutMain.Controls.Add(this.panelLinkGeometry, 0, 1);
 			this.layoutMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.layoutMain.Location = new System.Drawing.Point(0, 0);
 			this.layoutMain.Name = "layoutMain";
-			this.layoutMain.RowCount = 3;
+			this.layoutMain.RowCount = 4;
 			this.layoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
+			this.layoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 160F));
 			this.layoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.layoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.layoutMain.Size = new System.Drawing.Size(746, 508);
+			this.layoutMain.Size = new System.Drawing.Size(746, 603);
 			this.layoutMain.TabIndex = 0;
 			// 
 			// panelLinkShaders
@@ -220,9 +225,9 @@
 			this.panelAttributes.Controls.Add(this.panelListsGeometry);
 			this.panelAttributes.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelAttributes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.panelAttributes.Location = new System.Drawing.Point(3, 183);
+			this.panelAttributes.Location = new System.Drawing.Point(3, 343);
 			this.panelAttributes.Name = "panelAttributes";
-			this.panelAttributes.Size = new System.Drawing.Size(740, 158);
+			this.panelAttributes.Size = new System.Drawing.Size(740, 125);
 			this.panelAttributes.TabIndex = 1;
 			this.panelAttributes.TabStop = false;
 			this.panelAttributes.Text = "Link Attributes";
@@ -234,7 +239,7 @@
 			this.panelDataInputLinks.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDataInputLinks.Location = new System.Drawing.Point(268, 18);
 			this.panelDataInputLinks.Name = "panelDataInputLinks";
-			this.panelDataInputLinks.Size = new System.Drawing.Size(469, 137);
+			this.panelDataInputLinks.Size = new System.Drawing.Size(469, 104);
 			this.panelDataInputLinks.TabIndex = 3;
 			// 
 			// datagridInputLinks
@@ -249,7 +254,7 @@
 			this.datagridInputLinks.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.datagridInputLinks.Location = new System.Drawing.Point(0, 0);
 			this.datagridInputLinks.Name = "datagridInputLinks";
-			this.datagridInputLinks.Size = new System.Drawing.Size(469, 137);
+			this.datagridInputLinks.Size = new System.Drawing.Size(469, 104);
 			this.datagridInputLinks.TabIndex = 2;
 			this.datagridInputLinks.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridInputLinks_CellEndEdit);
 			this.datagridInputLinks.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.DatagridLinks_EditingControlShowing);
@@ -273,20 +278,19 @@
 			// panelListsGeometry
 			// 
 			this.panelListsGeometry.Controls.Add(this.panelListShaderInputs);
-			this.panelListsGeometry.Controls.Add(this.panelListGeometry);
 			this.panelListsGeometry.Dock = System.Windows.Forms.DockStyle.Left;
 			this.panelListsGeometry.Location = new System.Drawing.Point(3, 18);
 			this.panelListsGeometry.Name = "panelListsGeometry";
-			this.panelListsGeometry.Size = new System.Drawing.Size(265, 137);
+			this.panelListsGeometry.Size = new System.Drawing.Size(265, 104);
 			this.panelListsGeometry.TabIndex = 6;
 			// 
 			// panelListShaderInputs
 			// 
 			this.panelListShaderInputs.Controls.Add(this.lstShaderInputs);
 			this.panelListShaderInputs.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelListShaderInputs.Location = new System.Drawing.Point(0, 24);
+			this.panelListShaderInputs.Location = new System.Drawing.Point(0, 0);
 			this.panelListShaderInputs.Name = "panelListShaderInputs";
-			this.panelListShaderInputs.Size = new System.Drawing.Size(265, 113);
+			this.panelListShaderInputs.Size = new System.Drawing.Size(265, 104);
 			this.panelListShaderInputs.TabIndex = 5;
 			// 
 			// lstShaderInputs
@@ -298,42 +302,8 @@
 			this.lstShaderInputs.Location = new System.Drawing.Point(0, 0);
 			this.lstShaderInputs.Name = "lstShaderInputs";
 			this.lstShaderInputs.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.lstShaderInputs.Size = new System.Drawing.Size(265, 113);
+			this.lstShaderInputs.Size = new System.Drawing.Size(265, 104);
 			this.lstShaderInputs.TabIndex = 0;
-			// 
-			// panelListGeometry
-			// 
-			this.panelListGeometry.BackColor = System.Drawing.Color.Transparent;
-			this.panelListGeometry.Controls.Add(this.lstGeometry);
-			this.panelListGeometry.Controls.Add(this.lblGeometry);
-			this.panelListGeometry.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panelListGeometry.Location = new System.Drawing.Point(0, 0);
-			this.panelListGeometry.Name = "panelListGeometry";
-			this.panelListGeometry.Size = new System.Drawing.Size(265, 24);
-			this.panelListGeometry.TabIndex = 4;
-			// 
-			// lstGeometry
-			// 
-			this.lstGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lstGeometry.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.lstGeometry.FormattingEnabled = true;
-			this.lstGeometry.Location = new System.Drawing.Point(67, 0);
-			this.lstGeometry.Name = "lstGeometry";
-			this.lstGeometry.Size = new System.Drawing.Size(198, 24);
-			this.lstGeometry.TabIndex = 1;
-			this.lstGeometry.SelectedIndexChanged += new System.EventHandler(this.LstGeometry_SelectedIndexChanged);
-			// 
-			// lblGeometry
-			// 
-			this.lblGeometry.AutoSize = true;
-			this.lblGeometry.Dock = System.Windows.Forms.DockStyle.Left;
-			this.lblGeometry.ForeColor = System.Drawing.Color.Black;
-			this.lblGeometry.Location = new System.Drawing.Point(0, 0);
-			this.lblGeometry.Name = "lblGeometry";
-			this.lblGeometry.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-			this.lblGeometry.Size = new System.Drawing.Size(67, 22);
-			this.lblGeometry.TabIndex = 0;
-			this.lblGeometry.Text = "Geometry";
 			// 
 			// panelUniforms
 			// 
@@ -341,9 +311,9 @@
 			this.panelUniforms.Controls.Add(this.lstShaderUniform);
 			this.panelUniforms.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelUniforms.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.panelUniforms.Location = new System.Drawing.Point(3, 347);
+			this.panelUniforms.Location = new System.Drawing.Point(3, 474);
 			this.panelUniforms.Name = "panelUniforms";
-			this.panelUniforms.Size = new System.Drawing.Size(740, 158);
+			this.panelUniforms.Size = new System.Drawing.Size(740, 126);
 			this.panelUniforms.TabIndex = 2;
 			this.panelUniforms.TabStop = false;
 			this.panelUniforms.Text = "Link Uniforms";
@@ -360,7 +330,7 @@
 			this.datagridUniformLinks.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.datagridUniformLinks.Location = new System.Drawing.Point(268, 18);
 			this.datagridUniformLinks.Name = "datagridUniformLinks";
-			this.datagridUniformLinks.Size = new System.Drawing.Size(469, 137);
+			this.datagridUniformLinks.Size = new System.Drawing.Size(469, 105);
 			this.datagridUniformLinks.TabIndex = 3;
 			this.datagridUniformLinks.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.DatagridUniformLinks_CellEndEdit);
 			this.datagridUniformLinks.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.DatagridLinks_EditingControlShowing);
@@ -390,15 +360,75 @@
 			this.lstShaderUniform.Location = new System.Drawing.Point(3, 18);
 			this.lstShaderUniform.Name = "lstShaderUniform";
 			this.lstShaderUniform.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.lstShaderUniform.Size = new System.Drawing.Size(265, 137);
+			this.lstShaderUniform.Size = new System.Drawing.Size(265, 105);
 			this.lstShaderUniform.TabIndex = 1;
+			// 
+			// panelLinkGeometry
+			// 
+			this.panelLinkGeometry.Controls.Add(this.lstVertexDescription);
+			this.panelLinkGeometry.Controls.Add(this.panelGeometryList);
+			this.panelLinkGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelLinkGeometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.panelLinkGeometry.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.panelLinkGeometry.Location = new System.Drawing.Point(3, 183);
+			this.panelLinkGeometry.Name = "panelLinkGeometry";
+			this.panelLinkGeometry.Size = new System.Drawing.Size(740, 154);
+			this.panelLinkGeometry.TabIndex = 3;
+			this.panelLinkGeometry.TabStop = false;
+			this.panelLinkGeometry.Text = "Link Geometry";
+			// 
+			// lstVertexDescription
+			// 
+			this.lstVertexDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lstVertexDescription.FormattingEnabled = true;
+			this.lstVertexDescription.IntegralHeight = false;
+			this.lstVertexDescription.ItemHeight = 16;
+			this.lstVertexDescription.Location = new System.Drawing.Point(3, 43);
+			this.lstVertexDescription.MultiColumn = true;
+			this.lstVertexDescription.Name = "lstVertexDescription";
+			this.lstVertexDescription.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.lstVertexDescription.Size = new System.Drawing.Size(734, 108);
+			this.lstVertexDescription.TabIndex = 4;
+			// 
+			// panelGeometryList
+			// 
+			this.panelGeometryList.Controls.Add(this.lstGeometry);
+			this.panelGeometryList.Controls.Add(this.lblGeometry);
+			this.panelGeometryList.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelGeometryList.Location = new System.Drawing.Point(3, 18);
+			this.panelGeometryList.Name = "panelGeometryList";
+			this.panelGeometryList.Size = new System.Drawing.Size(734, 25);
+			this.panelGeometryList.TabIndex = 5;
+			// 
+			// lstGeometry
+			// 
+			this.lstGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lstGeometry.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstGeometry.FormattingEnabled = true;
+			this.lstGeometry.Location = new System.Drawing.Point(67, 0);
+			this.lstGeometry.Name = "lstGeometry";
+			this.lstGeometry.Size = new System.Drawing.Size(667, 24);
+			this.lstGeometry.TabIndex = 4;
+			this.lstGeometry.SelectedIndexChanged += new System.EventHandler(this.LstGeometry_SelectedIndexChanged);
+			// 
+			// lblGeometry
+			// 
+			this.lblGeometry.AutoSize = true;
+			this.lblGeometry.Dock = System.Windows.Forms.DockStyle.Left;
+			this.lblGeometry.ForeColor = System.Drawing.Color.Black;
+			this.lblGeometry.Location = new System.Drawing.Point(0, 0);
+			this.lblGeometry.Name = "lblGeometry";
+			this.lblGeometry.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+			this.lblGeometry.Size = new System.Drawing.Size(67, 22);
+			this.lblGeometry.TabIndex = 3;
+			this.lblGeometry.Text = "Geometry";
 			// 
 			// splitterLinkStatus
 			// 
 			this.splitterLinkStatus.BackColor = System.Drawing.SystemColors.ControlLight;
 			this.splitterLinkStatus.Cursor = System.Windows.Forms.Cursors.HSplit;
 			this.splitterLinkStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.splitterLinkStatus.Location = new System.Drawing.Point(0, 508);
+			this.splitterLinkStatus.Location = new System.Drawing.Point(0, 603);
 			this.splitterLinkStatus.Name = "splitterLinkStatus";
 			this.splitterLinkStatus.Size = new System.Drawing.Size(746, 10);
 			this.splitterLinkStatus.TabIndex = 1;
@@ -409,7 +439,7 @@
 			this.panelLinkStatus.Controls.Add(this.dataLinkStatus);
 			this.panelLinkStatus.Controls.Add(this.panelLinkStatusHead);
 			this.panelLinkStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelLinkStatus.Location = new System.Drawing.Point(0, 518);
+			this.panelLinkStatus.Location = new System.Drawing.Point(0, 613);
 			this.panelLinkStatus.Name = "panelLinkStatus";
 			this.panelLinkStatus.Size = new System.Drawing.Size(746, 24);
 			this.panelLinkStatus.TabIndex = 5;
@@ -542,7 +572,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(748, 574);
+			this.ClientSize = new System.Drawing.Size(748, 669);
 			this.Controls.Add(this.panelMain);
 			this.Name = "frmProgram";
 			this.Text = "Designer_ProjectObject";
@@ -562,10 +592,11 @@
 			((System.ComponentModel.ISupportInitialize)(this.datagridInputLinks)).EndInit();
 			this.panelListsGeometry.ResumeLayout(false);
 			this.panelListShaderInputs.ResumeLayout(false);
-			this.panelListGeometry.ResumeLayout(false);
-			this.panelListGeometry.PerformLayout();
 			this.panelUniforms.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformLinks)).EndInit();
+			this.panelLinkGeometry.ResumeLayout(false);
+			this.panelGeometryList.ResumeLayout(false);
+			this.panelGeometryList.PerformLayout();
 			this.panelLinkStatus.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dataLinkStatus)).EndInit();
 			this.panelLinkStatusHead.ResumeLayout(false);
@@ -595,13 +626,10 @@
 		private System.Windows.Forms.ContextMenuStrip menuShader;
 		private System.Windows.Forms.ToolStripMenuItem menuShader_Detach;
 		private System.Windows.Forms.GroupBox panelAttributes;
-		private System.Windows.Forms.ComboBox lstGeometry;
-		private System.Windows.Forms.Label lblGeometry;
 		private System.Windows.Forms.DataGridView datagridInputLinks;
 		private System.Windows.Forms.Panel panelDataInputLinks;
 		private System.Windows.Forms.Panel panelListsGeometry;
 		private System.Windows.Forms.Panel panelListShaderInputs;
-		private System.Windows.Forms.Panel panelListGeometry;
 		private System.Windows.Forms.ListBox lstShaderInputs;
 		private System.Windows.Forms.CheckBox chkLinkWarnings;
 		private System.Windows.Forms.CheckBox chkLinkErrors;
@@ -612,5 +640,10 @@
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnUniformExpression;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnShaderInputName;
 		private System.Windows.Forms.DataGridViewTextBoxColumn columnVertexDescription;
+		private System.Windows.Forms.GroupBox panelLinkGeometry;
+		private System.Windows.Forms.ListBox lstVertexDescription;
+		private System.Windows.Forms.Panel panelGeometryList;
+		private System.Windows.Forms.ComboBox lstGeometry;
+		private System.Windows.Forms.Label lblGeometry;
 	}
 }

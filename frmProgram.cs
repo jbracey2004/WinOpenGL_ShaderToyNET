@@ -22,6 +22,7 @@ namespace WinOpenGL_ShaderToy
 			lstLink.AllowDrop = true;
 			columnShaderInputName.Tag = lstShaderInputs;
 			columnShaderUniform.Tag = lstShaderUniform;
+			columnVertexDescription.Tag = lstVertexDescription;
 			UpdateLists();
 			LinkShaders();
 			timerUpdateLists = new clsHPTimer(this);
@@ -167,6 +168,11 @@ namespace WinOpenGL_ShaderToy
 			{
 				clsGeometry geomSelected = lstGeometry.SelectedItem as clsGeometry;
 				Program.Geometry = geomSelected;
+				lstVertexDescription.Items.Clear();
+				if(geomSelected != null)
+				{
+					lstVertexDescription.Items.AddRange(geomSelected.VertexDescription.aryComponents.ToArray());
+				}
 			}
 		}
 		private void LinkShaders()
@@ -443,7 +449,7 @@ namespace WinOpenGL_ShaderToy
 			DataGridViewColumn columnCurrent = datagrid.Columns[cellCurrent.ColumnIndex];
 			ListBox lstSource = columnCurrent.Tag as ListBox;
 			if (lstSource == null) return;
-			txtControl.AutoCompleteMode = AutoCompleteMode.Suggest;
+			txtControl.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 			txtControl.AutoCompleteSource = AutoCompleteSource.CustomSource;
 			if(txtControl.AutoCompleteCustomSource == null)
 			{

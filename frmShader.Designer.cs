@@ -137,12 +137,10 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtSource.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.txtSource.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtSource.IsReplaceMode = false;
 			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.txtSource.LeftBracket = '(';
 			this.txtSource.LeftBracket2 = '{';
-			this.txtSource.LineNumberStartValue = ((uint)(0u));
 			this.txtSource.Location = new System.Drawing.Point(0, 0);
 			this.txtSource.Name = "txtSource";
 			this.txtSource.Paddings = new System.Windows.Forms.Padding(0);
