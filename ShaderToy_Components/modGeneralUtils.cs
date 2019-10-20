@@ -87,7 +87,15 @@ public class generalUtils
 		double dValue = double.NaN;
 		if (!double.TryParse(t.ToString(), out dValue)) return double.NaN;
 		return dValue*(double)(max - min) + min;
-	} 
+	}
+	public static Typ[] ObjectToArray<Typ>(object aryObj)
+	{
+		return (Typ[])aryObj;
+	}
+	public static Typ ObjectArrayComponent<Typ>(object aryObj, int idx)
+	{
+		return ((Typ[])aryObj)[idx];
+	}
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
