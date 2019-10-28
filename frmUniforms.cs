@@ -8,6 +8,11 @@ using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using modProject;
+using modUniformDataView;
+using static WinOpenGL_ShaderToy.controlUniformData;
+using static modProject.clsUniformSet;
+using OpenTK;
+
 namespace WinOpenGL_ShaderToy
 {
 	public partial class frmUniforms : DockContent
@@ -18,27 +23,15 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FrmUniforms_Load(object sender, EventArgs e)
 		{
-			DataGridViewComboBoxColumn rowCombo = ((DataGridViewComboBoxColumn)datagridUniforms.Columns["columnType"]);
-			for (int itr = 0; itr < clsUniformSet.UniformBindDelegate.Keys.Count; itr++)
+			DataGridViewComboBoxColumn columnCombo = ((DataGridViewComboBoxColumn)datagridUniforms.Columns["columnType"]);
+			clsUniformDataColumn columnValue = new clsUniformDataColumn();
+			columnValue.HeaderText = "Value";
+			columnValue.Name = "columnValue";
+			datagridUniforms.Columns.Add(columnValue);
+			for (int itr = 0; itr < UniformBindDelegate.Keys.Count; itr++)
 			{
-				rowCombo.Items.Add(clsUniformSet.UniformBindDelegate.Keys.ElementAt(itr).ToString());
+				columnCombo.Items.Add(UniformBindDelegate.Keys.ElementAt(itr).ToString());
 			}
-		}
-
-		private void DatagridUniforms_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
-		{
-			DataGridViewCell cellCurrent = datagridUniforms.CurrentCell;
-			DataGridViewColumn columnCurrent = cellCurrent.OwningColumn;
-			Panel panelEdit = datagridUniforms.EditingPanel;
-			Control controlEdit = datagridUniforms.EditingControl;
-		}
-		private void DatagridUniforms_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-		{
-			DataGridViewCell cellCurrent = datagridUniforms.CurrentCell;
-			DataGridViewColumn columnCurrent = cellCurrent.OwningColumn;
-			Panel panelEdit = datagridUniforms.EditingPanel;
-			Control controlEdit = new PropertyGrid();
-			panelEdit.Controls.Add(controlEdit);
 		}
 	}
 }

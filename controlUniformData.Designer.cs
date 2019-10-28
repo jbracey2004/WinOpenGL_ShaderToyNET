@@ -48,6 +48,7 @@
 			this.Controls.Add(this.datagridData);
 			this.Name = "controlUniformData";
 			this.Size = new System.Drawing.Size(553, 36);
+			this.Load += new System.EventHandler(this.controlUniformData_Load);
 			((System.ComponentModel.ISupportInitialize)(this.datagridData)).EndInit();
 			this.ResumeLayout(false);
 

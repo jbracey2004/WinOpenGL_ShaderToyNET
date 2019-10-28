@@ -8,13 +8,14 @@ using System.Text;
 using System.Windows.Forms;
 using static modProject.clsUniformSet;
 using static WinOpenGL_ShaderToy.controlUniformData.clsComponentDelegateSet;
+using OpenTK;
+using System.Reflection;
 
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlUniformData : UserControl
 	{
-		public static Dictionary<UniformType, clsComponentSet> UniformDelegateSet =
-			new Dictionary<UniformType, clsComponentSet>()
+		public static Dictionary<UniformType, clsComponentSet> UniformDelegateSet = new Dictionary<UniformType, clsComponentSet>()
 		{
 			{UniformType.Int, new clsComponentSet(null, new string[]{"int"},new ComponentGet[]{itm=>(int)itm}, new ComponentSet[]{(itm,val)=> { itm = (int)val; } }) },
 			{UniformType.Float,  new clsComponentSet(null, new string[]{"float"},new ComponentGet[]{itm=>(float)itm}, new ComponentSet[]{(itm,val)=> { itm = (float)val; } }) },
@@ -28,15 +29,15 @@ namespace WinOpenGL_ShaderToy
 			{UniformType.Int4, new clsComponentSet(null, new string[]{"int x", "int y", "int z", "int w"}, clsComponentSet.MakeComponentDelegateArray<int>(4)) },
 			{UniformType.Float4,  new clsComponentSet(null, new string[]{"float x", "float y", "float z", "float w"}, clsComponentSet.MakeComponentDelegateArray<float>(4)) },
 			{UniformType.Double4, new clsComponentSet(null, new string[]{"double x", "double y", "double z", "double w"}, clsComponentSet.MakeComponentDelegateArray<double>(4)) },
-			{UniformType.Matrix2, null},
-			{UniformType.Matrix2x3, null},
-			{UniformType.Matrix2x4, null},
-			{UniformType.Matrix3, null},
-			{UniformType.Matrix3x2, null},
-			{UniformType.Matrix3x4, null},
-			{UniformType.Matrix4, null},
-			{UniformType.Matrix4x3, null},
-			{UniformType.Matrix4x2, null}
+			{UniformType.Matrix2, new clsComponentSet(null, "Matrix", "OpenTK", 2, 2) },
+			{UniformType.Matrix2x3, new clsComponentSet(null, "Matrix", "OpenTK", 2, 3)},
+			{UniformType.Matrix2x4, new clsComponentSet(null, "Matrix", "OpenTK", 2, 4)},
+			{UniformType.Matrix3, new clsComponentSet(null, "Matrix", "OpenTK", 3, 3)},
+			{UniformType.Matrix3x2, new clsComponentSet(null, "Matrix", "OpenTK", 3, 2)},
+			{UniformType.Matrix3x4, new clsComponentSet(null, "Matrix", "OpenTK", 3, 4)},
+			{UniformType.Matrix4, new clsComponentSet(null, "Matrix", "OpenTK", 4, 4)},
+			{UniformType.Matrix4x3, new clsComponentSet(null, "Matrix", "OpenTK", 4, 3)},
+			{UniformType.Matrix4x2, new clsComponentSet(null, "Matrix", "OpenTK", 4, 2)}
 		};
 		public class clsComponentDelegateSet
 		{
@@ -78,13 +79,26 @@ namespace WinOpenGL_ShaderToy
 				for (int itr = 0; itr < names.Length; itr++)
 					ComponentDelegates.Add(names[itr], delegatesGetSet[itr]);
 			}
+			public clsComponentSet(object value, string strTypeName, string strAssemblyName, int elemRows, int elemColumns)
+			{
+				Data = value;
+				string strSuffix = elemRows.ToString() + ((elemRows != elemColumns) ? ("x" + elemColumns.ToString()) : (""));
+				Type Typ = Type.GetType($"{strAssemblyName}.{strTypeName}{strSuffix}, {strAssemblyName}");
+				for (int itrRow = 1; itrRow <= elemRows; itrRow++) {
+					for (int itrColumn = 1; itrColumn <= elemColumns; itrColumn++) {
+						string strProp = $"M{itrRow}{itrColumn}";
+						PropertyInfo prop = Typ.GetProperty(strProp);
+						ComponentDelegates.Add($"[{itrRow},{itrColumn}]", new clsComponentDelegateSet(itm=>(float)prop.GetValue(itm, null), (itm, val) => prop.SetValue(itm, (float)Convert.ChangeType(val,typeof(float)), null) ));
+					}
+				}
+			}
 			public static clsComponentDelegateSet[] MakeComponentDelegateArray<Typ>(int elemCount)
 			{
 				clsComponentDelegateSet[] aryRet = new clsComponentDelegateSet[elemCount];
 				for (int itr = 0; itr < elemCount; itr++)
 					aryRet[itr] = new clsComponentDelegateSet((itm)=>((Typ[])itm)[itr], (itm, val)=>{ ((Typ[])itm)[0] = (Typ)val; });
 				return aryRet;
-			} 
+			}
 			public object this[string comp]
 			{
 				get
@@ -142,6 +156,25 @@ namespace WinOpenGL_ShaderToy
 		public controlUniformData()
 		{
 			InitializeComponent();
+		}
+		private void controlUniformData_Load(object sender, EventArgs e)
+		{
+
+		}
+		public void SetComponentDescriptionFromDataType(UniformType Typ)
+		{
+			DataObject.ComponentDelegates = UniformDelegateSet[Typ].ComponentDelegates;
+			datagridData.Columns.Clear();
+			datagridData.Rows.Clear();
+			for(int itr = 0; itr < DataObject.ComponentDelegates.Count; itr++)
+			{
+				datagridData.Columns.Add($"column{itr}", DataObject.ComponentDelegates.Keys.ToArray()[itr]);
+			}
+			datagridData.Rows.Add();
+			for (int itr = 0; itr < DataObject.ComponentDelegates.Count; itr++)
+			{
+				datagridData.Rows[0].Cells[itr].Value = DataObject[itr];
+			}
 		}
 	}
 }
