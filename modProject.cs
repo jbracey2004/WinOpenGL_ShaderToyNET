@@ -102,6 +102,54 @@ namespace modProject
 			{UniformType.Matrix4x3, (glUniform, intCount, matxDat) => {Matrix4x3 matx = (Matrix4x3)matxDat[0]; GL.UniformMatrix4x3(glUniform, false, ref matx); }},
 			{UniformType.Matrix4x2, (glUniform, intCount, matxDat) => {Matrix4x2 matx = (Matrix4x2)matxDat[0]; GL.UniformMatrix4x2(glUniform, false, ref matx); }}
 		};
+		public static Dictionary<UniformType, object> UniformBindInitialValues = new Dictionary<UniformType, object>()
+		{
+			{UniformType.Int, (int)0 },
+			{UniformType.Float,  (float)0 },
+			{UniformType.Double, (double)0 },
+			{UniformType.Int2, new int[]{0, 0} },
+			{UniformType.Float2,  new float[]{0f, 0f} },
+			{UniformType.Double2, new double[]{0.0, 0.0} },
+			{UniformType.Int3, new int[]{0, 0, 0} },
+			{UniformType.Float3,  new float[]{0f, 0f, 0f} },
+			{UniformType.Double3, new double[]{0.0, 0.0, 0.0} },
+			{UniformType.Int4, new int[]{0, 0, 0, 0} },
+			{UniformType.Float4,  new float[]{0f, 0f, 0f, 0f} },
+			{UniformType.Double4, new double[]{0.0, 0.0, 0.0, 0.0} },
+			{UniformType.Matrix2, new Matrix2(1, 0, 0, 1) },
+			{UniformType.Matrix2x3, new Matrix2x3(1, 0, 0, 1, 0, 0) },
+			{UniformType.Matrix2x4, new Matrix2x4(1, 0, 0, 1, 0, 0, 0, 0) },
+			{UniformType.Matrix3, new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1) },
+			{UniformType.Matrix3x2, new Matrix3x2(1, 0, 0, 0, 1, 0) },
+			{UniformType.Matrix3x4, new Matrix3x4(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0) },
+			{UniformType.Matrix4, new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) },
+			{UniformType.Matrix4x3, new Matrix4x3(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0) },
+			{UniformType.Matrix4x2, new Matrix4x2(1, 0, 0 ,0, 0, 1, 0, 0)}
+		};
+		public static Dictionary<UniformType, Type> UniformBindCompTypes = new Dictionary<UniformType, Type>()
+		{
+			{UniformType.Int, typeof(int) },
+			{UniformType.Float, typeof(float) },
+			{UniformType.Double, typeof(double) },
+			{UniformType.Int2, typeof(double) },
+			{UniformType.Float2, typeof(float) },
+			{UniformType.Double2, typeof(double) },
+			{UniformType.Int3, typeof(int) },
+			{UniformType.Float3, typeof(float)},
+			{UniformType.Double3, typeof(double) },
+			{UniformType.Int4, typeof(int) },
+			{UniformType.Float4, typeof(float) },
+			{UniformType.Double4, typeof(double) },
+			{UniformType.Matrix2, typeof(float) },
+			{UniformType.Matrix2x3, typeof(float) },
+			{UniformType.Matrix2x4, typeof(float) },
+			{UniformType.Matrix3, typeof(float) },
+			{UniformType.Matrix3x2, typeof(float) },
+			{UniformType.Matrix3x4, typeof(float) },
+			{UniformType.Matrix4, typeof(float) },
+			{UniformType.Matrix4x3, typeof(float) },
+			{UniformType.Matrix4x2, typeof(float) }
+		};
 	}
 	public class clsShader : clsProjectObject
 	{

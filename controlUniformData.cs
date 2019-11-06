@@ -124,7 +124,7 @@ namespace WinOpenGL_ShaderToy
 					{
 						ComponentDelegates[comp].SetValue(Data, value);
 					}
-					catch
+					catch(Exception err)
 					{
 
 					}
@@ -153,13 +153,11 @@ namespace WinOpenGL_ShaderToy
 			}
 		}
 		public clsComponentSet DataObject { get; private set; } = new clsComponentSet();
+		public UniformType DataUniformType { get; private set; } = UniformType.Int;
+		public Type DataComponentType { get => UniformBindCompTypes[DataUniformType]; }
 		public controlUniformData()
 		{
 			InitializeComponent();
-		}
-		private void controlUniformData_Load(object sender, EventArgs e)
-		{
-
 		}
 		public void SetComponentDescriptionFromDataType(UniformType Typ)
 		{
@@ -175,6 +173,11 @@ namespace WinOpenGL_ShaderToy
 			{
 				datagridData.Rows[0].Cells[itr].Value = DataObject[itr];
 			}
+		}
+		private void datagridData_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			DataGridViewCell cell = datagridData.Rows[e.RowIndex].Cells[e.ColumnIndex];
+			DataObject[e.ColumnIndex] = Convert.ChangeType(cell.FormattedValue, DataComponentType);
 		}
 	}
 }

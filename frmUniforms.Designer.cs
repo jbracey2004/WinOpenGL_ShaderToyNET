@@ -29,10 +29,10 @@
 		private void InitializeComponent()
 		{
 			this.datagridUniforms = new System.Windows.Forms.DataGridView();
-			this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnUniformName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnType = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniforms)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -49,17 +49,7 @@
 			this.datagridUniforms.Name = "datagridUniforms";
 			this.datagridUniforms.Size = new System.Drawing.Size(616, 324);
 			this.datagridUniforms.TabIndex = 0;
-			// 
-			// dataGridViewTextBoxColumn1
-			// 
-			this.dataGridViewTextBoxColumn1.HeaderText = "Name";
-			this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-			this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-			// 
-			// dataGridViewTextBoxColumn2
-			// 
-			this.dataGridViewTextBoxColumn2.HeaderText = "Value";
-			this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+			this.datagridUniforms.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniforms_CellValueChanged);
 			// 
 			// columnUniformName
 			// 
@@ -71,6 +61,17 @@
 			// 
 			this.columnType.HeaderText = "Type";
 			this.columnType.Name = "columnType";
+			// 
+			// dataGridViewTextBoxColumn1
+			// 
+			this.dataGridViewTextBoxColumn1.HeaderText = "Name";
+			this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+			this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+			// 
+			// dataGridViewTextBoxColumn2
+			// 
+			this.dataGridViewTextBoxColumn2.HeaderText = "Value";
+			this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
 			// 
 			// frmUniforms
 			// 

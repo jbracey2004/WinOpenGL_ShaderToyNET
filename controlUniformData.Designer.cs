@@ -35,11 +35,14 @@
 			// datagridData
 			// 
 			this.datagridData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.datagridData.ColumnHeadersVisible = false;
 			this.datagridData.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.datagridData.Location = new System.Drawing.Point(0, 0);
 			this.datagridData.Name = "datagridData";
+			this.datagridData.ShowRowErrors = false;
 			this.datagridData.Size = new System.Drawing.Size(553, 36);
 			this.datagridData.TabIndex = 0;
+			this.datagridData.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridData_CellValueChanged);
 			// 
 			// controlUniformData
 			// 
@@ -48,7 +51,6 @@
 			this.Controls.Add(this.datagridData);
 			this.Name = "controlUniformData";
 			this.Size = new System.Drawing.Size(553, 36);
-			this.Load += new System.EventHandler(this.controlUniformData_Load);
 			((System.ComponentModel.ISupportInitialize)(this.datagridData)).EndInit();
 			this.ResumeLayout(false);
 

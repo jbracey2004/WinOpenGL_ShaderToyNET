@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -27,9 +28,11 @@ namespace modUniformDataView
 	}
 	public class clsUniformDataCell : DataGridViewTextBoxCell
 	{
+		private clsUniformDataEditor displayControl;
 		public clsUniformDataCell() : base()
 		{
-
+			displayControl = new clsUniformDataEditor();
+			Value = "NaN";
 		}
 		public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
 		{
@@ -66,22 +69,40 @@ namespace modUniformDataView
 		{
 			get
 			{
+				if (DataGridView.Columns.Contains("columnType"))
+				{
+					object objTyp = DataGridView.Rows[RowIndex].Cells["columnType"].Value;
+					if (objTyp != null)
+					{
+						UniformType Typ = (UniformType)Enum.Parse(typeof(UniformType), objTyp.ToString());
+						return UniformBindInitialValues[Typ].GetType();
+					}
+				}
 				return typeof(object);
 			}
 		}
-
 		public override object DefaultNewRowValue
 		{
 			get
 			{
-				return 0;
+				return "NaN";
 			}
 		}
 	}
 	public class clsUniformDataEditor : controlUniformData, IDataGridViewEditingControl
 	{
 		public DataGridView EditingControlDataGridView { get; set; }
-		public object EditingControlFormattedValue { get; set; }
+		public object EditingControlFormattedValue
+		{
+			get
+			{
+				return this.DataObject.Data;
+			}
+			set
+			{
+				this.DataObject.Data = value;
+			}
+		}
 		public int EditingControlRowIndex { get; set; }
 		public bool EditingControlValueChanged { get; set; }
 
@@ -104,6 +125,15 @@ namespace modUniformDataView
 			return this.DataObject.Data;
 		}
 
+		protected override void OnValidating(CancelEventArgs e)
+		{
+			base.OnValidating(e);
+			if(!e.Cancel)
+			{
+				EditingControlValueChanged = true;
+				this.EditingControlDataGridView.NotifyCurrentCellDirty(true);
+			}
+		}
 		public void PrepareEditingControlForEdit(bool selectAll)
 		{
 			
