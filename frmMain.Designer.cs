@@ -100,15 +100,7 @@
 			this.menusMain.Name = "menusMain";
 			this.menusMain.Size = new System.Drawing.Size(1264, 24);
 			this.menusMain.TabIndex = 13;
-			this.menusMain.Text = "menuStrip1";
-			// 
-			// menuUniformInputs
-			// 
-			this.menuUniformInputs.CheckOnClick = true;
-			this.menuUniformInputs.Name = "menuUniformInputs";
-			this.menuUniformInputs.Size = new System.Drawing.Size(180, 22);
-			this.menuUniformInputs.Text = "Uniform Inputs";
-			this.menuUniformInputs.CheckedChanged += new System.EventHandler(this.MenuUniformInputs_CheckedChanged);
+			this.menusMain.Text = "Main Menu";
 			// 
 			// frmMain
 			// 
