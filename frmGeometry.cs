@@ -40,9 +40,22 @@ namespace WinOpenGL_ShaderToy
 			containerMain.CollapseDistanceChanged += new CollapseStateChangeHandler(containerMain_CollapseDistanceChange);
 			if (Geometry.VertexDescription == null)
 			{
-				clsVertexDescription newDesc = new clsVertexDescription();
-				newDesc.Add(VertexAttribPointerType.Float, "Position", 3, 0);
-				projectMain.ProjectObjects.Add(newDesc);
+				clsVertexDescription newDesc = null;
+				foreach (clsProjectObject objItr in projectMain.ProjectObjects)
+				{
+					clsVertexDescription descItr = objItr as clsVertexDescription;
+					if (descItr != null) 
+					{
+						newDesc = descItr;
+						break;
+					}
+				}
+				if(newDesc == null)
+				{
+					newDesc = new clsVertexDescription();
+					newDesc.Add(VertexAttribPointerType.Float, "Position", 3, 0);
+					projectMain.ProjectObjects.Add(newDesc);
+				}
 				Geometry.VertexDescription = newDesc;
 			}
 			if(Geometry.Vertices == null)
@@ -83,10 +96,15 @@ namespace WinOpenGL_ShaderToy
 		private void FrmGeometry_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			tsRender = null;
+			timerUpdateLists.Stop();
+			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
 		}
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{
+			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
+			glRender_Init();
 			UpdateLists();
 		}
 		private void UpdateLists()
