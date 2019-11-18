@@ -36,7 +36,6 @@
 			this.menuStats = new System.Windows.Forms.ToolStripMenuItem();
 			this.menusWindows = new System.Windows.Forms.ToolStripMenuItem();
 			this.menusMain = new System.Windows.Forms.MenuStrip();
-			this.menuUniformInputs = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuWindows.SuspendLayout();
 			this.menusMain.SuspendLayout();
 			this.SuspendLayout();
@@ -61,11 +60,9 @@
 			// 
 			this.menuWindows.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuProject,
-            this.menuUniformInputs,
             this.menuStats});
 			this.menuWindows.Name = "menuWindows";
-			this.menuWindows.OwnerItem = this.menusWindows;
-			this.menuWindows.Size = new System.Drawing.Size(181, 92);
+			this.menuWindows.Size = new System.Drawing.Size(181, 70);
 			this.menuWindows.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.MenuWindows_Closing);
 			// 
 			// menuProject
@@ -134,7 +131,6 @@
 		private System.Windows.Forms.ToolStripMenuItem menuStats;
 		private System.Windows.Forms.ToolStripMenuItem menusWindows;
 		private System.Windows.Forms.MenuStrip menusMain;
-		private System.Windows.Forms.ToolStripMenuItem menuUniformInputs;
 	}
 }
 

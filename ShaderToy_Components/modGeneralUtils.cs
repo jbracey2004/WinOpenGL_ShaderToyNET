@@ -226,19 +226,30 @@ public class generalUtils
 		{
 			return this.Median_Rate.ToString();
 		}
-
+		private bool bolIsDisposed = false;
+	    protected  virtual void Dispose(bool Disposing)
+		{
+			if(!bolIsDisposed)
+			{
+				if(Disposing)
+				{
+					this.Data.Clear();
+					this.Data = null;
+					this.Data_Sorted.Clear();
+					this.Data_Sorted = null;
+					this.Data_Durations.Clear();
+					this.Data_Durations = null;
+					this.Data_Rates.Clear();
+					this.Data_Rates = null;
+					this.Data_TimeStamps.Clear();
+					this.Data_TimeStamps = null;
+				}
+			}
+		}
 		public void Dispose()
 		{
-			this.Data.Clear();
-			this.Data = null;
-			this.Data_Sorted.Clear();
-			this.Data_Sorted = null;
-			this.Data_Durations.Clear();
-			this.Data_Durations = null;
-			this.Data_Rates.Clear();
-			this.Data_Rates = null;
-			this.Data_TimeStamps.Clear();
-			this.Data_TimeStamps = null;
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 	}
 

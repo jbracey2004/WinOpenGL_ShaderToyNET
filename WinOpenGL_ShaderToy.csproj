@@ -85,6 +85,12 @@
     <Compile Include="frmGeometry.Designer.cs">
       <DependentUpon>frmGeometry.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmVertexDescription.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmVertexDescription.Designer.cs">
+      <DependentUpon>frmVertexDescription.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmProgram.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,6 +130,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmGeometry.resx">
       <DependentUpon>frmGeometry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmVertexDescription.resx">
+      <DependentUpon>frmVertexDescription.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmProgram.resx">
       <DependentUpon>frmProgram.cs</DependentUpon>

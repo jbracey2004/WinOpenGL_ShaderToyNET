@@ -100,8 +100,10 @@
 			this.datagridShaderLinks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnShader});
 			this.datagridShaderLinks.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.datagridShaderLinks.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
 			this.datagridShaderLinks.Location = new System.Drawing.Point(0, 0);
 			this.datagridShaderLinks.Name = "datagridShaderLinks";
+			this.datagridShaderLinks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.datagridShaderLinks.ShowCellErrors = false;
 			this.datagridShaderLinks.Size = new System.Drawing.Size(421, 214);
 			this.datagridShaderLinks.TabIndex = 6;

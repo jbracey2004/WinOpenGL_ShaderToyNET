@@ -13,10 +13,11 @@ namespace modProject
 			Null = -2,
 			Designer = -1,
 			Project = 0,
-			Geometry = 1,
-			Shader = 2,
-			Program = 3,
-			Render = 4
+			VertexDescription = 1,
+			Geometry = 2,
+			Shader = 3,
+			Program = 4,
+			Render = 5
 		}
 		public static List<clsProjectObject> All { private set; get; } = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
@@ -62,15 +63,28 @@ namespace modProject
 			}
 			return strRet;
 		}
-		public virtual void Dispose()
+		private bool disposedValue = false;
+		protected virtual void Dispose(bool disposing)
 		{
-			if(ParentControl != null)
+			if (!disposedValue)
 			{
-				ParentControl.ProjectObject = null;
+				if (disposing)
+				{
+					if (ParentControl != null)
+					{
+						ParentControl.ProjectObject = null;
+					}
+					Name = null;
+					ProjectObjType = ProjectObjectTypes.Null;
+					RemoveFromCollection();
+				}
+				disposedValue = true;
 			}
-			Name = null;
-			ProjectObjType = ProjectObjectTypes.Null;
-			RemoveFromCollection();
+		}
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }

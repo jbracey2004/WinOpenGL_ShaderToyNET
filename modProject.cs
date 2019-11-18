@@ -28,6 +28,8 @@ namespace WinOpenGL_ShaderToy
 		{
 			switch(obj.ProjectObjType)
 			{
+				case ProjectObjectTypes.VertexDescription:
+					return new frmVertexDescription((clsVertexDescription)obj);
 				case ProjectObjectTypes.Geometry:
 					return new frmGeometry((clsGeometry)obj);
 				case ProjectObjectTypes.Shader:
@@ -198,7 +200,7 @@ namespace modProject
 			GL.DeleteShader(glID);
 			glID = -1;
 		}
-		public override void Dispose()
+		public new void Dispose()
 		{
 			Delete();
 			base.Dispose();
@@ -238,7 +240,7 @@ namespace modProject
 			GL.DeleteProgram(glID);
 			glID = -1;
 		}
-		public override void Dispose()
+		public new void Dispose()
 		{
 			Delete();
 			base.Dispose();
@@ -690,25 +692,46 @@ namespace modProject
 				}
 				get { return Desc.IndexOf(this); }
 			}
-			public void Dispose()
-			{
-				Desc = null;
-			}
 			public override string ToString()
 			{
 				return $"{Name} {{<{ElementGLType}> Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; }}";
 			}
+			private bool disposedValue = false;
+			protected virtual void Dispose(bool disposing)
+			{
+				if (!disposedValue)
+				{
+					if (disposing)
+					{
+						
+					}
+					Desc = null;
+					disposedValue = true;
+				}
+			}
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
 		}
 		[TypeConverter(typeof(ExpandableObjectConverter))]
-		public class clsVertexDescription : IDisposable, IList<clsVertexDescriptionComponent>
+		public class clsVertexDescription : clsProjectObject, IList<clsVertexDescriptionComponent>
 		{
 			internal List<clsVertexDescriptionComponent> aryComponents = new List<clsVertexDescriptionComponent>();
 			public delegate void delegateUpdated();
 			public event delegateUpdated Updated;
+			public clsVertexDescription() : base(ProjectObjectTypes.VertexDescription)
+			{
+				AddToCollection();
+			}
 			internal void RaiseUpdated()
 			{
-				delegateUpdated evnt = new delegateUpdated(Updated);
-				evnt?.Invoke();
+				if(Updated != null)
+				{
+					delegateUpdated evnt = new delegateUpdated(Updated);
+					evnt?.Invoke();
+				}
 			}
 			public clsVertexDescriptionComponent this[int index]
 			{
@@ -823,16 +846,11 @@ namespace modProject
 			{
 				return aryComponents.GetEnumerator();
 			}
-			public void Dispose()
+			public new void Dispose()
 			{
 				foreach (clsVertexDescriptionComponent itm in aryComponents) itm.Dispose();
 				aryComponents.Clear();
-			}
-			public override string ToString()
-			{
-				string strRet = "";
-				foreach (clsVertexDescriptionComponent itm in aryComponents) strRet += itm.Name + "; ";
-				return strRet;
+				base.Dispose();
 			}
 		}
 		[TypeConverter(typeof(VertexPropertyConverter))]
@@ -1138,14 +1156,6 @@ namespace modProject
 					}
 				}
 			}
-			public void Dispose()
-			{
-				refDesc.Updated -= desc_Updated;
-				Count = 0;
-				Data.Clear();
-				Data = null;
-				refDesc = null;
-			}
 			public override string ToString()
 			{
 				return $"Count={intCount}";
@@ -1190,6 +1200,28 @@ namespace modProject
 			{
 				return ((IList<clsVertex>)aryVertices).GetEnumerator();
 			}
+			
+			private bool disposedValue = false;
+			protected virtual void Dispose(bool disposing)
+			{
+				if (!disposedValue)
+				{
+					if (disposing)
+					{
+						refDesc.Updated -= desc_Updated;
+						Count = 0;
+						Data.Clear();
+						Data = null;
+						refDesc = null;
+					}
+					disposedValue = true;
+				}
+			}
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
 		}
 		[TypeConverter(typeof(TriagnelCollectionConverter))]
 		public class clsTriangleCollection : IDisposable, IList<clsTriangle>
@@ -1202,12 +1234,25 @@ namespace modProject
 			{
 				Geometry = refGeometry;
 			}
+			private bool disposedValue = false;
+			protected virtual void Dispose(bool disposing)
+			{
+				if (!disposedValue)
+				{
+					if (disposing)
+					{
+						aryIndices.Clear();
+						aryIndices = null;
+						aryTriangles.Clear();
+						aryTriangles = null;
+					}
+					disposedValue = true;
+				}
+			}
 			public void Dispose()
 			{
-				aryIndices.Clear();
-				aryIndices = null;
-				aryTriangles.Clear();
-				aryTriangles = null;
+				Dispose(true);
+				GC.SuppressFinalize(this);
 			}
 			public int Count
 			{
@@ -1367,31 +1412,22 @@ namespace modProject
 				return $"v[{v_Id0.ToString(strFormat)}], v[{v_Id1.ToString(strFormat)}], v[{v_Id2.ToString(strFormat)}]";
 			}
 		}
-		public clsVertexDescription VertexDescription { set; get; }
-		public clsVertexCollection Vertices { set; get; }
-		public clsTriangleCollection Triangles { set; get; }
+		public clsVertexDescription VertexDescription { set; get; } = null;
+		public clsVertexCollection Vertices { set; get; } = null;
+		public clsTriangleCollection Triangles { set; get; } = null;
 		public int glIndexBuffer = -1;
 		public List<int> glBuffers = new List<int>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
 		{
-			VertexDescription = new clsVertexDescription();
-			Vertices = new clsVertexCollection(this);
-			Triangles = new clsTriangleCollection(this);
-			VertexDescription.Add(VertexAttribPointerType.Float, "Position", 3, 0);
-			Vertices.Count = 4;
-			Vertices[0]["Position"] = new object[] { -1f, -1f, 0f };
-			Vertices[1]["Position"] = new object[] { 1f, -1f, 0f };
-			Vertices[2]["Position"] = new object[] { 1f, 1f, 0f };
-			Vertices[3]["Position"] = new object[] { -1f, 1f, 0f };
-			Triangles.Count = 2;
-			Triangles[0].Items = new uint[] { 0, 1, 2 };
-			Triangles[1].Items = new uint[] { 2, 3, 0 };
 			glIndexBuffer = GL.GenBuffer();
 			glUpdateBuffers();
 			AddToCollection();
 		}
 		public void glUpdateBuffers()
 		{
+			if (VertexDescription == null) return;
+			if (Triangles == null) return;
+			if (Vertices == null) return;
 			glContext_Main.MakeCurrent(infoWindow);
 			if (VertexDescription.Count > glBuffers.Count)
 			{
@@ -1422,14 +1458,23 @@ namespace modProject
 				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 			}
 		}
-		public override void Dispose()
+		public new void Dispose()
 		{
-			Triangles.Dispose();
-			Triangles = null;
-			Vertices.Dispose();
-			Vertices = null;
-			VertexDescription.Dispose();
-			VertexDescription = null;
+			if (Triangles != null)
+			{
+				Triangles.Dispose();
+				Triangles = null;
+			}
+			if (Vertices != null)
+			{
+				Vertices.Dispose();
+				Vertices = null;
+			}
+			if (VertexDescription != null)
+			{
+				VertexDescription.Dispose();
+				VertexDescription = null;
+			}
 			GL.DeleteBuffers(glBuffers.Count, glBuffers.ToArray());
 			glBuffers.Clear();
 			base.Dispose();

@@ -31,13 +31,14 @@
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Project");
 			this.menuNew = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuNew_Geometry = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Shader = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Program = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Render = new System.Windows.Forms.ToolStripMenuItem();
 			this.treeMain = new System.Windows.Forms.TreeView();
 			this.menuProjectObject = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.menuProjectObject_Delete = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuNew_Geometry = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuNew_VertexDescription = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew.SuspendLayout();
 			this.menuProjectObject.SuspendLayout();
 			this.SuspendLayout();
@@ -45,30 +46,38 @@
 			// menuNew
 			// 
 			this.menuNew.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuNew_VertexDescription,
             this.menuNew_Geometry,
             this.menuNew_Shader,
             this.menuNew_Program,
             this.menuNew_Render});
 			this.menuNew.Name = "menuNew";
-			this.menuNew.Size = new System.Drawing.Size(181, 114);
+			this.menuNew.Size = new System.Drawing.Size(197, 136);
+			// 
+			// menuNew_Geometry
+			// 
+			this.menuNew_Geometry.Name = "menuNew_Geometry";
+			this.menuNew_Geometry.Size = new System.Drawing.Size(196, 22);
+			this.menuNew_Geometry.Text = "New Geometry";
+			this.menuNew_Geometry.Click += new System.EventHandler(this.MenuNew_Geometry_Click);
 			// 
 			// menuNew_Shader
 			// 
 			this.menuNew_Shader.Name = "menuNew_Shader";
-			this.menuNew_Shader.Size = new System.Drawing.Size(180, 22);
+			this.menuNew_Shader.Size = new System.Drawing.Size(196, 22);
 			this.menuNew_Shader.Text = "New Shader";
 			// 
 			// menuNew_Program
 			// 
 			this.menuNew_Program.Name = "menuNew_Program";
-			this.menuNew_Program.Size = new System.Drawing.Size(180, 22);
+			this.menuNew_Program.Size = new System.Drawing.Size(196, 22);
 			this.menuNew_Program.Text = "New Program";
 			this.menuNew_Program.Click += new System.EventHandler(this.MenuNew_Program_Click);
 			// 
 			// menuNew_Render
 			// 
 			this.menuNew_Render.Name = "menuNew_Render";
-			this.menuNew_Render.Size = new System.Drawing.Size(180, 22);
+			this.menuNew_Render.Size = new System.Drawing.Size(196, 22);
 			this.menuNew_Render.Text = "New Render";
 			this.menuNew_Render.Click += new System.EventHandler(this.MenuNew_Render_Click);
 			// 
@@ -112,12 +121,12 @@
 			this.menuProjectObject_Delete.Text = "Delete Object";
 			this.menuProjectObject_Delete.Click += new System.EventHandler(this.MenuProjectObject_Delete_Click);
 			// 
-			// menuNew_Geometry
+			// menuNew_VertexDescription
 			// 
-			this.menuNew_Geometry.Name = "menuNew_Geometry";
-			this.menuNew_Geometry.Size = new System.Drawing.Size(180, 22);
-			this.menuNew_Geometry.Text = "New Geometry";
-			this.menuNew_Geometry.Click += new System.EventHandler(this.MenuNew_Geometry_Click);
+			this.menuNew_VertexDescription.Name = "menuNew_VertexDescription";
+			this.menuNew_VertexDescription.Size = new System.Drawing.Size(196, 22);
+			this.menuNew_VertexDescription.Text = "New Vertex Description";
+			this.menuNew_VertexDescription.Click += new System.EventHandler(this.menuNew_VertexDescription_Click);
 			// 
 			// frmProject
 			// 
@@ -146,5 +155,6 @@
 		private System.Windows.Forms.ContextMenuStrip menuProjectObject;
 		private System.Windows.Forms.ToolStripMenuItem menuProjectObject_Delete;
 		private System.Windows.Forms.ToolStripMenuItem menuNew_Geometry;
+		private System.Windows.Forms.ToolStripMenuItem menuNew_VertexDescription;
 	}
 }
