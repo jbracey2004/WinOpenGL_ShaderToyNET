@@ -1,0 +1,22 @@
+[1129/073134.599:ERROR:browser_process_sub_thread.cc(221)] Waited 0 ms for network service
+[1129/073257.094:ERROR:browser_process_sub_thread.cc(221)] Waited 22 ms for network service
+[1129/073347.629:ERROR:browser_process_sub_thread.cc(221)] Waited 21 ms for network service
+[1129/073445.912:ERROR:browser_process_sub_thread.cc(221)] Waited 21 ms for network service
+[1129/075933.957:ERROR:browser_process_sub_thread.cc(221)] Waited 50 ms for network service
+[1129/080120.746:ERROR:browser_process_sub_thread.cc(221)] Waited 25 ms for network service
+[1129/080413.021:ERROR:browser_process_sub_thread.cc(221)] Waited 20 ms for network service
+[1129/085339.586:ERROR:browser_process_sub_thread.cc(221)] Waited 179 ms for network service
+[1129/085434.997:ERROR:browser_process_sub_thread.cc(221)] Waited 131 ms for network service
+[1129/085510.664:WARNING:backend_impl.cc(1846)] Destroying invalid entry.
+[1129/090236.287:ERROR:browser_process_sub_thread.cc(221)] Waited 172 ms for network service
+[1129/090310.493:ERROR:browser_process_sub_thread.cc(221)] Waited 110 ms for network service
+[1129/090446.473:ERROR:browser_process_sub_thread.cc(221)] Waited 242 ms for network service
+[1129/090514.647:ERROR:shader_disk_cache.cc(258)] Failed to create shader cache entry: -2
+[1129/090522.064:ERROR:browser_process_sub_thread.cc(221)] Waited 20 ms for network service
+[1129/090654.183:ERROR:browser_process_sub_thread.cc(221)] Waited 23 ms for network service
+[1129/091623.282:ERROR:browser_process_sub_thread.cc(221)] Waited 19 ms for network service
+[1129/091825.710:ERROR:browser_process_sub_thread.cc(221)] Waited 23 ms for network service
+[1129/114941.070:ERROR:browser_process_sub_thread.cc(221)] Waited 63 ms for network service
+[1129/121600.859:WARNING:backend_impl.cc(1846)] Destroying invalid entry.
+[1129/121816.117:ERROR:browser_process_sub_thread.cc(221)] Waited 14 ms for network service
+[1129/122028.823:ERROR:browser_process_sub_thread.cc(221)] Waited 19 ms for network service
