@@ -19,20 +19,31 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net40"
+          "net462"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net40": {
+          "net462": {
             "projectReferences": {}
           }
         }
       },
       "frameworks": {
-        "net40": {}
+        "net462": {
+          "dependencies": {
+            "Geckofx60.64": {
+              "target": "Package",
+              "version": "[60.0.44, )"
+            },
+            "Geckofx60.64.Windows": {
+              "target": "Package",
+              "version": "[0.11.0, )"
+            }
+          }
+        }
       },
       "runtimes": {
         "win": {

@@ -15,6 +15,8 @@ namespace WinOpenGL_ShaderToy
 		private DockContent windowProject;
 		private void FormMain_Load(object sender, EventArgs e)
 		{
+			frmShaderIOLinks frm = new frmShaderIOLinks();
+			frm.Show();
 			formMain = this;
 			glInit(Handle);
 			dockMainPanel = this.dockMain;

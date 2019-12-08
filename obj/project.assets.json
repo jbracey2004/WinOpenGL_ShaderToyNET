@@ -1,14 +1,189 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.0": {},
-    ".NETFramework,Version=v4.0/win": {},
-    ".NETFramework,Version=v4.0/win-x64": {},
-    ".NETFramework,Version=v4.0/win-x86": {}
+    ".NETFramework,Version=v4.6.2": {
+      "Geckofx60.64/60.0.44": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Windows.Forms"
+        ],
+        "compile": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "build": {
+          "build/Geckofx60.64.targets": {}
+        }
+      },
+      "Geckofx60.64.Windows/0.11.0": {
+        "type": "package",
+        "build": {
+          "build/Geckofx60.64.Windows.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win": {
+      "Geckofx60.64/60.0.44": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Windows.Forms"
+        ],
+        "compile": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "build": {
+          "build/Geckofx60.64.targets": {}
+        }
+      },
+      "Geckofx60.64.Windows/0.11.0": {
+        "type": "package",
+        "build": {
+          "build/Geckofx60.64.Windows.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win-x64": {
+      "Geckofx60.64/60.0.44": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Windows.Forms"
+        ],
+        "compile": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "build": {
+          "build/Geckofx60.64.targets": {}
+        }
+      },
+      "Geckofx60.64.Windows/0.11.0": {
+        "type": "package",
+        "build": {
+          "build/Geckofx60.64.Windows.targets": {}
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.2/win-x86": {
+      "Geckofx60.64/60.0.44": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Drawing",
+          "System.Windows.Forms"
+        ],
+        "compile": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Geckofx-Core.dll": {},
+          "lib/net45/Geckofx-Winforms.dll": {}
+        },
+        "build": {
+          "build/Geckofx60.64.targets": {}
+        }
+      },
+      "Geckofx60.64.Windows/0.11.0": {
+        "type": "package",
+        "build": {
+          "build/Geckofx60.64.Windows.targets": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Geckofx60.64/60.0.44": {
+      "sha512": "EuyHcWdSN+C0oCVFF1xLkhK8rvA73Z+Q8b1vKnYNrtJZ+VMGEBI+hj4ChXA1GRy9NCVAKd6INhYwlAZZObo42w==",
+      "type": "package",
+      "path": "geckofx60.64/60.0.44",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Geckofx60.64.targets",
+        "content/Firefox/AccessibleHandler.dll",
+        "content/Firefox/AccessibleMarshal.dll",
+        "content/Firefox/IA2Marshal.dll",
+        "content/Firefox/d3dcompiler_47.dll",
+        "content/Firefox/freebl3.dll",
+        "content/Firefox/lgpllibs.dll",
+        "content/Firefox/libEGL.dll",
+        "content/Firefox/libGLESv2.dll",
+        "content/Firefox/mozavcodec.dll",
+        "content/Firefox/mozavutil.dll",
+        "content/Firefox/mozglue.dll",
+        "content/Firefox/nss3.dll",
+        "content/Firefox/nssckbi.dll",
+        "content/Firefox/nssdbm3.dll",
+        "content/Firefox/omni.ja",
+        "content/Firefox/plugin-container.exe",
+        "content/Firefox/plugin-hang-ui.exe",
+        "content/Firefox/qipcap64.dll",
+        "content/Firefox/softokn3.dll",
+        "content/Firefox/xul.dll",
+        "geckofx60.64.60.0.44.nupkg.sha512",
+        "geckofx60.64.nuspec",
+        "lib/Geckofx-Core.dll.config",
+        "lib/Geckofx-Winforms.dll.config",
+        "lib/net45/Geckofx-Core.dll",
+        "lib/net45/Geckofx-Core.pdb",
+        "lib/net45/Geckofx-Winforms.dll",
+        "lib/net45/Geckofx-Winforms.pdb"
+      ]
+    },
+    "Geckofx60.64.Windows/0.11.0": {
+      "sha512": "dJ/cf1CvPORP70ei1DiKWmI5xJGuXY9fGDKT5EQHvM/lPwSlRfvLJ5wQWDS6vXBJKxgxuxVzyp96RjPggU5YEg==",
+      "type": "package",
+      "path": "geckofx60.64.windows/0.11.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Geckofx60.64.Windows.targets",
+        "content/Firefox64/AccessibleHandler.dll",
+        "content/Firefox64/AccessibleMarshal.dll",
+        "content/Firefox64/IA2Marshal.dll",
+        "content/Firefox64/d3dcompiler_47.dll",
+        "content/Firefox64/freebl3.dll",
+        "content/Firefox64/lgpllibs.dll",
+        "content/Firefox64/libEGL.dll",
+        "content/Firefox64/libGLESv2.dll",
+        "content/Firefox64/mozavcodec.dll",
+        "content/Firefox64/mozavutil.dll",
+        "content/Firefox64/mozglue.dll",
+        "content/Firefox64/nss3.dll",
+        "content/Firefox64/nssckbi.dll",
+        "content/Firefox64/nssdbm3.dll",
+        "content/Firefox64/omni.ja",
+        "content/Firefox64/platform.ini",
+        "content/Firefox64/plugin-container.exe",
+        "content/Firefox64/plugin-hang-ui.exe",
+        "content/Firefox64/qipcap64.dll",
+        "content/Firefox64/softokn3.dll",
+        "content/Firefox64/xul.dll",
+        "geckofx60.64.windows.0.11.0.nupkg.sha512",
+        "geckofx60.64.windows.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.0": []
+    ".NETFramework,Version=v4.6.2": [
+      "Geckofx60.64 >= 60.0.44",
+      "Geckofx60.64.Windows >= 0.11.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\jvipe\\.nuget\\packages\\": {}
@@ -28,20 +203,31 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net40"
+        "net462"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net40": {
+        "net462": {
           "projectReferences": {}
         }
       }
     },
     "frameworks": {
-      "net40": {}
+      "net462": {
+        "dependencies": {
+          "Geckofx60.64": {
+            "target": "Package",
+            "version": "[60.0.44, )"
+          },
+          "Geckofx60.64.Windows": {
+            "target": "Package",
+            "version": "[0.11.0, )"
+          }
+        }
+      }
     },
     "runtimes": {
       "win": {
