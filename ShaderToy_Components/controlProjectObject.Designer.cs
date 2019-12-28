@@ -47,6 +47,7 @@ namespace ShaderToy_Components
 			// 
 			// panelStatus
 			// 
+			this.panelStatus.AutoSize = true;
 			this.panelStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelStatus.Controls.Add(this.txtName);
 			this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -79,6 +80,7 @@ namespace ShaderToy_Components
 			this.panelStatus.ResumeLayout(false);
 			this.panelStatus.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 

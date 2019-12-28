@@ -18,7 +18,6 @@ using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
 using System.Reflection;
 using static modProject.clsGeometry;
-using static modProject.clsUniformSet;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -79,6 +78,17 @@ namespace modProject
 			Matrix3, Matrix3x2, Matrix3x4,
 			Matrix4, Matrix4x3, Matrix4x2
 		}
+		public static int UniformType_ComponentCount(UniformType typ)
+		{
+			int intRet = 1;
+			foreach (Match regMatch in Regex.Matches(typ.ToString(), @"\d+"))
+			{
+				int intNum;
+				string strNum = regMatch.Value;
+				if (int.TryParse(strNum, out intNum)) intRet *= intNum;
+			}
+			return intRet;
+		}
 		public delegate void delegateUniform(int glUniformLocation, int Count, object[] dat);
 		public static Dictionary<UniformType, delegateUniform> UniformBindDelegate = new Dictionary<UniformType, delegateUniform>()
 		{ 
@@ -104,7 +114,7 @@ namespace modProject
 			{UniformType.Matrix4x3, (glUniform, intCount, matxDat) => {Matrix4x3 matx = (Matrix4x3)matxDat[0]; GL.UniformMatrix4x3(glUniform, false, ref matx); }},
 			{UniformType.Matrix4x2, (glUniform, intCount, matxDat) => {Matrix4x2 matx = (Matrix4x2)matxDat[0]; GL.UniformMatrix4x2(glUniform, false, ref matx); }}
 		};
-		public static Dictionary<UniformType, object> UniformBindInitialValues = new Dictionary<UniformType, object>()
+		public static Dictionary<UniformType, object> UniformType_InitialValues = new Dictionary<UniformType, object>()
 		{
 			{UniformType.Int, (int)0 },
 			{UniformType.Float,  (float)0 },
@@ -128,12 +138,12 @@ namespace modProject
 			{UniformType.Matrix4x3, new Matrix4x3(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0) },
 			{UniformType.Matrix4x2, new Matrix4x2(1, 0, 0 ,0, 0, 1, 0, 0)}
 		};
-		public static Dictionary<UniformType, Type> UniformBindCompTypes = new Dictionary<UniformType, Type>()
+		public static Dictionary<UniformType, Type> UniformType_ComponentType = new Dictionary<UniformType, Type>()
 		{
 			{UniformType.Int, typeof(int) },
 			{UniformType.Float, typeof(float) },
 			{UniformType.Double, typeof(double) },
-			{UniformType.Int2, typeof(double) },
+			{UniformType.Int2, typeof(int) },
 			{UniformType.Float2, typeof(float) },
 			{UniformType.Double2, typeof(double) },
 			{UniformType.Int3, typeof(int) },
@@ -152,6 +162,73 @@ namespace modProject
 			{UniformType.Matrix4x3, typeof(float) },
 			{UniformType.Matrix4x2, typeof(float) }
 		};
+		public static List<object[]> StringToArray(string str, out int intComponentCount, out int intComponentType)
+		{
+			UniformType enumType = UniformType.Int;
+			intComponentType = -1;
+			Match matchType = Regex.Match(str, @"\<[\w|\d]+\>");
+			if (matchType.Success)
+			{
+				str = str.Replace(matchType.Value, "").Trim();
+				string strType = matchType.Value.Trim('<', '>');
+				if (Enum.TryParse(strType, out enumType)) intComponentType = (int)enumType;
+			}
+			if (intComponentType == -1) { intComponentCount = 1; } else { intComponentCount = UniformType_ComponentCount(enumType); }
+			List<object[]> aryRet = new List<object[]>();
+			if (!str.Contains("(") && !str.Contains(")")) { str = "(" + str + ")"; }
+			foreach (Match regMatch in Regex.Matches(str, @"\((\d+(\.\d+){0,}\s{0,}\,{0,}\s{0,}){1,}\)"))
+			{
+				string[] aryStr = regMatch.Value.Split(',');
+				List<object> elem = new List<object>();
+				for (int itr = 0; itr < aryStr.Length; itr++)
+				{
+					string strI = aryStr[itr].Trim('(', ')').Trim();
+					if (double.TryParse(strI, out double obj)) { elem.Add(obj); } else { elem.Add(0); }
+				}
+				if (intComponentType == -1)
+				{
+					intComponentCount = Math.Max(intComponentCount, elem.Count);
+				}
+				aryRet.Add(elem.ToArray());
+			}
+			for (int itr = 0; itr < aryRet.Count; itr++)
+			{
+				List<object> elem = new List<object>(aryRet[itr]);
+				ResizeList(ref elem, intComponentCount, itmEmpty => 0);
+				if (intComponentType != -1)
+				{
+					for (int itrComp = 0; itrComp < elem.Count; itrComp++)
+					{
+						elem[itrComp] = Convert.ChangeType(elem[itrComp], UniformType_ComponentType[enumType]);
+					}
+				}
+				aryRet[itr] = elem.ToArray();
+			}
+			return aryRet;
+		}
+		public UniformType Type = UniformType.Int;
+		public List<object[]> Data = new List<object[]>();
+		public clsUniformSet() { }
+		public clsUniformSet(string str)
+		{
+			Data = StringToArray(str, out int intNewCompLen, out int intNewCompType);
+			if (intNewCompType != -1) { Type = (UniformType)intNewCompType; }
+		}
+		public object[] DataInlined 
+		{ 
+			get 
+			{
+				List<object> aryRet = new List<object>();
+				for(int itr = 0; itr < Data.Count; itr++)
+				{
+					for(int elemItr = 0; elemItr< Data[itr].Length; elemItr++)
+					{
+						aryRet.Add(Data[itr][elemItr]);
+					}
+				}
+				return aryRet.ToArray();
+			} 
+		}
 	}
 	public class clsShader : clsProjectObject
 	{
@@ -173,7 +250,7 @@ namespace modProject
 		private static string[] parseRefLinks(string str, string prefix)
 		{
 			List<string> ret = new List<string>();
-			string strTmp = Regex.Replace(str, @"\{(\s|.)+\}", "{...};");
+			string strTmp = Regex.Replace(str+" ", @"\{(\s|.)+\}", "{...};");
 			strTmp = Regex.Replace(strTmp, @"\((\s|.)+\)", "(...)");
 			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d{{0,}})\s+(?<name>\w+)")))
 			{
@@ -213,8 +290,6 @@ namespace modProject
 	public class clsProgram : clsProjectObject
 	{
 		public List<clsShader> Shaders { private set; get; } = new List<clsShader>() { };
-		public clsGeometry Geometry { set; get; } = null;
-		public List<KeyValuePair<string, clsVertexDescriptionComponent>> InputLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
 		public int glID { private set; get; } = -1;
 		public clsInfoString LinkInfo { private set; get; }
 		public clsProgram() : base(ProjectObjectTypes.Program)
@@ -239,6 +314,33 @@ namespace modProject
 		{
 			GL.DeleteProgram(glID);
 			glID = -1;
+		}
+		public string[] Inputs 
+		{
+			get
+			{
+				List<string> aryRet = new List<string>();
+				foreach (clsShader shdItr in Shaders) { aryRet.AddRange(shdItr.Inputs); }
+				return aryRet.Distinct().ToArray();
+			}
+		}
+		public string[] Outputs
+		{
+			get
+			{
+				List<string> aryRet = new List<string>();
+				foreach (clsShader shdItr in Shaders) { aryRet.AddRange(shdItr.Outputs); }
+				return aryRet.Distinct().ToArray();
+			}
+		}
+		public string[] Uniforms
+		{
+			get
+			{
+				List<string> aryRet = new List<string>();
+				foreach (clsShader shdItr in Shaders) { aryRet.AddRange(shdItr.Uniforms); }
+				return aryRet.Distinct().ToArray();
+			}
 		}
 		public new void Dispose()
 		{
@@ -694,7 +796,7 @@ namespace modProject
 			}
 			public override string ToString()
 			{
-				return $"{Name} {{<{ElementGLType}> Type: {ElementType}; Elements: {ElementCount} x {ElementSize}B; Size: {ComponentSize}B; }}";
+				return $"{Name} <{ElementGLType}{ElementCount}>";
 			}
 			private bool disposedValue = false;
 			protected virtual void Dispose(bool disposing)
@@ -1603,9 +1705,19 @@ namespace modProject
 	}
 	public class clsRender : clsProjectObject
 	{
+		public double RenderInterval { get; set; } = 1000.0 / 60.0;
+		public clsGeometry Geometry { get; set; } = null;
+		public clsProgram Program { get; set; } = null;
+		public List<KeyValuePair<string, clsVertexDescriptionComponent>> GeometryShaderLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
+		public List<KeyValuePair<string, clsUniformSet>> Uniforms { private set; get; } = new List<KeyValuePair<string, clsUniformSet>>();
+		public List<KeyValuePair<string, string>> UniformShaderLinks { private set; get; } = new List<KeyValuePair<string, string>>();
 		public clsRender() : base(ProjectObjectTypes.Render)
 		{
 			AddToCollection();
+		}
+		public new void Dispose()
+		{
+			base.Dispose();
 		}
 	}
 }

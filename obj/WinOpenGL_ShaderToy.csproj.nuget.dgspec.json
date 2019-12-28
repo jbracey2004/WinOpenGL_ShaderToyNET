@@ -34,13 +34,9 @@
       "frameworks": {
         "net462": {
           "dependencies": {
-            "Geckofx60.64": {
+            "Microsoft.CodeAnalysis.CSharp.Scripting": {
               "target": "Package",
-              "version": "[60.0.44, )"
-            },
-            "Geckofx60.64.Windows": {
-              "target": "Package",
-              "version": "[0.11.0, )"
+              "version": "[3.5.0-beta1-final, )"
             }
           }
         }

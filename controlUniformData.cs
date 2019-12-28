@@ -1,183 +1,184 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using static generalUtils;
 using static modProject.clsUniformSet;
-using static WinOpenGL_ShaderToy.controlUniformData.clsComponentDelegateSet;
-using OpenTK;
-using System.Reflection;
-
+using System.Text.RegularExpressions;
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlUniformData : UserControl
 	{
-		public static Dictionary<UniformType, clsComponentSet> UniformDelegateSet = new Dictionary<UniformType, clsComponentSet>()
+		public List<object[]> DataObject { get; set; } = new List<object[]>();
+		private UniformType typeUniformData = UniformType.Int;
+		public UniformType DataUniformType { get => typeUniformData; set { SetComponentDescriptionFromDataType(value);} }
+		public int DataComponentCount
 		{
-			{UniformType.Int, new clsComponentSet(null, new string[]{"int"},new ComponentGet[]{itm=>(int)itm}, new ComponentSet[]{(itm,val)=> { itm = (int)val; } }) },
-			{UniformType.Float,  new clsComponentSet(null, new string[]{"float"},new ComponentGet[]{itm=>(float)itm}, new ComponentSet[]{(itm,val)=> { itm = (float)val; } }) },
-			{UniformType.Double, new clsComponentSet(null, new string[]{"double"},new ComponentGet[]{itm=>(double)itm}, new ComponentSet[]{(itm,val)=> { itm = (double)val; } }) },
-			{UniformType.Int2, new clsComponentSet(null, new string[]{"int x", "int y"}, clsComponentSet.MakeComponentDelegateArray<int>(2)) },
-			{UniformType.Float2,  new clsComponentSet(null, new string[]{"float x", "float y"}, clsComponentSet.MakeComponentDelegateArray<float>(2)) },
-			{UniformType.Double2, new clsComponentSet(null, new string[]{"double x", "double y"}, clsComponentSet.MakeComponentDelegateArray<double>(2)) },
-			{UniformType.Int3, new clsComponentSet(null, new string[]{"int x", "int y", "int z"}, clsComponentSet.MakeComponentDelegateArray<int>(3)) },
-			{UniformType.Float3, new clsComponentSet(null, new string[]{"float x", "float y", "float z"}, clsComponentSet.MakeComponentDelegateArray<float>(3)) },
-			{UniformType.Double3, new clsComponentSet(null, new string[]{"double x", "double y", "double z"}, clsComponentSet.MakeComponentDelegateArray<double>(3)) },
-			{UniformType.Int4, new clsComponentSet(null, new string[]{"int x", "int y", "int z", "int w"}, clsComponentSet.MakeComponentDelegateArray<int>(4)) },
-			{UniformType.Float4,  new clsComponentSet(null, new string[]{"float x", "float y", "float z", "float w"}, clsComponentSet.MakeComponentDelegateArray<float>(4)) },
-			{UniformType.Double4, new clsComponentSet(null, new string[]{"double x", "double y", "double z", "double w"}, clsComponentSet.MakeComponentDelegateArray<double>(4)) },
-			{UniformType.Matrix2, new clsComponentSet(null, "Matrix", "OpenTK", 2, 2) },
-			{UniformType.Matrix2x3, new clsComponentSet(null, "Matrix", "OpenTK", 2, 3)},
-			{UniformType.Matrix2x4, new clsComponentSet(null, "Matrix", "OpenTK", 2, 4)},
-			{UniformType.Matrix3, new clsComponentSet(null, "Matrix", "OpenTK", 3, 3)},
-			{UniformType.Matrix3x2, new clsComponentSet(null, "Matrix", "OpenTK", 3, 2)},
-			{UniformType.Matrix3x4, new clsComponentSet(null, "Matrix", "OpenTK", 3, 4)},
-			{UniformType.Matrix4, new clsComponentSet(null, "Matrix", "OpenTK", 4, 4)},
-			{UniformType.Matrix4x3, new clsComponentSet(null, "Matrix", "OpenTK", 4, 3)},
-			{UniformType.Matrix4x2, new clsComponentSet(null, "Matrix", "OpenTK", 4, 2)}
-		};
-		public class clsComponentDelegateSet
-		{
-			public delegate void ComponentSet(object Obj, object value);
-			public delegate object ComponentGet(object Obj);
-			public ComponentGet ComponentGetter { get; set; }
-			public ComponentSet ComponentSetter { get; set; }
-			public clsComponentDelegateSet(ComponentGet delegateGet, ComponentSet delegateSet)
+			get => UniformType_ComponentCount(typeUniformData);
+			set
 			{
-				ComponentGetter = delegateGet;
-				ComponentSetter = delegateSet;
-			}
-			public object GetValue(object obj) => ComponentGetter(obj);
-			public void SetValue(object obj, object value) => ComponentSetter(obj, value);
-		}
-		public class clsComponentSet
-		{
-			public object Data { get; set; } = null;
-			public Dictionary<string, clsComponentDelegateSet> ComponentDelegates { get; set; } = new Dictionary<string, clsComponentDelegateSet>();
-			public clsComponentSet() { }
-			public clsComponentSet(object value, KeyValuePair<string, clsComponentDelegateSet>[] aryComponentDelegates)
-			{
-				Data = value;
-				foreach(KeyValuePair<string, clsComponentDelegateSet> comp in aryComponentDelegates)
-					ComponentDelegates.Add(comp.Key, comp.Value);
-			}
-			public clsComponentSet(object value, string[] names, ComponentGet[] delegatesGet, ComponentSet[] delegatesSet)
-			{
-				if (names.Length != delegatesGet.Length) throw new ArgumentException("Array Lengths must be equal");
-				if (names.Length != delegatesSet.Length) throw new ArgumentException("Array Lengths must be equal");
-				Data = value;
-				for (int itr = 0; itr < names.Length; itr++)
-					ComponentDelegates.Add(names[itr], new clsComponentDelegateSet(delegatesGet[itr], delegatesSet[itr]));
-			}
-			public clsComponentSet(object value, string[] names, clsComponentDelegateSet[] delegatesGetSet)
-			{
-				if (names.Length != delegatesGetSet.Length) throw new ArgumentException("Array Lengths must be equal");
-				Data = value;
-				for (int itr = 0; itr < names.Length; itr++)
-					ComponentDelegates.Add(names[itr], delegatesGetSet[itr]);
-			}
-			public clsComponentSet(object value, string strTypeName, string strAssemblyName, int elemRows, int elemColumns)
-			{
-				Data = value;
-				string strSuffix = elemRows.ToString() + ((elemRows != elemColumns) ? ("x" + elemColumns.ToString()) : (""));
-				Type Typ = Type.GetType($"{strAssemblyName}.{strTypeName}{strSuffix}, {strAssemblyName}");
-				for (int itrRow = 1; itrRow <= elemRows; itrRow++) {
-					for (int itrColumn = 1; itrColumn <= elemColumns; itrColumn++) {
-						string strProp = $"M{itrRow}{itrColumn}";
-						PropertyInfo prop = Typ.GetProperty(strProp);
-						ComponentDelegates.Add($"[{itrRow},{itrColumn}]", new clsComponentDelegateSet(itm=>(float)prop.GetValue(itm, null), (itm, val) => prop.SetValue(itm, (float)Convert.ChangeType(val,typeof(float)), null) ));
-					}
-				}
-			}
-			public static clsComponentDelegateSet[] MakeComponentDelegateArray<Typ>(int elemCount)
-			{
-				clsComponentDelegateSet[] aryRet = new clsComponentDelegateSet[elemCount];
-				for (int itr = 0; itr < elemCount; itr++)
-					aryRet[itr] = new clsComponentDelegateSet((itm)=>((Typ[])itm)[itr], (itm, val)=>{ ((Typ[])itm)[0] = (Typ)val; });
-				return aryRet;
-			}
-			public object this[string comp]
-			{
-				get
+				List<int> dimsCurrent = new List<int>();
+				foreach (Match regMatch in Regex.Matches(typeUniformData.ToString(), @"\d+"))
 				{
-					if (Data == null) return null;
-					if (!ComponentDelegates.ContainsKey(comp)) return null;
-					object ret;
-					try
-					{
-						ret = ComponentDelegates[comp].GetValue(Data);
-					}
-					catch
-					{
-						ret = null;
-					}
-					return ret;
+					int intNum;
+					string strNum = regMatch.Value;
+					if (int.TryParse(strNum, out intNum)) dimsCurrent.Add(intNum);
 				}
-				set
+				if(dimsCurrent.Count == 0)
 				{
-					if (Data == null) return;
-					if (!ComponentDelegates.ContainsKey(comp)) return;
-					try
+					if(value > 1)
 					{
-						ComponentDelegates[comp].SetValue(Data, value);
+						UniformType enumNew;
+						string strNew = typeUniformData.ToString() + dimsCurrent[0].ToString();
+						if (Enum.TryParse(strNew, out enumNew)) DataUniformType = enumNew;
 					}
-					catch(Exception err)
-					{
-
-					}
+				} else if (dimsCurrent.Count == 1) {
+					UniformType enumNew;
+					string strNew = Regex.Replace(typeUniformData.ToString(), @"\d+", value.ToString());
+					if (Enum.TryParse(strNew, out enumNew)) DataUniformType = enumNew;
 				}
-			}
-			public object this[int index]
-			{
-				get
-				{
-					if (Data == null) return null;
-					if (index < 0 || index > ComponentDelegates.Count-1) return null;
-					return this[ComponentDelegates.Keys.ToArray()[index]];
-				}
-				set
-				{
-					if (Data == null) return;
-					if (index < 0 || index > ComponentDelegates.Count - 1) return;
-					this[ComponentDelegates.Keys.ToArray()[index]] = value;
-				}
-			}
-			public object[] ToArray()
-			{
-				object[] aryRet = new object[ComponentDelegates.Count];
-				for (int i = 0; i < aryRet.Length; i++) aryRet[i] = this[i];
-				return aryRet;
 			}
 		}
-		public clsComponentSet DataObject { get; private set; } = new clsComponentSet();
-		public UniformType DataUniformType { get; private set; } = UniformType.Int;
-		public Type DataComponentType { get => UniformBindCompTypes[DataUniformType]; }
+		public Type DataComponentType { get => UniformType_ComponentType[typeUniformData]; }
 		public controlUniformData()
 		{
 			InitializeComponent();
+			DataObject.Add(new object[] { 0 });
 		}
-		public void SetComponentDescriptionFromDataType(UniformType Typ)
+		private void controlUniformData_Load(object sender, EventArgs e)
 		{
-			DataObject.ComponentDelegates = UniformDelegateSet[Typ].ComponentDelegates;
+			foreach (string itm in Enum.GetNames(typeof(UniformType)))
+			{
+				lstType.Items.Add(itm);
+			}
+			lstType.SelectedIndex = (int)typeUniformData;
+		}
+		private void SetComponentDescriptionFromDataType(UniformType Typ)
+		{
+			int intComponentCount = UniformType_ComponentCount(Typ);
+			Type typComp = UniformType_ComponentType[Typ];
+			for (int itr = 0; itr < DataObject.Count; itr++)
+			{
+				List<object> ary = new List<object>(DataObject[itr]);
+				ResizeList(ref ary, intComponentCount, itmEmpty => 0);
+				DataObject[itr] = ary.ToArray();
+			}
+			typeUniformData = Typ;
+			bolTypeLocked = true;
 			datagridData.Columns.Clear();
 			datagridData.Rows.Clear();
-			for(int itr = 0; itr < DataObject.ComponentDelegates.Count; itr++)
+			for(int itr = 0; itr < intComponentCount; itr++)
 			{
-				datagridData.Columns.Add($"column{itr}", DataObject.ComponentDelegates.Keys.ToArray()[itr]);
+				datagridData.Columns.Add($"column{itr}", itr.ToString());
 			}
-			datagridData.Rows.Add();
-			for (int itr = 0; itr < DataObject.ComponentDelegates.Count; itr++)
+			datagridData.Rows.Add(DataObject.Count);
+			for (int itr = 0; itr < DataObject.Count; itr++)
 			{
-				datagridData.Rows[0].Cells[itr].Value = DataObject[itr];
+				for(int itrComp = 0; itrComp < intComponentCount; itrComp++)
+				{
+					datagridData.Rows[itr].Cells[itrComp].Value = DataObject[itr][itrComp].ToString();
+				}
 			}
+			if(lstType.Items.Count != 0)
+			{
+				lstType.SelectedIndex = (int)Typ;
+			}
+			bolTypeLocked = false;
+			UpdateRowHeaders();
+			UpdateAutoHeight();
+		}
+		private void datagridData_RowHeightChanged(object sender, DataGridViewRowEventArgs e)
+		{
+			UpdateRowHeaders();
+			UpdateAutoHeight();
+		}
+		private void datagridData_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+		{
+			UpdateRowHeaders();
+			UpdateAutoHeight();
+		}
+		private void datagridData_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		{
+			UpdateRowHeaders();
+			UpdateAutoHeight();
+		}
+		private bool bolTypeLocked = false;
+		private void datagridData_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+		{
+			if (e.RowIndex >= DataObject.Count) { return; }
+			DataGridViewCell cell = datagridData.Rows[e.RowIndex].Cells[e.ColumnIndex];
+			double.TryParse(e.FormattedValue.ToString(), out double fValue);
+			cell.Value = Convert.ChangeType(fValue, DataComponentType).ToString();
 		}
 		private void datagridData_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
+			if (bolTypeLocked) return;
+			if (e.ColumnIndex < 0) return;
+			if (e.RowIndex >= DataObject.Count) { return; }
 			DataGridViewCell cell = datagridData.Rows[e.RowIndex].Cells[e.ColumnIndex];
-			DataObject[e.ColumnIndex] = Convert.ChangeType(cell.FormattedValue, DataComponentType);
+			string strValue = cell.Value as string;
+			double.TryParse(strValue, out double fValue);
+			DataObject[e.RowIndex][e.ColumnIndex] = Convert.ChangeType(fValue, DataComponentType);
+		}
+		private void datagridData_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+		{
+			int intCompLen = DataComponentCount;
+			object[] elemNew = new object[intCompLen];
+			for (int itrComp = 0; itrComp < elemNew.Length; itrComp++)
+			{
+				elemNew[itrComp] = 0;
+			}
+			DataObject.Add(elemNew);
+		}
+		private void datagridData_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+		{
+			DataObject.RemoveAt(e.Row.Index);
+		}
+		private void lstType_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (bolTypeLocked) return;
+			UniformType val;
+			if(Enum.TryParse(lstType.SelectedItem.ToString(), out val))
+			{
+				DataUniformType = val;
+			}
+		}
+		public static string ArrayToString(List<object[]> ary)
+		{
+			string strRet = "";
+			for (int itr = 0; itr < ary.Count; itr++)
+			{
+				if(ary.Count > 1) strRet += "(";
+				for (int itrComp = 0; itrComp < ary[itr].Length; itrComp++)
+				{
+					strRet += ary[itr][itrComp].ToString();
+					if (itrComp < ary[itr].Length - 1) strRet += ", ";
+				}
+				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
+			}
+			return strRet;
+		}
+		public int ContentHeight { get { int intRet = 0; for (int itr = 0; itr < datagridData.Rows.Count; itr++) { intRet+=datagridData.Rows[itr].Height; }; return intRet; } }
+		public override string Text
+		{
+			get => $"<{typeUniformData}> " + ArrayToString(DataObject);
+			set 
+			{
+				this.DataObject = StringToArray(value, out int intNewCompLen, out int intNewCompType);
+				if (intNewCompType == -1) { DataComponentCount = intNewCompLen; } else { DataUniformType = (UniformType)intNewCompType; }
+			}
+		}
+		public void UpdateAutoHeight()
+		{
+			Height = ContentHeight + 8;
+		}
+		private void UpdateRowHeaders()
+		{
+			for (int itr = 0; itr < datagridData.Rows.Count; itr++)
+			{
+				datagridData.Rows[itr].HeaderCell.Value = (!datagridData.Rows[itr].IsNewRow) ? itr.ToString() : "+";
+			}
 		}
 	}
 }

@@ -31,6 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Project");
 			this.menuNew = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.menuNew_VertexDescription = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Geometry = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Shader = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew_Program = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,7 +39,6 @@
 			this.treeMain = new System.Windows.Forms.TreeView();
 			this.menuProjectObject = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.menuProjectObject_Delete = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuNew_VertexDescription = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuNew.SuspendLayout();
 			this.menuProjectObject.SuspendLayout();
 			this.SuspendLayout();
@@ -52,7 +52,14 @@
             this.menuNew_Program,
             this.menuNew_Render});
 			this.menuNew.Name = "menuNew";
-			this.menuNew.Size = new System.Drawing.Size(197, 136);
+			this.menuNew.Size = new System.Drawing.Size(197, 158);
+			// 
+			// menuNew_VertexDescription
+			// 
+			this.menuNew_VertexDescription.Name = "menuNew_VertexDescription";
+			this.menuNew_VertexDescription.Size = new System.Drawing.Size(196, 22);
+			this.menuNew_VertexDescription.Text = "New Vertex Description";
+			this.menuNew_VertexDescription.Click += new System.EventHandler(this.menuNew_VertexDescription_Click);
 			// 
 			// menuNew_Geometry
 			// 
@@ -120,13 +127,6 @@
 			this.menuProjectObject_Delete.Size = new System.Drawing.Size(145, 22);
 			this.menuProjectObject_Delete.Text = "Delete Object";
 			this.menuProjectObject_Delete.Click += new System.EventHandler(this.MenuProjectObject_Delete_Click);
-			// 
-			// menuNew_VertexDescription
-			// 
-			this.menuNew_VertexDescription.Name = "menuNew_VertexDescription";
-			this.menuNew_VertexDescription.Size = new System.Drawing.Size(196, 22);
-			this.menuNew_VertexDescription.Text = "New Vertex Description";
-			this.menuNew_VertexDescription.Click += new System.EventHandler(this.menuNew_VertexDescription_Click);
 			// 
 			// frmProject
 			// 

@@ -250,6 +250,7 @@ namespace WinOpenGL_ShaderToy
 		private void glRender_Render()
 		{
 			glRender.Context.MakeCurrent(glRender.WindowInfo);
+			GL.Viewport(glRender.ClientRectangle);
 			tsRender.ResetInterval();
 			tsRender.StartInterval();
 			glRender.MakeCurrent();

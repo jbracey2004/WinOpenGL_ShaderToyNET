@@ -17,7 +17,8 @@ namespace modProject
 			Geometry = 2,
 			Shader = 3,
 			Program = 4,
-			Render = 5
+			IOLinks = 5,
+			Render = 6
 		}
 		public static List<clsProjectObject> All { private set; get; } = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
