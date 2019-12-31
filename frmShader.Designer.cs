@@ -264,12 +264,13 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lstShaderType
 			// 
+			this.lstShaderType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.lstShaderType.FormattingEnabled = true;
 			this.lstShaderType.Location = new System.Drawing.Point(3, 3);
 			this.lstShaderType.Name = "lstShaderType";
 			this.lstShaderType.Size = new System.Drawing.Size(138, 21);
 			this.lstShaderType.TabIndex = 1;
-			this.lstShaderType.TextChanged += new System.EventHandler(this.LstShaderType_TextChanged);
+			this.lstShaderType.SelectedIndexChanged += new System.EventHandler(this.lstShaderType_SelectedIndexChanged);
 			// 
 			// btnLoad
 			// 

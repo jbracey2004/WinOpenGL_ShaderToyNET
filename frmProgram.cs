@@ -122,7 +122,7 @@ namespace WinOpenGL_ShaderToy
 				else if (Program.LinkInfo.WarningMessages.Length > 0)
 				{
 					lblLinkStatus.ForeColor = Color.Blue;
-					lblLinkStatus.Text = "Link Status: Linkd* See Messages.";
+					lblLinkStatus.Text = "Link Status: Linked* See Messages.";
 				}
 				else if (Program.LinkInfo.AllMessages.Length > 0)
 				{
@@ -132,7 +132,7 @@ namespace WinOpenGL_ShaderToy
 				else
 				{
 					lblLinkStatus.ForeColor = Color.Green;
-					lblLinkStatus.Text = "Link Status: Linkd. Good.";
+					lblLinkStatus.Text = "Link Status: Linked. Good.";
 				}
 				chkLinkErrors.Text = $"Errors: {Program.LinkInfo.ErrorMessages.Length}";
 				chkLinkWarnings.Text = $"Warnings: {Program.LinkInfo.WarningMessages.Length}";
@@ -142,6 +142,7 @@ namespace WinOpenGL_ShaderToy
 					if (itm.Level == "WARNING" && !chkLinkWarnings.Checked) return false;
 					return true;
 				});
+				dataLinkStatus.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			}
 		}
 		private void ChkLinkErrors_CheckedChanged(object sender, EventArgs e)

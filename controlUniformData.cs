@@ -1,4 +1,5 @@
 ﻿using System;
+using modProject;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,8 @@ using System.Windows.Forms;
 using static generalUtils;
 using static modProject.clsUniformSet;
 using System.Text.RegularExpressions;
+using WeifenLuo.WinFormsUI.Docking;
+
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlUniformData : UserControl
@@ -144,25 +147,10 @@ namespace WinOpenGL_ShaderToy
 				DataUniformType = val;
 			}
 		}
-		public static string ArrayToString(List<object[]> ary)
-		{
-			string strRet = "";
-			for (int itr = 0; itr < ary.Count; itr++)
-			{
-				if(ary.Count > 1) strRet += "(";
-				for (int itrComp = 0; itrComp < ary[itr].Length; itrComp++)
-				{
-					strRet += ary[itr][itrComp].ToString();
-					if (itrComp < ary[itr].Length - 1) strRet += ", ";
-				}
-				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
-			}
-			return strRet;
-		}
 		public int ContentHeight { get { int intRet = 0; for (int itr = 0; itr < datagridData.Rows.Count; itr++) { intRet+=datagridData.Rows[itr].Height; }; return intRet; } }
 		public override string Text
 		{
-			get => $"<{typeUniformData}> " + ArrayToString(DataObject);
+			get => $"<{typeUniformData}> " + clsUniformSet.ArrayToString(DataObject);
 			set 
 			{
 				this.DataObject = StringToArray(value, out int intNewCompLen, out int intNewCompType);

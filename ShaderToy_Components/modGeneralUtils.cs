@@ -210,8 +210,8 @@ public class generalUtils
 				Data.RemoveAll(itm => itm.Key < historyCut);
 				Data_Sorted.RemoveAll(itm => { if (itm.Key < historyCut) { DataAccumulated -= itm.Value; return true; } else { return false; } });
 				Data_TimeStamps.RemoveAll(itm => itm < historyCut);
-				Data_Durations.RemoveRange(0, Data_Durations.Count - Data.Count);
-				Data_Rates.RemoveRange(0, Data_Rates.Count - Data.Count);
+				if (Data_Durations.Count - Data.Count > 0) Data_Durations.RemoveRange(0, Data_Durations.Count - Data.Count);
+				if(Data_Rates.Count - Data.Count > 0) Data_Rates.RemoveRange(0, Data_Rates.Count - Data.Count);
 				int idxNew = FindSortedInsert(Data_Sorted.ToArray(), itmNew, (itmAdding, itm) => Math.Sign(itmAdding.Value - itm.Value));
 				Data.Add(itmNew);
 				Data_TimeStamps.Add(xval);

@@ -100,6 +100,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsCollapsePanel.cs" />
+    <Compile Include="controlEventScript.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controlEventScript.Designer.cs">
+      <DependentUpon>controlEventScript.cs</DependentUpon>
+    </Compile>
     <Compile Include="controlUniformData.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -155,9 +161,13 @@
       <DependentUpon>frmShader.cs</DependentUpon>
     </Compile>
     <Compile Include="modProject.cs" />
+    <Compile Include="modEventScriptDataView.cs" />
     <Compile Include="modUniformDataView.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="controlEventScript.resx">
+      <DependentUpon>controlEventScript.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="controlUniformData.resx">
       <DependentUpon>controlUniformData.cs</DependentUpon>
     </EmbeddedResource>

@@ -46,13 +46,13 @@
 			this.dockMain.DefaultFloatWindowSize = new System.Drawing.Size(640, 480);
 			this.dockMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dockMain.DockBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.dockMain.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
 			this.dockMain.Location = new System.Drawing.Point(0, 24);
 			this.dockMain.Margin = new System.Windows.Forms.Padding(0);
 			this.dockMain.Name = "dockMain";
 			this.dockMain.Padding = new System.Windows.Forms.Padding(6);
-			this.dockMain.ShowAutoHideContentOnHover = false;
+			this.dockMain.ShowDocumentIcon = true;
 			this.dockMain.Size = new System.Drawing.Size(1264, 737);
-			this.dockMain.SupportDeeplyNestedContent = true;
 			this.dockMain.TabIndex = 10;
 			this.dockMain.Theme = this.themeDock_Main;
 			// 
@@ -62,7 +62,8 @@
             this.menuProject,
             this.menuStats});
 			this.menuWindows.Name = "menuWindows";
-			this.menuWindows.Size = new System.Drawing.Size(181, 70);
+			this.menuWindows.OwnerItem = this.menusWindows;
+			this.menuWindows.Size = new System.Drawing.Size(121, 48);
 			this.menuWindows.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.MenuWindows_Closing);
 			// 
 			// menuProject
@@ -71,7 +72,7 @@
 			this.menuProject.CheckOnClick = true;
 			this.menuProject.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.menuProject.Name = "menuProject";
-			this.menuProject.Size = new System.Drawing.Size(180, 22);
+			this.menuProject.Size = new System.Drawing.Size(120, 22);
 			this.menuProject.Text = "Project";
 			this.menuProject.CheckedChanged += new System.EventHandler(this.MenuProject_CheckedChanged);
 			// 
@@ -79,7 +80,7 @@
 			// 
 			this.menuStats.CheckOnClick = true;
 			this.menuStats.Name = "menuStats";
-			this.menuStats.Size = new System.Drawing.Size(180, 22);
+			this.menuStats.Size = new System.Drawing.Size(120, 22);
 			this.menuStats.Text = "Statistics";
 			// 
 			// menusWindows

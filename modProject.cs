@@ -11,6 +11,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 using static modProject.clsProjectObject;
 using static WinOpenGL_ShaderToy.ProjectDef;
 using static generalUtils;
@@ -74,9 +76,9 @@ namespace modProject
 			Int2, Float2, Double2,
 			Int3, Float3, Double3,
 			Int4, Float4, Double4,
-			Matrix2, Matrix2x3, Matrix2x4,
-			Matrix3, Matrix3x2, Matrix3x4,
-			Matrix4, Matrix4x3, Matrix4x2
+			Matrix2x2, Matrix2x3, Matrix2x4,
+			Matrix3x3, Matrix3x2, Matrix3x4,
+			Matrix4x4, Matrix4x3, Matrix4x2
 		}
 		public static int UniformType_ComponentCount(UniformType typ)
 		{
@@ -104,13 +106,13 @@ namespace modProject
 			{UniformType.Int4, (glUniform, intCount, intDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<int>(intDat)); } },
 			{UniformType.Float4,  (glUniform, intCount, floatDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<float>(floatDat)); } },
 			{UniformType.Double4, (glUniform, intCount, doubleDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<double>(doubleDat)); } },
-			{UniformType.Matrix2, (glUniform, intCount, matxDat) => {Matrix2 matx = (Matrix2)matxDat[0]; GL.UniformMatrix2(glUniform, false, ref matx); } },
+			{UniformType.Matrix2x2, (glUniform, intCount, matxDat) => {Matrix2 matx = (Matrix2)matxDat[0]; GL.UniformMatrix2(glUniform, false, ref matx); } },
 			{UniformType.Matrix2x3, (glUniform, intCount, matxDat) => {Matrix2x3 matx = (Matrix2x3)matxDat[0]; GL.UniformMatrix2x3(glUniform, false, ref matx); }},
 			{UniformType.Matrix2x4, (glUniform, intCount, matxDat) => {Matrix2x4 matx = (Matrix2x4)matxDat[0]; GL.UniformMatrix2x4(glUniform, false, ref matx); }},
-			{UniformType.Matrix3, (glUniform, intCount, matxDat) => {Matrix3 matx = (Matrix3)matxDat[0]; GL.UniformMatrix3(glUniform, false, ref matx); }},
+			{UniformType.Matrix3x3, (glUniform, intCount, matxDat) => {Matrix3 matx = (Matrix3)matxDat[0]; GL.UniformMatrix3(glUniform, false, ref matx); }},
 			{UniformType.Matrix3x2, (glUniform, intCount, matxDat) => {Matrix3x2 matx = (Matrix3x2)matxDat[0]; GL.UniformMatrix3x2(glUniform, false, ref matx); }},
 			{UniformType.Matrix3x4, (glUniform, intCount, matxDat) => {Matrix3x4 matx = (Matrix3x4)matxDat[0]; GL.UniformMatrix3x4(glUniform, false, ref matx); }},
-			{UniformType.Matrix4, (glUniform, intCount, matxDat) => {Matrix4 matx = (Matrix4)matxDat[0]; GL.UniformMatrix4(glUniform, false, ref matx); }},
+			{UniformType.Matrix4x4, (glUniform, intCount, matxDat) => {Matrix4 matx = (Matrix4)matxDat[0]; GL.UniformMatrix4(glUniform, false, ref matx); }},
 			{UniformType.Matrix4x3, (glUniform, intCount, matxDat) => {Matrix4x3 matx = (Matrix4x3)matxDat[0]; GL.UniformMatrix4x3(glUniform, false, ref matx); }},
 			{UniformType.Matrix4x2, (glUniform, intCount, matxDat) => {Matrix4x2 matx = (Matrix4x2)matxDat[0]; GL.UniformMatrix4x2(glUniform, false, ref matx); }}
 		};
@@ -128,13 +130,13 @@ namespace modProject
 			{UniformType.Int4, new int[]{0, 0, 0, 0} },
 			{UniformType.Float4,  new float[]{0f, 0f, 0f, 0f} },
 			{UniformType.Double4, new double[]{0.0, 0.0, 0.0, 0.0} },
-			{UniformType.Matrix2, new Matrix2(1, 0, 0, 1) },
+			{UniformType.Matrix2x2, new Matrix2(1, 0, 0, 1) },
 			{UniformType.Matrix2x3, new Matrix2x3(1, 0, 0, 1, 0, 0) },
 			{UniformType.Matrix2x4, new Matrix2x4(1, 0, 0, 1, 0, 0, 0, 0) },
-			{UniformType.Matrix3, new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1) },
+			{UniformType.Matrix3x3, new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1) },
 			{UniformType.Matrix3x2, new Matrix3x2(1, 0, 0, 0, 1, 0) },
 			{UniformType.Matrix3x4, new Matrix3x4(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0) },
-			{UniformType.Matrix4, new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) },
+			{UniformType.Matrix4x4, new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) },
 			{UniformType.Matrix4x3, new Matrix4x3(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0) },
 			{UniformType.Matrix4x2, new Matrix4x2(1, 0, 0 ,0, 0, 1, 0, 0)}
 		};
@@ -152,13 +154,13 @@ namespace modProject
 			{UniformType.Int4, typeof(int) },
 			{UniformType.Float4, typeof(float) },
 			{UniformType.Double4, typeof(double) },
-			{UniformType.Matrix2, typeof(float) },
+			{UniformType.Matrix2x2, typeof(float) },
 			{UniformType.Matrix2x3, typeof(float) },
 			{UniformType.Matrix2x4, typeof(float) },
-			{UniformType.Matrix3, typeof(float) },
+			{UniformType.Matrix3x3, typeof(float) },
 			{UniformType.Matrix3x2, typeof(float) },
 			{UniformType.Matrix3x4, typeof(float) },
-			{UniformType.Matrix4, typeof(float) },
+			{UniformType.Matrix4x4, typeof(float) },
 			{UniformType.Matrix4x3, typeof(float) },
 			{UniformType.Matrix4x2, typeof(float) }
 		};
@@ -176,7 +178,7 @@ namespace modProject
 			if (intComponentType == -1) { intComponentCount = 1; } else { intComponentCount = UniformType_ComponentCount(enumType); }
 			List<object[]> aryRet = new List<object[]>();
 			if (!str.Contains("(") && !str.Contains(")")) { str = "(" + str + ")"; }
-			foreach (Match regMatch in Regex.Matches(str, @"\((\d+(\.\d+){0,}\s{0,}\,{0,}\s{0,}){1,}\)"))
+			foreach (Match regMatch in Regex.Matches(str, @"\((\-{0,}\d+(\.\d+){0,}\s{0,}\,{0,}\s{0,}){1,}\)"))
 			{
 				string[] aryStr = regMatch.Value.Split(',');
 				List<object> elem = new List<object>();
@@ -206,6 +208,21 @@ namespace modProject
 			}
 			return aryRet;
 		}
+		public static string ArrayToString(List<object[]> ary)
+		{
+			string strRet = "";
+			for (int itr = 0; itr < ary.Count; itr++)
+			{
+				if (ary.Count > 1) strRet += "(";
+				for (int itrComp = 0; itrComp < ary[itr].Length; itrComp++)
+				{
+					strRet += ary[itr][itrComp].ToString();
+					if (itrComp < ary[itr].Length - 1) strRet += ", ";
+				}
+				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
+			}
+			return strRet;
+		}
 		public UniformType Type = UniformType.Int;
 		public List<object[]> Data = new List<object[]>();
 		public clsUniformSet() { }
@@ -230,9 +247,43 @@ namespace modProject
 			} 
 		}
 	}
+	public class clsEventScript
+	{
+		public enum EventType
+		{
+			OnRenderInit = 0,
+			OnRender = 1,
+			OnResize = 2,
+			OnPointerStart = 3,
+			OnPointerMove = 4,
+			OnPointerEnd = 5
+		}
+		public EventType Type { get; set; }
+		public EventHandler Handler { get; set; }
+		public string Source { get; set; }
+		public void Compile()
+		{
+
+		}
+		public void Run()
+		{
+
+		}
+	}
 	public class clsShader : clsProjectObject
 	{
-		public ShaderType Type { set; get; } = ShaderType.VertexShader;
+		private ShaderType typeShader;
+		public ShaderType Type 
+		{
+			get => typeShader;
+			set
+			{
+				if (glID >= 0 && GL.IsShader(glID)) GL.DeleteShader(glID);
+				glID = GL.CreateShader(value);
+				typeShader = value;
+				Compile();
+			} 
+		}
 		public string Path { set; get; }
 		public string Source { set; get; }
 		public string[] Lines { get { return Regex.Split(Source+" ","\r\n"); } }
@@ -241,7 +292,6 @@ namespace modProject
 		public clsShader(ShaderType typ) : base(ProjectObjectTypes.Shader)
 		{
 			Type = typ;
-			glID = GL.CreateShader(Type);
 			AddToCollection();
 		}
 		public string[] Inputs { get => parseRefLinks(Source, "in|attribute"); }
@@ -271,6 +321,14 @@ namespace modProject
 			GL.ShaderSource(glID, Source+"\n");
 			GL.CompileShader(glID);
 			CompileInfo = new clsInfoString(GL.GetShaderInfoLog(glID));
+			foreach(clsProjectObject projObj in projectMain.ProjectObjects.FindAll(itm => itm.ProjectObjType == ProjectObjectTypes.Program))
+			{
+				clsProgram progObj = projObj as clsProgram;
+				if(progObj.Shaders.Contains(this))
+				{
+					progObj.Link();
+				}
+			}
 		}
 		public void Delete()
 		{

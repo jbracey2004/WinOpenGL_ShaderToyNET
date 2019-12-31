@@ -23,12 +23,13 @@ namespace WinOpenGL_ShaderToy
 			dialogOpenFile.InitialDirectory = System.IO.Path.GetFullPath(strPathBase);
 			lstShaderType.Items.AddRange(Array.FindAll(Enum.GetNames(typeof(ShaderType)), itm => !itm.EndsWith("Arb")));
 			lstShaderType.Text = Regex.Replace(Shader.Type.ToString(), @"Arb\z", "");
-			Compile();
 			timerAutoCompile = new clsHPTimer(this);
 			timerAutoCompile.Interval = 1000.0;
 			timerAutoCompile.SleepInterval = 500;
 			timerAutoCompile.IntervalEnd += new HPIntervalEventHandler(timerAutoCompile_EndInterval);
 			timerAutoCompile.Start();
+			txtSource.Text = Shader.Source;
+			Compile();
 		}
 		private void FrmShader_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -54,7 +55,7 @@ namespace WinOpenGL_ShaderToy
 				if(Shader != null)
 				{
 					Shader.Source = txtSource.Text;
-					Shader.SaveSourceToFile(dialogOpenFile.FileName);
+					Shader.SaveSourceToFile(dialogSaveFile.FileName);
 				}
 			}
 		}
@@ -71,7 +72,7 @@ namespace WinOpenGL_ShaderToy
 				}
 			}
 		}
-		private void LstShaderType_TextChanged(object sender, EventArgs e)
+		private void lstShaderType_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (Shader != null)
 			{
@@ -136,6 +137,7 @@ namespace WinOpenGL_ShaderToy
 					if (itm.Level == "WARNING" && !chkCompileWarnings.Checked) return false;
 					return true;
 				});
+				dataCompileStatus.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 			}
 		}
 		private void ChkCompileErrors_CheckedChanged(object sender, EventArgs e)

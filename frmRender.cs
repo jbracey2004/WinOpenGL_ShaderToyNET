@@ -61,6 +61,7 @@ namespace WinOpenGL_ShaderToy
 			glMain = new GLControl();
 			glMain.Parent = panelMain.Content;
 			glMain.Dock = DockStyle.Fill;
+			glMain.HandleCreated += glMain_HandleCreated;
 			glMain.MakeCurrent();
 			UpdateGeometryRouting();
 		}
@@ -75,6 +76,11 @@ namespace WinOpenGL_ShaderToy
 			tsRenderTimer.StartInterval();
 			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median*1000.0);
 			lblRenderFreq.Text = string.Format("{0,15:##,##0.00000 Hz}", tsRender.Median_Rate);
+		}
+		private void glMain_HandleCreated(object sender, EventArgs e)
+		{
+			glMain.MakeCurrent();
+			UpdateGeometryRouting();
 		}
 		private void glMain_Render()
 		{

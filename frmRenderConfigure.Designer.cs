@@ -39,16 +39,18 @@ namespace WinOpenGL_ShaderToy
 			this.columnVertDesc = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.splitter1 = new System.Windows.Forms.Splitter();
 			this.datagridUniformsRouting = new System.Windows.Forms.DataGridView();
+			this.columnProgramUniform = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.columnVarName = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.splitter2 = new System.Windows.Forms.Splitter();
 			this.datagridUniformsValues = new System.Windows.Forms.DataGridView();
 			this.columnVariableName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.splitter3 = new System.Windows.Forms.Splitter();
-			this.columnProgramUniform = new System.Windows.Forms.DataGridViewComboBoxColumn();
-			this.columnVarName = new System.Windows.Forms.DataGridViewComboBoxColumn();
+			this.datagridEvents = new System.Windows.Forms.DataGridView();
 			this.panelSelectData.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.datagridGeometryRouting)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformsRouting)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformsValues)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.datagridEvents)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// panelSelectData
@@ -61,7 +63,7 @@ namespace WinOpenGL_ShaderToy
 			this.panelSelectData.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelSelectData.Location = new System.Drawing.Point(0, 0);
 			this.panelSelectData.Name = "panelSelectData";
-			this.panelSelectData.Size = new System.Drawing.Size(576, 30);
+			this.panelSelectData.Size = new System.Drawing.Size(643, 30);
 			this.panelSelectData.TabIndex = 0;
 			// 
 			// lblGeometry
@@ -118,7 +120,7 @@ namespace WinOpenGL_ShaderToy
 			this.datagridGeometryRouting.Dock = System.Windows.Forms.DockStyle.Top;
 			this.datagridGeometryRouting.Location = new System.Drawing.Point(0, 30);
 			this.datagridGeometryRouting.Name = "datagridGeometryRouting";
-			this.datagridGeometryRouting.Size = new System.Drawing.Size(576, 115);
+			this.datagridGeometryRouting.Size = new System.Drawing.Size(643, 91);
 			this.datagridGeometryRouting.TabIndex = 1;
 			this.datagridGeometryRouting.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridGeometryRouting_CellValueChanged);
 			this.datagridGeometryRouting.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.datagridGeometryRouting_DataError);
@@ -139,12 +141,12 @@ namespace WinOpenGL_ShaderToy
 			// splitter1
 			// 
 			this.splitter1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.splitter1.Location = new System.Drawing.Point(0, 145);
+			this.splitter1.Location = new System.Drawing.Point(0, 121);
 			this.splitter1.Margin = new System.Windows.Forms.Padding(0);
 			this.splitter1.MinExtra = 0;
 			this.splitter1.MinSize = 0;
 			this.splitter1.Name = "splitter1";
-			this.splitter1.Size = new System.Drawing.Size(576, 6);
+			this.splitter1.Size = new System.Drawing.Size(643, 6);
 			this.splitter1.TabIndex = 2;
 			this.splitter1.TabStop = false;
 			// 
@@ -156,59 +158,15 @@ namespace WinOpenGL_ShaderToy
             this.columnProgramUniform,
             this.columnVarName});
 			this.datagridUniformsRouting.Dock = System.Windows.Forms.DockStyle.Top;
-			this.datagridUniformsRouting.Location = new System.Drawing.Point(0, 298);
+			this.datagridUniformsRouting.Location = new System.Drawing.Point(0, 274);
 			this.datagridUniformsRouting.Name = "datagridUniformsRouting";
-			this.datagridUniformsRouting.Size = new System.Drawing.Size(576, 142);
+			this.datagridUniformsRouting.Size = new System.Drawing.Size(643, 128);
 			this.datagridUniformsRouting.TabIndex = 3;
 			this.datagridUniformsRouting.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsRouting_CellValueChanged);
 			this.datagridUniformsRouting.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.datagridUniformsRouting_DataError);
 			this.datagridUniformsRouting.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.datagridUniformsRouting_EditingControlShowing);
 			this.datagridUniformsRouting.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsRouting_UserAddedRow);
 			this.datagridUniformsRouting.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.datagridUniformsRouting_UserDeletingRow);
-			// 
-			// splitter2
-			// 
-			this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
-			this.splitter2.Location = new System.Drawing.Point(0, 292);
-			this.splitter2.Margin = new System.Windows.Forms.Padding(0);
-			this.splitter2.MinExtra = 0;
-			this.splitter2.MinSize = 0;
-			this.splitter2.Name = "splitter2";
-			this.splitter2.Size = new System.Drawing.Size(576, 6);
-			this.splitter2.TabIndex = 4;
-			this.splitter2.TabStop = false;
-			// 
-			// datagridUniformsValues
-			// 
-			this.datagridUniformsValues.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.datagridUniformsValues.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.datagridUniformsValues.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.columnVariableName});
-			this.datagridUniformsValues.Dock = System.Windows.Forms.DockStyle.Top;
-			this.datagridUniformsValues.Location = new System.Drawing.Point(0, 151);
-			this.datagridUniformsValues.Name = "datagridUniformsValues";
-			this.datagridUniformsValues.Size = new System.Drawing.Size(576, 141);
-			this.datagridUniformsValues.TabIndex = 5;
-			this.datagridUniformsValues.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsValues_CellValueChanged);
-			this.datagridUniformsValues.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserAddedRow);
-			this.datagridUniformsValues.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserDeletedRow);
-			// 
-			// columnVariableName
-			// 
-			this.columnVariableName.HeaderText = "Variable Name";
-			this.columnVariableName.Name = "columnVariableName";
-			// 
-			// splitter3
-			// 
-			this.splitter3.Dock = System.Windows.Forms.DockStyle.Top;
-			this.splitter3.Location = new System.Drawing.Point(0, 440);
-			this.splitter3.Margin = new System.Windows.Forms.Padding(0);
-			this.splitter3.MinExtra = 0;
-			this.splitter3.MinSize = 0;
-			this.splitter3.Name = "splitter3";
-			this.splitter3.Size = new System.Drawing.Size(576, 6);
-			this.splitter3.TabIndex = 6;
-			this.splitter3.TabStop = false;
 			// 
 			// columnProgramUniform
 			// 
@@ -224,12 +182,66 @@ namespace WinOpenGL_ShaderToy
 			this.columnVarName.Resizable = System.Windows.Forms.DataGridViewTriState.True;
 			this.columnVarName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
 			// 
+			// splitter2
+			// 
+			this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
+			this.splitter2.Location = new System.Drawing.Point(0, 268);
+			this.splitter2.Margin = new System.Windows.Forms.Padding(0);
+			this.splitter2.MinExtra = 0;
+			this.splitter2.MinSize = 0;
+			this.splitter2.Name = "splitter2";
+			this.splitter2.Size = new System.Drawing.Size(643, 6);
+			this.splitter2.TabIndex = 4;
+			this.splitter2.TabStop = false;
+			// 
+			// datagridUniformsValues
+			// 
+			this.datagridUniformsValues.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+			this.datagridUniformsValues.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.datagridUniformsValues.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.columnVariableName});
+			this.datagridUniformsValues.Dock = System.Windows.Forms.DockStyle.Top;
+			this.datagridUniformsValues.Location = new System.Drawing.Point(0, 127);
+			this.datagridUniformsValues.Name = "datagridUniformsValues";
+			this.datagridUniformsValues.Size = new System.Drawing.Size(643, 141);
+			this.datagridUniformsValues.TabIndex = 5;
+			this.datagridUniformsValues.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsValues_CellValueChanged);
+			this.datagridUniformsValues.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserAddedRow);
+			this.datagridUniformsValues.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserDeletedRow);
+			// 
+			// columnVariableName
+			// 
+			this.columnVariableName.HeaderText = "Variable Name";
+			this.columnVariableName.Name = "columnVariableName";
+			// 
+			// splitter3
+			// 
+			this.splitter3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.splitter3.Location = new System.Drawing.Point(0, 402);
+			this.splitter3.Margin = new System.Windows.Forms.Padding(0);
+			this.splitter3.MinExtra = 0;
+			this.splitter3.MinSize = 0;
+			this.splitter3.Name = "splitter3";
+			this.splitter3.Size = new System.Drawing.Size(643, 6);
+			this.splitter3.TabIndex = 6;
+			this.splitter3.TabStop = false;
+			// 
+			// datagridEvents
+			// 
+			this.datagridEvents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.datagridEvents.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.datagridEvents.Location = new System.Drawing.Point(0, 408);
+			this.datagridEvents.Name = "datagridEvents";
+			this.datagridEvents.Size = new System.Drawing.Size(643, 166);
+			this.datagridEvents.TabIndex = 7;
+			// 
 			// frmRenderConfigure
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ClientSize = new System.Drawing.Size(576, 448);
+			this.ClientSize = new System.Drawing.Size(643, 574);
+			this.Controls.Add(this.datagridEvents);
 			this.Controls.Add(this.splitter3);
 			this.Controls.Add(this.datagridUniformsRouting);
 			this.Controls.Add(this.splitter2);
@@ -245,6 +257,7 @@ namespace WinOpenGL_ShaderToy
 			((System.ComponentModel.ISupportInitialize)(this.datagridGeometryRouting)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformsRouting)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.datagridUniformsValues)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.datagridEvents)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -268,5 +281,6 @@ namespace WinOpenGL_ShaderToy
 		private System.Windows.Forms.Splitter splitter3;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnProgramUniform;
 		private System.Windows.Forms.DataGridViewComboBoxColumn columnVarName;
+		private System.Windows.Forms.DataGridView datagridEvents;
 	}
 }

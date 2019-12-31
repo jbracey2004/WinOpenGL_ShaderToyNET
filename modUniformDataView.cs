@@ -1,4 +1,5 @@
 ﻿using System;
+using modProject;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace modUniformDataView
 		{
 			Value = "0";
 		}
-		public UniformType DataUniformType => this.DataUniformType;
+		public UniformType DataUniformType = UniformType.Int;
 		public List<object[]> DataObject
 		{
 			get
@@ -44,7 +45,7 @@ namespace modUniformDataView
 			}
 			set
 			{
-				this.Value = ArrayToString(value);
+				this.Value = clsUniformSet.ArrayToString(value);
 			}
 		}
 		public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
@@ -52,7 +53,7 @@ namespace modUniformDataView
 			base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
 			ctl.EditingPanel = ctl.Parent;
-			ctl.Parent = DataGridView.FindForm();
+			ctl.Parent = ctl.ParentForm;
 			ctl.BringToFront();
 			if (this.Value == null)
 			{
@@ -72,6 +73,7 @@ namespace modUniformDataView
 			if (ctl != null)
 			{
 				Value = ctl.Text;
+				DataUniformType = ctl.DataUniformType;
 				ctl.Parent = ctl.EditingPanel;
 			}
 			base.DetachEditingControl();
@@ -80,11 +82,9 @@ namespace modUniformDataView
 		{
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
 			if (ctl == null) return;
-			Rectangle ctlSize = new Rectangle(new Point(cellBounds.Location.X, cellBounds.Location.Y), new Size(cellBounds.Width, cellBounds.Height));
+			Rectangle ctlSize = new Rectangle(new Point(cellBounds.Location.X, cellBounds.Location.Y), new Size(Math.Max(cellBounds.Width, 400), cellBounds.Height));
 			base.PositionEditingControl(setLocation, setSize, ctlSize, ctlSize, cellStyle, singleVerticalBorderAdded, singleHorizontalBorderAdded, isFirstDisplayedColumn, isFirstDisplayedRow);
-			Point pos = cellBounds.Location;
-			pos.Offset(DataGridView.Location);
-			ctl.Location = pos;
+			ctl.Location = ctl.Parent.PointToClient(DataGridView.PointToScreen(cellBounds.Location));
 			ctl.UpdateAutoHeight();
 		}
 		public override Type EditType
@@ -117,10 +117,6 @@ namespace modUniformDataView
 			//if (formattedValue.GetType().IsArray) { strRet = ArrayToString(formattedValue); } else { strRet = formattedValue.ToString(); }
 			//return strRet
 			return formattedValue;
-		}
-		protected override object GetFormattedValue(object value, int rowIndex, ref DataGridViewCellStyle cellStyle, TypeConverter valueTypeConverter, TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context)
-		{
-			return base.GetFormattedValue(value, rowIndex, ref cellStyle, valueTypeConverter, formattedValueTypeConverter, context);
 		}
 	}
 	public class clsUniformDataEditor : controlUniformData, IDataGridViewEditingControl
@@ -178,6 +174,7 @@ namespace modUniformDataView
 			base.OnLeave(e);
 			if(EditingControlDataGridView.IsCurrentCellInEditMode)
 			{
+				base.Validate();
 				EditingControlDataGridView.EndEdit();
 			}
 		}

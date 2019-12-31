@@ -4,13 +4,12 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.Collections.Generic;
 using modProject;
 using static WinOpenGL_ShaderToy.ProjectDef;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 using static WinOpenGL_ShaderToy.controlUniformData;
 using static modProject.clsUniformSet;
 using static clsHPTimer;
 using static modProject.clsGeometry;
 using modUniformDataView;
+using modEventScriptView;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -20,10 +19,6 @@ namespace WinOpenGL_ShaderToy
 		public static frmRenderConfigure FormWithSubjectForm(frmRender subject) => AllForms.Find(itm => itm.RenderSubjectForm == subject);
 		public static frmRenderConfigure FormWithSubjectObject(clsRender subject) => AllForms.Find(itm => itm.RenderSubject == subject);
 		private clsHPTimer timerUpdateLists;
-		public class clsScriptContext
-		{
-			public Dictionary<string, object> Uniforms = new Dictionary<string, object>();
-		}
 		public frmRenderConfigure()
 		{
 			InitializeComponent();
@@ -31,11 +26,14 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void frmRenderConfigure_Load(object sender, EventArgs e)
 		{
-			clsScriptContext obj = new clsScriptContext();
 			DataGridViewColumn column = new clsUniformDataColumn();
 			column.Name = "columnVariableValue";
 			column.HeaderText = "Variable Value";
 			datagridUniformsValues.Columns.Add(column);
+			column = new clsEventScriptColumn();
+			column.Name = "columnEvent";
+			column.HeaderText = "Event Scripts";
+			datagridEvents.Columns.Add(column);
 			UpdateLists();
 			UpdateTables();
 			timerUpdateLists = new clsHPTimer(this);
@@ -177,6 +175,7 @@ namespace WinOpenGL_ShaderToy
 			if (bolUpdateLock) return;
 			clsProgram itm = lstProgram.SelectedItem as clsProgram;
 			RenderSubject.Program = itm;
+			if(RenderSubject.Program != null) RenderSubject.Program.Link();
 			UpdateAttributeList();
 			UpdateUniformsList();
 			RenderSubjectForm.UpdateGeometryRouting();
