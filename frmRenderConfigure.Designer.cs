@@ -228,6 +228,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// datagridEvents
 			// 
+			this.datagridEvents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.datagridEvents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.datagridEvents.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.datagridEvents.Location = new System.Drawing.Point(0, 408);

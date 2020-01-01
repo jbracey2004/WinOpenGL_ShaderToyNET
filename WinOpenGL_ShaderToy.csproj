@@ -163,6 +163,7 @@
     <Compile Include="modProject.cs" />
     <Compile Include="modEventScriptDataView.cs" />
     <Compile Include="modUniformDataView.cs" />
+    <Compile Include="modWndProcInterop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="controlEventScript.resx">

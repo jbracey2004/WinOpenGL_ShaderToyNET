@@ -52,9 +52,6 @@ namespace modUniformDataView
 		{
 			base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
-			ctl.EditingPanel = ctl.Parent;
-			ctl.Parent = ctl.ParentForm;
-			ctl.BringToFront();
 			if (this.Value == null)
 			{
 				ctl.Text = this.DefaultNewRowValue as string;
@@ -75,6 +72,7 @@ namespace modUniformDataView
 				Value = ctl.Text;
 				DataUniformType = ctl.DataUniformType;
 				ctl.Parent = ctl.EditingPanel;
+				ctl.EditingPanel = null;
 			}
 			base.DetachEditingControl();
 		}
@@ -82,10 +80,14 @@ namespace modUniformDataView
 		{
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
 			if (ctl == null) return;
+			if (ctl.Parent != DataGridView.EditingPanel) return;
+			ctl.Parent = ctl.ParentForm;
 			Rectangle ctlSize = new Rectangle(new Point(cellBounds.Location.X, cellBounds.Location.Y), new Size(Math.Max(cellBounds.Width, 400), cellBounds.Height));
 			base.PositionEditingControl(setLocation, setSize, ctlSize, ctlSize, cellStyle, singleVerticalBorderAdded, singleHorizontalBorderAdded, isFirstDisplayedColumn, isFirstDisplayedRow);
 			ctl.Location = ctl.Parent.PointToClient(DataGridView.PointToScreen(cellBounds.Location));
 			ctl.UpdateAutoHeight();
+			ctl.EditingPanel = DataGridView.EditingPanel;
+			ctl.BringToFront();
 		}
 		public override Type EditType
 		{
@@ -168,6 +170,11 @@ namespace modUniformDataView
 		public void PrepareEditingControlForEdit(bool selectAll)
 		{
 			
+		}
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			if (EditingPanel != null) EditingPanel.SetBounds(Left, Top, Width, Height);
+			base.OnSizeChanged(e);
 		}
 		protected override void OnLeave(EventArgs e)
 		{

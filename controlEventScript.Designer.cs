@@ -43,7 +43,7 @@
 			this.panelEventDescription.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelEventDescription.Location = new System.Drawing.Point(0, 0);
 			this.panelEventDescription.Name = "panelEventDescription";
-			this.panelEventDescription.Size = new System.Drawing.Size(579, 27);
+			this.panelEventDescription.Size = new System.Drawing.Size(575, 27);
 			this.panelEventDescription.TabIndex = 0;
 			// 
 			// lstEventType
@@ -84,7 +84,7 @@
 			this.txtSource.Paddings = new System.Windows.Forms.Padding(0);
 			this.txtSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
 			this.txtSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtSource.ServiceColors")));
-			this.txtSource.Size = new System.Drawing.Size(579, 137);
+			this.txtSource.Size = new System.Drawing.Size(575, 133);
 			this.txtSource.TabIndex = 1;
 			this.txtSource.Zoom = 100;
 			// 
@@ -94,7 +94,9 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.txtSource);
 			this.Controls.Add(this.panelEventDescription);
+			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "controlEventScript";
+			this.Padding = new System.Windows.Forms.Padding(0, 0, 4, 4);
 			this.Size = new System.Drawing.Size(579, 164);
 			this.Load += new System.EventHandler(this.controlEventScript_Load);
 			this.panelEventDescription.ResumeLayout(false);
