@@ -64,7 +64,7 @@ namespace WinOpenGL_ShaderToy
 			for (int itr = 0; itr < DataObject.Count; itr++)
 			{
 				List<object> ary = new List<object>(DataObject[itr]);
-				ResizeList(ref ary, intComponentCount, itmEmpty => 0);
+				ResizeList(ref ary, intComponentCount, itmEmpty => UniformType_InitialValues[Typ][itmEmpty]);
 				DataObject[itr] = ary.ToArray();
 			}
 			typeUniformData = Typ;

@@ -23,6 +23,7 @@ namespace WinOpenGL_ShaderToy
 		private infoFramePerformance tsRender;
 		private infoFramePerformance tsRenderTimer;
 		private Stopwatch timeRun;
+		private double tsPrevious;
 		private void FrmGLMain_Load(object sender, EventArgs e)
 		{
 			InitDialog();
@@ -32,6 +33,7 @@ namespace WinOpenGL_ShaderToy
 			timerRender.IntervalEnd += new HPIntervalEventHandler(TimerRender_Tick);
 			txtInterval.Text = ((Render!=null)?(Render.RenderInterval):(1000.0/60.0)).ToString("#.########");
 			timerRender.Start();
+			if(Render != null) { Render.RaiseLoadEvent(); }
 		}
 		private void FrmGLMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -62,11 +64,16 @@ namespace WinOpenGL_ShaderToy
 			glMain.Parent = panelMain.Content;
 			glMain.Dock = DockStyle.Fill;
 			glMain.HandleCreated += glMain_HandleCreated;
+			glMain.SizeChanged += glMain_Resized;
 			glMain.MakeCurrent();
 			UpdateGeometryRouting();
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
+			double tsCurrent = timeRun.Elapsed.TotalSeconds;
+			double tsDelta = tsCurrent - tsPrevious;
+			Render.RaiseRenderEvent(tsDelta, tsCurrent);
+			tsPrevious = tsCurrent;
 			glMain_Render();
 			tsRenderTimer.StopInterval();
 			tsRenderTimer.SampleInterval();
@@ -76,6 +83,10 @@ namespace WinOpenGL_ShaderToy
 			tsRenderTimer.StartInterval();
 			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median*1000.0);
 			lblRenderFreq.Text = string.Format("{0,15:##,##0.00000 Hz}", tsRender.Median_Rate);
+		}
+		private void glMain_Resized(object sender, EventArgs e)
+		{
+			Render.RaiseResizeEvent(glMain.Width, glMain.Height);
 		}
 		private void glMain_HandleCreated(object sender, EventArgs e)
 		{

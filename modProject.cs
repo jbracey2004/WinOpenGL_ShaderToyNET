@@ -20,6 +20,11 @@ using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
 using System.Reflection;
 using static modProject.clsGeometry;
+using System.Windows.Forms;
+using static modProject.clsUniformSet;
+using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using WinOpenGL_ShaderToy;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -68,6 +73,35 @@ namespace modProject
 		public string Path { set; get; }
 		public List<clsProjectObject> ProjectObjects { set; get; } = new List<clsProjectObject>() { };
 	}
+	public class clsKeyCollection<TKey, TValue>
+	{
+		public IList<KeyValuePair<TKey, TValue>> Collection { get; set; }
+		public clsKeyCollection(IList<KeyValuePair<TKey, TValue>> collection) 
+		{
+			Collection = collection;
+		}
+		public TValue this[int index]
+		{
+			get => Collection[index].Value;
+			set
+			{
+				KeyValuePair<TKey, TValue> keypairOld = Collection[index];
+				KeyValuePair<TKey, TValue> keypairNew = new KeyValuePair<TKey, TValue>(keypairOld.Key, value);
+				Collection[index] = keypairNew;
+			}
+		}
+		public TValue this[TKey key]
+		{
+			get => Collection.First(itm => itm.Key.Equals(key)).Value;
+			set
+			{
+				KeyValuePair<TKey, TValue> keypairOld = Collection.First(itm => itm.Key.Equals(key));
+				KeyValuePair<TKey, TValue> keypairNew = new KeyValuePair<TKey, TValue>(keypairOld.Key, value);
+				int index = Collection.IndexOf(keypairOld);
+				Collection[index] = keypairNew;
+			}
+		}
+	}
 	public class clsUniformSet
 	{
 		public enum UniformType
@@ -76,9 +110,12 @@ namespace modProject
 			Int2, Float2, Double2,
 			Int3, Float3, Double3,
 			Int4, Float4, Double4,
-			Matrix2x2, Matrix2x3, Matrix2x4,
-			Matrix3x3, Matrix3x2, Matrix3x4,
-			Matrix4x4, Matrix4x3, Matrix4x2
+			Float2x2, Float2x3, Float2x4,
+			Float3x3, Float3x2, Float3x4,
+			Float4x4, Float4x3, Float4x2,
+			Double2x2, Double2x3, Double2x4,
+			Double3x3, Double3x2, Double3x4,
+			Double4x4, Double4x3, Double4x2
 		}
 		public static int UniformType_ComponentCount(UniformType typ)
 		{
@@ -106,39 +143,57 @@ namespace modProject
 			{UniformType.Int4, (glUniform, intCount, intDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<int>(intDat)); } },
 			{UniformType.Float4,  (glUniform, intCount, floatDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<float>(floatDat)); } },
 			{UniformType.Double4, (glUniform, intCount, doubleDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<double>(doubleDat)); } },
-			{UniformType.Matrix2x2, (glUniform, intCount, matxDat) => {Matrix2 matx = (Matrix2)matxDat[0]; GL.UniformMatrix2(glUniform, false, ref matx); } },
-			{UniformType.Matrix2x3, (glUniform, intCount, matxDat) => {Matrix2x3 matx = (Matrix2x3)matxDat[0]; GL.UniformMatrix2x3(glUniform, false, ref matx); }},
-			{UniformType.Matrix2x4, (glUniform, intCount, matxDat) => {Matrix2x4 matx = (Matrix2x4)matxDat[0]; GL.UniformMatrix2x4(glUniform, false, ref matx); }},
-			{UniformType.Matrix3x3, (glUniform, intCount, matxDat) => {Matrix3 matx = (Matrix3)matxDat[0]; GL.UniformMatrix3(glUniform, false, ref matx); }},
-			{UniformType.Matrix3x2, (glUniform, intCount, matxDat) => {Matrix3x2 matx = (Matrix3x2)matxDat[0]; GL.UniformMatrix3x2(glUniform, false, ref matx); }},
-			{UniformType.Matrix3x4, (glUniform, intCount, matxDat) => {Matrix3x4 matx = (Matrix3x4)matxDat[0]; GL.UniformMatrix3x4(glUniform, false, ref matx); }},
-			{UniformType.Matrix4x4, (glUniform, intCount, matxDat) => {Matrix4 matx = (Matrix4)matxDat[0]; GL.UniformMatrix4(glUniform, false, ref matx); }},
-			{UniformType.Matrix4x3, (glUniform, intCount, matxDat) => {Matrix4x3 matx = (Matrix4x3)matxDat[0]; GL.UniformMatrix4x3(glUniform, false, ref matx); }},
-			{UniformType.Matrix4x2, (glUniform, intCount, matxDat) => {Matrix4x2 matx = (Matrix4x2)matxDat[0]; GL.UniformMatrix4x2(glUniform, false, ref matx); }}
+			{UniformType.Float2x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix2(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); } },
+			{UniformType.Float2x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x3(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float2x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x4(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float3x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix3(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float3x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix3x2(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float3x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix3x4(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float4x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix4(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float4x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix4x3(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Float4x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix4x2(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
+			{UniformType.Double2x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix2(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat)  ); } },
+			{UniformType.Double2x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x3(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double2x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x4(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double3x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix3(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double3x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix3x2(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double3x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix3x4(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double4x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix4(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double4x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix4x3(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }},
+			{UniformType.Double4x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix4x2(glUniform, intCount, false, ObjectArrayAsType<double>(matxDat) ); }}
 		};
-		public static Dictionary<UniformType, object> UniformType_InitialValues = new Dictionary<UniformType, object>()
+		public static Dictionary<UniformType, object[]> UniformType_InitialValues = new Dictionary<UniformType, object[]>()
 		{
-			{UniformType.Int, (int)0 },
-			{UniformType.Float,  (float)0 },
-			{UniformType.Double, (double)0 },
-			{UniformType.Int2, new int[]{0, 0} },
-			{UniformType.Float2,  new float[]{0f, 0f} },
-			{UniformType.Double2, new double[]{0.0, 0.0} },
-			{UniformType.Int3, new int[]{0, 0, 0} },
-			{UniformType.Float3,  new float[]{0f, 0f, 0f} },
-			{UniformType.Double3, new double[]{0.0, 0.0, 0.0} },
-			{UniformType.Int4, new int[]{0, 0, 0, 0} },
-			{UniformType.Float4,  new float[]{0f, 0f, 0f, 0f} },
-			{UniformType.Double4, new double[]{0.0, 0.0, 0.0, 0.0} },
-			{UniformType.Matrix2x2, new Matrix2(1, 0, 0, 1) },
-			{UniformType.Matrix2x3, new Matrix2x3(1, 0, 0, 1, 0, 0) },
-			{UniformType.Matrix2x4, new Matrix2x4(1, 0, 0, 1, 0, 0, 0, 0) },
-			{UniformType.Matrix3x3, new Matrix3(1, 0, 0, 0, 1, 0, 0, 0, 1) },
-			{UniformType.Matrix3x2, new Matrix3x2(1, 0, 0, 0, 1, 0) },
-			{UniformType.Matrix3x4, new Matrix3x4(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0) },
-			{UniformType.Matrix4x4, new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) },
-			{UniformType.Matrix4x3, new Matrix4x3(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0) },
-			{UniformType.Matrix4x2, new Matrix4x2(1, 0, 0 ,0, 0, 1, 0, 0)}
+			{UniformType.Int, new object[] { (int)0 } },
+			{UniformType.Float,  new object[] { (float)0 } },
+			{UniformType.Double, new object[] { (double)0 } },
+			{UniformType.Int2, new object[] {(int)0, (int)0} },
+			{UniformType.Float2,  new object[] {(float)0, (float)0} },
+			{UniformType.Double2, new object[] {(double)0, (double)0} },
+			{UniformType.Int3, new object[] {(int)0, (int)0, (int)0} },
+			{UniformType.Float3,  new object[] {(float)0, (float)0, (float)0} },
+			{UniformType.Double3, new object[] {(double)0, (double)0, (double)0} },
+			{UniformType.Int4, new object[] {(int)0, (int)0, (int)0, (int)0} },
+			{UniformType.Float4,  new object[] {(float)0, (float)0, (float)0, (float)0} },
+			{UniformType.Double4, new object[] {(double)0, (double)0, (double)0, (double)0} },
+			{UniformType.Float2x2, new object[] {(float)1, (float)0, (float)0, (float)1} },
+			{UniformType.Float2x3, new object[] {(float)1, (float)0, (float)0, (float)1, (float)0, (float)0} },
+			{UniformType.Float2x4, new object[] {(float)1, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)0} },
+			{UniformType.Float3x3, new object[] {(float)1, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)1} },
+			{UniformType.Float3x2, new object[] {(float)1, (float)0, (float)0, (float)0, (float)1, (float)0} },
+			{UniformType.Float3x4, new object[] {(float)1, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0} },
+			{UniformType.Float4x4, new object[] {(float)1, (float)0, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)0, (float)1} },
+			{UniformType.Float4x3, new object[] {(float)1, (float)0, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0, (float)0, (float)0, (float)1, (float)0} },
+			{UniformType.Float4x2, new object[] {(float)1, (float)0, (float)0, (float)0, (float)0, (float)1, (float)0, (float)0} },
+			{UniformType.Double2x2, new object[] {(double)1, (double)0, (double)0, (double)1} },
+			{UniformType.Double2x3, new object[] {(double)1, (double)0, (double)0, (double)1, (double)0, (double)0} },
+			{UniformType.Double2x4, new object[] {(double)1, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)0} },
+			{UniformType.Double3x3, new object[] {(double)1, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)1} },
+			{UniformType.Double3x2, new object[] {(double)1, (double)0, (double)0, (double)0, (double)1, (double)0} },
+			{UniformType.Double3x4, new object[] {(double)1, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0} },
+			{UniformType.Double4x4, new object[] {(double)1, (double)0, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)0, (double)1} },
+			{UniformType.Double4x3, new object[] {(double)1, (double)0, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0, (double)0, (double)0, (double)1, (double)0} },
+			{UniformType.Double4x2, new object[] {(double)1, (double)0, (double)0, (double)0, (double)0, (double)1, (double)0, (double)0} }
 		};
 		public static Dictionary<UniformType, Type> UniformType_ComponentType = new Dictionary<UniformType, Type>()
 		{
@@ -154,15 +209,24 @@ namespace modProject
 			{UniformType.Int4, typeof(int) },
 			{UniformType.Float4, typeof(float) },
 			{UniformType.Double4, typeof(double) },
-			{UniformType.Matrix2x2, typeof(float) },
-			{UniformType.Matrix2x3, typeof(float) },
-			{UniformType.Matrix2x4, typeof(float) },
-			{UniformType.Matrix3x3, typeof(float) },
-			{UniformType.Matrix3x2, typeof(float) },
-			{UniformType.Matrix3x4, typeof(float) },
-			{UniformType.Matrix4x4, typeof(float) },
-			{UniformType.Matrix4x3, typeof(float) },
-			{UniformType.Matrix4x2, typeof(float) }
+			{UniformType.Float2x2, typeof(float) },
+			{UniformType.Float2x3, typeof(float) },
+			{UniformType.Float2x4, typeof(float) },
+			{UniformType.Float3x3, typeof(float) },
+			{UniformType.Float3x2, typeof(float) },
+			{UniformType.Float3x4, typeof(float) },
+			{UniformType.Float4x4, typeof(float) },
+			{UniformType.Float4x3, typeof(float) },
+			{UniformType.Float4x2, typeof(float) },
+			{UniformType.Double2x2, typeof(double) },
+			{UniformType.Double2x3, typeof(double) },
+			{UniformType.Double2x4, typeof(double) },
+			{UniformType.Double3x3, typeof(double) },
+			{UniformType.Double3x2, typeof(double) },
+			{UniformType.Double3x4, typeof(double) },
+			{UniformType.Double4x4, typeof(double) },
+			{UniformType.Double4x3, typeof(double) },
+			{UniformType.Double4x2, typeof(double) }
 		};
 		public static List<object[]> StringToArray(string str, out int intComponentCount, out int intComponentType)
 		{
@@ -197,13 +261,13 @@ namespace modProject
 			{
 				List<object> elem = new List<object>(aryRet[itr]);
 				ResizeList(ref elem, intComponentCount, itmEmpty => 0);
-				if (intComponentType != -1)
+				/*if (intComponentType != -1)
 				{
 					for (int itrComp = 0; itrComp < elem.Count; itrComp++)
 					{
 						elem[itrComp] = Convert.ChangeType(elem[itrComp], UniformType_ComponentType[enumType]);
 					}
-				}
+				}*/
 				aryRet[itr] = elem.ToArray();
 			}
 			return aryRet;
@@ -222,6 +286,47 @@ namespace modProject
 				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
 			}
 			return strRet;
+		}
+		public static string ArrayToString(List<object[]> ary, UniformType typ)
+		{
+			string strRet = "";
+			Type typObj = UniformType_ComponentType[typ];
+			for (int itr = 0; itr < ary.Count; itr++)
+			{
+				if (ary.Count > 1) strRet += "(";
+				for (int itrComp = 0; itrComp < ary[itr].Length; itrComp++)
+				{
+					strRet += Convert.ChangeType(ary[itr][itrComp], typObj).ToString();
+					if (itrComp < ary[itr].Length - 1) strRet += ", ";
+				}
+				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
+			}
+			return strRet;
+		}
+		public class clsUniformSetCollection
+		{
+			public List<KeyValuePair<string, clsUniformSet>> Collection;
+			public clsUniformSetCollection(List<KeyValuePair<string, clsUniformSet>> collection)
+			{
+				Collection = collection;
+			}
+			public object[][] this[int index]
+			{
+				get => Collection[index].Value.Data.ToArray();
+				set
+				{
+					Collection[index].Value.Data = value.ToList();
+				}
+			}
+			public object[][] this[string key]
+			{
+				get => Collection.First(itm => itm.Key.Equals(key)).Value.Data.ToArray();
+				set
+				{
+					int index = Collection.FindIndex(itm => itm.Key.Equals(key));
+					if(index >=0) Collection[index].Value.Data = value.ToList();
+				}
+			}
 		}
 		public UniformType Type = UniformType.Int;
 		public List<object[]> Data = new List<object[]>();
@@ -246,28 +351,235 @@ namespace modProject
 				return aryRet.ToArray();
 			} 
 		}
+		public override string ToString()
+		{
+			return $"<{Type}> " + clsUniformSet.ArrayToString(Data, Type);
+		}
 	}
 	public class clsEventScript
 	{
 		public enum EventType
 		{
-			OnRenderInit = 0,
+			OnLoad = 0,
 			OnRender = 1,
 			OnResize = 2,
 			OnPointerStart = 3,
 			OnPointerMove = 4,
 			OnPointerEnd = 5
 		}
-		public EventType Type { get; set; }
-		public EventHandler Handler { get; set; }
+		public static ParameterInfo[] EventType_Parameters(EventType typ)
+		{
+			string str = $"Raise{typ.ToString().Replace("On", "")}Event";
+			return typeof(clsRender).GetMethod(str).GetParameters();
+		}
+		public static clsEventScript EventScript_FromString(string str)
+		{
+			clsEventScript ret = new clsEventScript();
+			EventScript_FromString(str, ref ret);
+			return ret;
+		}
+		public static void EventScript_FromString(string str, ref clsEventScript obj)
+		{
+			EventScript_FromString(str, out EventType typ, out string src);
+			obj.Type = typ; obj.Source = src;
+		}
+		public static void EventScript_FromString(string str, out EventType typ, out string src)
+		{
+			typ = EventType.OnLoad;
+			src = "";
+			Match mch;
+			mch = Regex.Match(str, @"\w+\s{0,}");
+			if (mch.Success)
+			{
+				if (Enum.TryParse(mch.Value, out EventType intTyp)) typ = intTyp;
+				str = str.Replace(mch.Value, "").Trim();
+			}
+			mch = Regex.Match(str, @"\((\s{0,}\w+\s+\w+\,{0,}){0,}\s{0,}\)");
+			if (mch.Success)
+			{
+				str = str.Replace(mch.Value, "").Trim();
+			}
+			src = str.Trim('{', '}').Trim();
+		}
+		public static string EventScript_ToString(clsEventScript obj)
+		{
+			return EventScript_ToString(obj.Type, obj.Source);
+		}
+		public static string EventScript_ToString(EventType typ, string src)
+		{
+			ParameterInfo[] parms = EventType_Parameters(typ);
+			string str = "";
+			for (int itr = 0; itr < parms.Length; itr++)
+			{
+				str += parms[itr].ParameterType.Name + " " + parms[itr].Name + ((itr < parms.Length - 1) ? ", " : "");
+			}
+			return $"{typ.ToString()} ( {str} ) {{ {src} }}";
+		}
+		public class clsEventScriptContext
+		{
+			public clsRender RenderSubject { get; set; }
+			public clsUniformSetCollection Uniforms { get; set; }
+			public object[][] Uniform_Get(string name)
+			{
+				object[][] objRet = new object[][] { new object[] { } };
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if (idx >= 0)
+				{
+					objRet = RenderSubject.Uniforms[idx].Value.Data.ToArray();
+				}
+				return objRet;
+			}
+			public object[] Uniform_Get(string name, int index = -1)
+			{
+				object[] objRet = new object[] { };
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if (idx >= 0)
+				{
+					if(index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					{
+						objRet = RenderSubject.Uniforms[idx].Value.Data[index];
+					}
+				}
+				return objRet;
+			}
+			public void Uniform_Set(string name, params object[][] args)
+			{
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if(idx >= 0)
+				{
+					RenderSubject.Uniforms[idx].Value.Data = args.ToList();
+				}
+			}
+			public void Uniform_Set(string name, int index = -1, params object[] args)
+			{
+				object[] objRet = new object[] { };
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if (idx >= 0)
+				{
+					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					{
+						RenderSubject.Uniforms[idx].Value.Data[index] = args;
+					}
+				}
+			}
+			public object[] Arguments { get; set; }
+		}
+		private Script script;
+		public clsEventScriptContext ScriptContext { get; set; } = new clsEventScriptContext();
+		private EventType typEvent;
+		public EventType Type 
+		{ 
+			get => typEvent;
+			set { clsRender subj = renderSubject; 
+				  DetachSubject(); 
+				  typEvent = value; 
+				  AttachSubject(subj); } 
+		}
+		private clsRender renderSubject;
+		public clsRender Subject 
+		{ 
+			get => renderSubject;
+			set { DetachSubject(); 
+				  renderSubject = value;
+				  ScriptContext.RenderSubject = value;
+				  if (value != null)
+				  {
+						ScriptContext.Uniforms = new clsUniformSetCollection(value.Uniforms);
+				  } else
+				  {
+					    ScriptContext.Uniforms = null;
+				  }
+				  AttachSubject(renderSubject); } 
+		}
+		public frmRenderConfigure ConfigureForm
+		{
+			get
+			{
+				if (renderSubject == null) return null;
+				return frmRenderConfigure.FormWithSubjectObject(renderSubject);
+			}
+			set
+			{
+				frmRenderConfigure frm = value as frmRenderConfigure;
+				if (frm == null) return;
+				Subject = frm.RenderSubject;
+			}
+		}
 		public string Source { get; set; }
+		public void AttachSubject(clsRender subject)
+		{
+			renderSubject = subject;
+			switch(typEvent)
+			{
+				case EventType.OnLoad:
+					renderSubject.Load += Run;
+					break;
+				case EventType.OnRender:
+					renderSubject.Render += Run;
+					break;
+				case EventType.OnResize:
+					renderSubject.Resize += Run;
+					break;
+				case EventType.OnPointerStart:
+					renderSubject.PointerStart += Run;
+					break;
+				case EventType.OnPointerMove:
+					renderSubject.PointerMove += Run;
+					break;
+				case EventType.OnPointerEnd:
+					renderSubject.PointerEnd += Run;
+					break;
+			}
+		}
+		public void DetachSubject()
+		{
+			if (renderSubject == null) return;
+			switch (typEvent)
+			{
+				case EventType.OnLoad:
+					renderSubject.Load -= Run;
+					break;
+				case EventType.OnRender:
+					renderSubject.Render -= Run;
+					break;
+				case EventType.OnResize:
+					renderSubject.Resize -= Run;
+					break;
+				case EventType.OnPointerStart:
+					renderSubject.PointerStart -= Run;
+					break;
+				case EventType.OnPointerMove:
+					renderSubject.PointerMove -= Run;
+					break;
+				case EventType.OnPointerEnd:
+					renderSubject.PointerEnd -= Run;
+					break;
+			}
+			renderSubject = null;
+		}
 		public void Compile()
 		{
-
+			ScriptOptions opts = ScriptOptions.Default;
+			script = CSharpScript.Create(Source, opts, ScriptContext.GetType());
+			script.Compile();
 		}
-		public void Run()
+		public void Run(params object[] args)
 		{
-
+			ScriptContext.Arguments = args;
+			try
+			{
+				script.RunAsync(ScriptContext).Wait();
+			} catch(Exception err)
+			{
+				
+			}
+			//if (renderSubject != null) renderSubject.FormatUniforms();
+			if(ConfigureForm != null) ConfigureForm.UpdateDataGrid();
+			ScriptContext.Arguments = null;
+		}
+		public void Dispose()
+		{
+			DetachSubject();
 		}
 	}
 	public class clsShader : clsProjectObject
@@ -1769,9 +2081,39 @@ namespace modProject
 		public List<KeyValuePair<string, clsVertexDescriptionComponent>> GeometryShaderLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
 		public List<KeyValuePair<string, clsUniformSet>> Uniforms { private set; get; } = new List<KeyValuePair<string, clsUniformSet>>();
 		public List<KeyValuePair<string, string>> UniformShaderLinks { private set; get; } = new List<KeyValuePair<string, string>>();
+		public List<clsEventScript> EventScripts { private set; get; } = new List<clsEventScript>();
+		public delegate void ScriptHandler(params object[] args);
+		public event ScriptHandler Load;
+		public event ScriptHandler Render;
+		public event ScriptHandler Resize;
+		public event ScriptHandler PointerStart;
+		public event ScriptHandler PointerMove;
+		public event ScriptHandler PointerEnd;
+		public void RaiseLoadEvent() { if (Load != null) Load.Invoke(); }
+		public void RaiseRenderEvent(double dt, double t) { if (Render != null) Render.Invoke(dt, t); }
+		public void RaiseResizeEvent(int Width, int Height) { if (Resize != null) Resize.Invoke(Width, Height); }
+		public void RaisePointerStartEvent() { if (PointerStart != null) PointerStart.Invoke(); }
+		public void RaisePointerMoveEvent() { if (PointerMove != null) PointerMove.Invoke(); }
+		public void RaisePointerEndEvent() { if (PointerEnd != null) PointerEnd.Invoke(); }
 		public clsRender() : base(ProjectObjectTypes.Render)
 		{
 			AddToCollection();
+		}
+		public void FormatUniforms()
+		{
+			foreach(KeyValuePair<string, clsUniformSet> itm in Uniforms)
+			{
+				clsUniformSet uni = itm.Value;
+				UniformType typUni = itm.Value.Type;
+				Type typ = UniformType_ComponentType[typUni];
+				for(int elemI = 0; elemI < uni.Data.Count; elemI++)
+				{
+					for (int compI = 0; compI < uni.Data[elemI].Length; compI++)
+					{
+						uni.Data[elemI][compI] = Convert.ChangeType(uni.Data[elemI][compI], typ);
+					}
+				}
+			}
 		}
 		public new void Dispose()
 		{

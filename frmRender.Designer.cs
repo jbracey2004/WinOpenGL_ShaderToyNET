@@ -29,10 +29,10 @@ namespace WinOpenGL_ShaderToy
 		/// </summary>
 		private void InitializeComponent()
 		{
-			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
-			this.lblRenderName = new System.Windows.Forms.ToolStripStatusLabel();
+			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner2 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.lblName = new System.Windows.Forms.Label();
+			this.btnConfigure = new System.Windows.Forms.Button();
 			this.toolStripFPS = new System.Windows.Forms.ToolStrip();
 			this.btnInterval = new System.Windows.Forms.ToolStripDropDownButton();
 			this.txtInterval = new System.Windows.Forms.ToolStripTextBox();
@@ -40,17 +40,11 @@ namespace WinOpenGL_ShaderToy
 			this.txtFPS = new System.Windows.Forms.ToolStripTextBox();
 			this.lblRenderDuration = new System.Windows.Forms.ToolStripStatusLabel();
 			this.lblRenderFreq = new System.Windows.Forms.ToolStripStatusLabel();
-			this.btnConfigure = new System.Windows.Forms.Button();
+			this.lblRenderName = new System.Windows.Forms.ToolStripStatusLabel();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
 			this.toolStripFPS.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// lblRenderName
-			// 
-			this.lblRenderName.Name = "lblRenderName";
-			this.lblRenderName.Size = new System.Drawing.Size(44, 20);
-			this.lblRenderName.Text = "Render";
 			// 
 			// panelMain
 			// 
@@ -69,9 +63,9 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
 			this.panelMain.ParentControl = this;
-			clsDesigner1.Name = "ProjectObject";
-			clsDesigner1.ParentControl = this.panelMain;
-			this.panelMain.ProjectObject = clsDesigner1;
+			clsDesigner2.Name = "ProjectObject";
+			clsDesigner2.ParentControl = this.panelMain;
+			this.panelMain.ProjectObject = clsDesigner2;
 			this.panelMain.Size = new System.Drawing.Size(800, 450);
 			// 
 			// panelMain.Status
@@ -99,6 +93,17 @@ namespace WinOpenGL_ShaderToy
 			this.lblName.TabIndex = 3;
 			this.lblName.Text = "Renderer";
 			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// btnConfigure
+			// 
+			this.btnConfigure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.btnConfigure.Location = new System.Drawing.Point(237, 3);
+			this.btnConfigure.Name = "btnConfigure";
+			this.btnConfigure.Size = new System.Drawing.Size(69, 23);
+			this.btnConfigure.TabIndex = 4;
+			this.btnConfigure.Text = "Configure";
+			this.btnConfigure.UseVisualStyleBackColor = true;
+			this.btnConfigure.Click += new System.EventHandler(this.btnConfigure_Click);
 			// 
 			// toolStripFPS
 			// 
@@ -131,9 +136,9 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtInterval
 			// 
+			this.txtInterval.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.txtInterval.Name = "txtInterval";
 			this.txtInterval.Size = new System.Drawing.Size(100, 23);
-			this.txtInterval.Text = "";
 			this.txtInterval.TextChanged += new System.EventHandler(this.txtInterval_Change);
 			// 
 			// btnFPS
@@ -148,9 +153,9 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtFPS
 			// 
+			this.txtFPS.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.txtFPS.Name = "txtFPS";
 			this.txtFPS.Size = new System.Drawing.Size(100, 23);
-			this.txtFPS.Text = "";
 			this.txtFPS.TextChanged += new System.EventHandler(this.txtFPS_Change);
 			// 
 			// lblRenderDuration
@@ -167,16 +172,11 @@ namespace WinOpenGL_ShaderToy
 			this.lblRenderFreq.Size = new System.Drawing.Size(21, 15);
 			this.lblRenderFreq.Text = "Hz";
 			// 
-			// btnConfigure
+			// lblRenderName
 			// 
-			this.btnConfigure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnConfigure.Location = new System.Drawing.Point(237, 3);
-			this.btnConfigure.Name = "btnConfigure";
-			this.btnConfigure.Size = new System.Drawing.Size(69, 23);
-			this.btnConfigure.TabIndex = 4;
-			this.btnConfigure.Text = "Configure";
-			this.btnConfigure.UseVisualStyleBackColor = true;
-			this.btnConfigure.Click += new System.EventHandler(this.btnConfigure_Click);
+			this.lblRenderName.Name = "lblRenderName";
+			this.lblRenderName.Size = new System.Drawing.Size(44, 20);
+			this.lblRenderName.Text = "Render";
 			// 
 			// frmRender
 			// 

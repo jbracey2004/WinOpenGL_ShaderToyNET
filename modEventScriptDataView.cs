@@ -34,20 +34,13 @@ namespace modEventScriptView
 	{
 		public clsEventScriptCell() : base()
 		{
-			Value = "0";
+			Value = "";
 		}
 		public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
 		{
 			base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			clsEventScriptEditor ctl = DataGridView.EditingControl as clsEventScriptEditor;
-			if (this.Value == null)
-			{
-				ctl.Text = this.DefaultNewRowValue as string;
-			}
-			else
-			{
-				ctl.Text = this.Value as string;
-			}
+			ctl.Text = (Value.ToString() != null)?(Value as string):"OnLoad() {}";
 		}
 		public override void DetachEditingControl()
 		{
@@ -94,7 +87,7 @@ namespace modEventScriptView
 		{
 			get
 			{
-				return "0";
+				return "";
 			}
 		}
 		public override Type FormattedValueType => base.FormattedValueType;
@@ -167,7 +160,8 @@ namespace modEventScriptView
 			base.OnLeave(e);
 			if(EditingControlDataGridView.IsCurrentCellInEditMode)
 			{
-				base.Validate();
+				EditingControlValueChanged = true;
+				this.EditingControlDataGridView.NotifyCurrentCellDirty(true);
 				EditingControlDataGridView.EndEdit();
 			}
 		}

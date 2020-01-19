@@ -68,10 +68,12 @@ public class generalUtils
 		FieldInfo fieldMax = Typ.GetField("MaxValue");
 		object objMin = fieldMin?.GetValue(null);
 		object objMax = fieldMax?.GetValue(null);
-		string strMin = (objMin != null) ? objMin.ToString() : " ";
+		ret[0] = (double)Convert.ChangeType(objMin, typeof(double));
+		ret[1] = (double)Convert.ChangeType(objMax, typeof(double));
+		/*string strMin = (objMin != null) ? objMin.ToString() : " ";
 		string strMax = (objMax != null) ? objMax.ToString() : " ";
 		double.TryParse(strMin, out ret[0]);
-		double.TryParse(strMax, out ret[1]);
+		double.TryParse(strMax, out ret[1]);*/
 		return ret;
 	}
 	public static double RangeTValue(object value, double min, double max)

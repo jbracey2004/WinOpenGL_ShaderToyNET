@@ -157,7 +157,6 @@ namespace modUniformDataView
 		{
 			return this.Text;
 		}
-
 		protected override void OnValidating(CancelEventArgs e)
 		{
 			base.OnValidating(e);
@@ -181,7 +180,8 @@ namespace modUniformDataView
 			base.OnLeave(e);
 			if(EditingControlDataGridView.IsCurrentCellInEditMode)
 			{
-				base.Validate();
+				EditingControlValueChanged = true;
+				this.EditingControlDataGridView.NotifyCurrentCellDirty(true);
 				EditingControlDataGridView.EndEdit();
 			}
 		}

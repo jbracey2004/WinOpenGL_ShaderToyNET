@@ -44,9 +44,12 @@ namespace WinOpenGL_ShaderToy
 				obj.Dispose();
 			}
 			projectMain.ProjectObjects.Clear();
-			windowProject.HideOnClose = false;
-			windowProject.Close();
-			windowProject = null;
+			if(windowProject != null)
+			{
+				windowProject.HideOnClose = false;
+				windowProject.Close();
+				windowProject = null;
+			}
 		}
 		private void MenuWindows_Closing(object sender, ToolStripDropDownClosingEventArgs e)
 		{

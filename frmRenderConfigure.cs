@@ -141,6 +141,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			UpdateGeometryRouting();
 			UpdateUniformRouting();
+			UpdateEventScripts();
 		}
 		private void UpdateGeometryRouting()
 		{
@@ -159,7 +160,16 @@ namespace WinOpenGL_ShaderToy
 			datagridUniformsRouting.Rows.Clear();
 			foreach(KeyValuePair<string, string> itm in RenderSubject.UniformShaderLinks)
 			{
-				datagridUniformsRouting.Rows.Add(new object[] { itm.Key as string, itm.Value as string });
+				datagridUniformsRouting.Rows.Add(new object[] { itm.Key as string, itm.Value as string } );
+			}
+		}
+		private void UpdateEventScripts()
+		{
+			if (RenderSubject == null) return;
+			datagridEvents.Rows.Clear();
+			foreach (clsEventScript itm in RenderSubject.EventScripts)
+			{
+				datagridEvents.Rows.Add();
 			}
 		}
 		private void lstGeometry_SelectedIndexChanged(object sender, EventArgs e)
@@ -236,6 +246,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridGeometryRouting_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
+			if (bolUpdateLock) return;
 			if(e.RowIndex < 0) return;
 			DataGridViewRow row = datagridGeometryRouting.Rows[e.RowIndex];
 			DataGridViewColumn column = datagridGeometryRouting.Columns[e.ColumnIndex];
@@ -369,6 +380,50 @@ namespace WinOpenGL_ShaderToy
 		{
 			DataGridViewCell cell = datagridGeometryRouting.Rows[e.RowIndex].Cells[e.ColumnIndex];
 			e.Cancel = true;
+		}
+		private void datagridEvents_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+		{
+			clsEventScriptCell cell = e.Row.Cells[0] as clsEventScriptCell;
+			clsEventScript scriptNew = new clsEventScript();
+			scriptNew.Subject = RenderSubject;
+			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptNew);
+			scriptNew.Compile();
+			RenderSubject.EventScripts.Add(scriptNew);
+		}
+		private void datagridEvents_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+		{
+			clsEventScript scriptTmp = RenderSubject.EventScripts[e.Row.Index];
+			scriptTmp.Dispose();
+			RenderSubject.EventScripts.RemoveAt(e.Row.Index);
+		}
+		private void datagridEvents_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.RowIndex >= RenderSubject.EventScripts.Count) return;
+			clsEventScriptCell cell = datagridEvents[e.ColumnIndex, e.RowIndex] as clsEventScriptCell;
+			clsEventScript scriptTmp = RenderSubject.EventScripts[e.RowIndex];
+			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptTmp);
+			scriptTmp.Compile();
+		}
+		public void UpdateDataGrid()
+		{
+			Invoke(new Action(() => 
+			{
+				bolUpdateLock = true;
+				for (int idxRow = 0; idxRow < Math.Min(datagridUniformsValues.Rows.Count, RenderSubject.Uniforms.Count); idxRow++)
+				{
+					DataGridViewTextBoxCell cellName = datagridUniformsValues["columnVariableName", idxRow] as DataGridViewTextBoxCell;
+					if (cellName == null) continue;
+					string strName = cellName.Value as string;
+					if (strName == null) continue;
+					if (strName != RenderSubject.Uniforms[idxRow].Key) continue;
+					clsUniformDataCell cellValue = datagridUniformsValues["columnVariableValue", idxRow] as clsUniformDataCell;
+					if (cellValue == null) continue;
+					clsUniformSet objData = RenderSubject.Uniforms[idxRow].Value;
+					if (objData == null) continue;
+					cellValue.Value = objData.ToString();
+				}
+				bolUpdateLock = false;
+			}));
 		}
 	}
 }

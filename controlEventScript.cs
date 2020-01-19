@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using modProject;
 using static modCommon.modWndProcInterop;
 using static modProject.clsEventScript;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -18,18 +20,33 @@ namespace WinOpenGL_ShaderToy
 		public controlEventScript()
 		{
 			InitializeComponent();
+			lstEventType.Items.AddRange(Enum.GetNames(typeof(EventType)));
+			lstEventType.SelectedIndex = 0;
 		}
 		private void controlEventScript_Load(object sender, EventArgs e)
 		{
-			lstEventType.Items.AddRange(Enum.GetNames(typeof(EventType)));
+			
 		}
-		public override string Text => txtSource.Text;
+		public string Source
+		{
+			get => txtSource.Text;
+			set { txtSource.Text = value; }
+		}
 		public EventType Type
 		{
 			get => (EventType)lstEventType.SelectedIndex;
 			set
 			{
 				lstEventType.SelectedIndex = (int)value;
+			}
+		}
+		public override string Text
+		{
+			get => EventScript_ToString(Type, txtSource.Text);
+			set
+			{
+				EventScript_FromString(value, out EventType typ, out string src);
+				Type = typ; txtSource.Text = src;
 			}
 		}
 		protected Dictionary<WinHitTest, Rectangle> ResizeGrips 
