@@ -261,13 +261,6 @@ namespace modProject
 			{
 				List<object> elem = new List<object>(aryRet[itr]);
 				ResizeList(ref elem, intComponentCount, itmEmpty => 0);
-				/*if (intComponentType != -1)
-				{
-					for (int itrComp = 0; itrComp < elem.Count; itrComp++)
-					{
-						elem[itrComp] = Convert.ChangeType(elem[itrComp], UniformType_ComponentType[enumType]);
-					}
-				}*/
 				aryRet[itr] = elem.ToArray();
 			}
 			return aryRet;
@@ -343,7 +336,7 @@ namespace modProject
 				List<object> aryRet = new List<object>();
 				for(int itr = 0; itr < Data.Count; itr++)
 				{
-					for(int elemItr = 0; elemItr< Data[itr].Length; elemItr++)
+					for(int elemItr = 0; elemItr < Data[itr].Length; elemItr++)
 					{
 						aryRet.Add(Data[itr][elemItr]);
 					}
@@ -429,7 +422,7 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public object[] Uniform_Get(string name, int index = -1)
+			public object[] Uniform_Get(string name, int index)
 			{
 				object[] objRet = new object[] { };
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
@@ -442,6 +435,22 @@ namespace modProject
 				}
 				return objRet;
 			}
+			public object Uniform_Get(string name, int index, int comp)
+			{
+				object objRet = null;
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if (idx >= 0)
+				{
+					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					{
+						if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+						{
+							objRet = RenderSubject.Uniforms[idx].Value.Data[index][comp];
+						}
+					}
+				}
+				return objRet;
+			}
 			public void Uniform_Set(string name, params object[][] args)
 			{
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
@@ -450,15 +459,28 @@ namespace modProject
 					RenderSubject.Uniforms[idx].Value.Data = args.ToList();
 				}
 			}
-			public void Uniform_Set(string name, int index = -1, params object[] args)
+			public void Uniform_Set(string name, int index, params object[] args)
 			{
-				object[] objRet = new object[] { };
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
 					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
 					{
 						RenderSubject.Uniforms[idx].Value.Data[index] = args;
+					}
+				}
+			}
+			public void Uniform_Set(string name, int index, int comp, object arg)
+			{
+				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
+				if (idx >= 0)
+				{
+					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					{
+						if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+						{
+							RenderSubject.Uniforms[idx].Value.Data[index][comp] = arg;
+						}
 					}
 				}
 			}
