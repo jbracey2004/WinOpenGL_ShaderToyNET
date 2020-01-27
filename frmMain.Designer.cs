@@ -42,17 +42,17 @@
 			// 
 			// dockMain
 			// 
-			this.dockMain.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.dockMain.DefaultFloatWindowSize = new System.Drawing.Size(640, 480);
 			this.dockMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dockMain.DockBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
-			this.dockMain.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
 			this.dockMain.Location = new System.Drawing.Point(0, 24);
 			this.dockMain.Margin = new System.Windows.Forms.Padding(0);
 			this.dockMain.Name = "dockMain";
 			this.dockMain.Padding = new System.Windows.Forms.Padding(6);
+			this.dockMain.ShowAutoHideContentOnHover = false;
 			this.dockMain.ShowDocumentIcon = true;
 			this.dockMain.Size = new System.Drawing.Size(1264, 737);
+			this.dockMain.SupportDeeplyNestedContent = true;
 			this.dockMain.TabIndex = 10;
 			this.dockMain.Theme = this.themeDock_Main;
 			// 

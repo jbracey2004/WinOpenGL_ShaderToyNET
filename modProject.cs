@@ -25,6 +25,7 @@ using static modProject.clsUniformSet;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using WinOpenGL_ShaderToy;
+using static modProject.clsEventScript;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -412,13 +413,88 @@ namespace modProject
 		{
 			public clsRender RenderSubject { get; set; }
 			public clsUniformSetCollection Uniforms { get; set; }
+			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
+			public object[] Vec<T>(params T[] args)
+			{
+				return Array.ConvertAll(args, itm => (object)itm);
+			}
+			public object Vec_Elem(object[] args, int index)
+			{
+				object objRet = 0;
+				if (index < args.Length) objRet = args[index];
+				return objRet;
+			}
+			public void Vec_Elem<T>(ref object[] args, int index, T value)
+			{
+				if(index < args.Length)
+				{
+					args[index] = value;
+				}
+			}
+			public object[] Matrix<T>(int numCols, int numRows, params T[][] args)
+			{
+				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				for(int idxRow = 0; idxRow < Math.Min(numRows, args.Length); idxRow++)
+				{
+					for(int idxCol = 0; idxCol < Math.Min(numCols, args[idxRow].Length); idxCol++)
+					{
+						int idx = idxCol + idxRow * numCols;
+						if(idx < objRet.Length)
+						{
+							objRet[idx] = args[idxRow][idxCol];
+						}
+					}
+				}
+				return objRet;
+			}
+			public object Matrix_Elem(int numCols, int numRows, int indexCol, int indexRow, object[] args)
+			{
+				object objRet = 0;
+				if(indexCol < numCols && indexRow < numRows)
+				{
+					objRet = args[indexCol + indexRow*numCols];
+				}
+				return objRet;
+			}
+			public void Matrix_Elem<T>(int numCols, int numRows, int indexCol, int indexRow, ref object[] args, T value)
+			{
+				if (indexCol < numCols && indexRow < numRows)
+				{
+					args[indexCol + indexRow * numCols] = value;
+				}
+			}
+			public object[] Matrix_Row(int numCols, int numRows, int indexRow, object[] args)
+			{
+				object[] objRet = ArrayList.Repeat(0, numCols).ToArray();
+				if(indexRow < numRows)
+				{
+					for (int idxCol = 0; idxCol < numCols; idxCol++)
+					{
+						objRet[idxCol] = args[idxCol + indexRow * numCols];
+					}
+				}
+				return objRet;
+			}
+			public void Matrix_Row<T>(int numCols, int numRows, int indexRow, ref object[] args, T[] value)
+			{
+				if (indexRow < numRows)
+				{
+					for (int idxCol = 0; idxCol < Math.Min(numCols, value.Length); idxCol++)
+					{
+						args[idxCol + indexRow * numCols] = value[idxCol];
+					}
+				}
+			}
 			public object[][] Uniform_Get(string name)
 			{
 				object[][] objRet = new object[][] { new object[] { } };
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
-					objRet = RenderSubject.Uniforms[idx].Value.Data.ToArray();
+					if (RenderSubject.Uniforms[idx].Value != null) 
+					{ 
+						objRet = RenderSubject.Uniforms[idx].Value.Data.ToArray();
+					}
 				}
 				return objRet;
 			}
@@ -428,9 +504,12 @@ namespace modProject
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
-					if(index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
-					{
-						objRet = RenderSubject.Uniforms[idx].Value.Data[index];
+					if (RenderSubject.Uniforms[idx].Value != null) 
+					{ 
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						{
+							objRet = RenderSubject.Uniforms[idx].Value.Data[index];
+						}
 					}
 				}
 				return objRet;
@@ -441,11 +520,14 @@ namespace modProject
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
-					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
-					{
-						if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+					if(RenderSubject.Uniforms[idx].Value != null) 
+					{ 
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
 						{
-							objRet = RenderSubject.Uniforms[idx].Value.Data[index][comp];
+							if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+							{
+								objRet = RenderSubject.Uniforms[idx].Value.Data[index][comp];
+							}
 						}
 					}
 				}
@@ -456,7 +538,10 @@ namespace modProject
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if(idx >= 0)
 				{
-					RenderSubject.Uniforms[idx].Value.Data = args.ToList();
+					if(RenderSubject.Uniforms[idx].Value != null) 
+					{ 
+						RenderSubject.Uniforms[idx].Value.Data = args.ToList();
+					}
 				}
 			}
 			public void Uniform_Set(string name, int index, params object[] args)
@@ -464,9 +549,12 @@ namespace modProject
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
-					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					if(RenderSubject.Uniforms[idx].Value != null)
 					{
-						RenderSubject.Uniforms[idx].Value.Data[index] = args;
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						{
+							RenderSubject.Uniforms[idx].Value.Data[index] = args;
+						}
 					}
 				}
 			}
@@ -475,16 +563,18 @@ namespace modProject
 				int idx = RenderSubject.Uniforms.FindIndex(itm => itm.Key == name);
 				if (idx >= 0)
 				{
-					if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+					if (RenderSubject.Uniforms[idx].Value != null)
 					{
-						if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
 						{
-							RenderSubject.Uniforms[idx].Value.Data[index][comp] = arg;
+							if (comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+							{
+								RenderSubject.Uniforms[idx].Value.Data[index][comp] = arg;
+							}
 						}
 					}
 				}
 			}
-			public object[] Arguments { get; set; }
 		}
 		private Script script;
 		public clsEventScriptContext ScriptContext { get; set; } = new clsEventScriptContext();
@@ -492,26 +582,32 @@ namespace modProject
 		public EventType Type 
 		{ 
 			get => typEvent;
-			set { clsRender subj = renderSubject; 
-				  DetachSubject(); 
-				  typEvent = value; 
-				  AttachSubject(subj); } 
+			set 
+			{ 
+				clsRender subj = renderSubject; 
+				DetachSubject(); 
+				typEvent = value; 
+				AttachSubject(subj); 
+			} 
 		}
 		private clsRender renderSubject;
 		public clsRender Subject 
 		{ 
 			get => renderSubject;
-			set { DetachSubject(); 
-				  renderSubject = value;
-				  ScriptContext.RenderSubject = value;
-				  if (value != null)
-				  {
-						ScriptContext.Uniforms = new clsUniformSetCollection(value.Uniforms);
-				  } else
-				  {
-					    ScriptContext.Uniforms = null;
-				  }
-				  AttachSubject(renderSubject); } 
+			set 
+			{ 
+				DetachSubject(); 
+				renderSubject = value;
+				ScriptContext.RenderSubject = value;
+				if (value != null)
+				{
+					ScriptContext.Uniforms = new clsUniformSetCollection(value.Uniforms);
+				} else
+				{
+					ScriptContext.Uniforms = null;
+				}
+				AttachSubject(renderSubject); 
+			} 
 		}
 		public frmRenderConfigure ConfigureForm
 		{
@@ -585,9 +681,14 @@ namespace modProject
 			script = CSharpScript.Create(Source, opts, ScriptContext.GetType());
 			script.Compile();
 		}
-		public void Run(params object[] args)
+		public void Run(EventType eventType, params object[] args)
 		{
-			ScriptContext.Arguments = args;
+			ScriptContext.Arguments.Clear();
+			ParameterInfo[] EventParams = EventType_Parameters(eventType);
+			for(int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
+			{
+				ScriptContext.Arguments.Add(EventParams[paramI].Name, args[paramI]);
+			}
 			try
 			{
 				script.RunAsync(ScriptContext).Wait();
@@ -597,7 +698,7 @@ namespace modProject
 			}
 			//if (renderSubject != null) renderSubject.FormatUniforms();
 			if(ConfigureForm != null) ConfigureForm.UpdateDataGrid();
-			ScriptContext.Arguments = null;
+			ScriptContext.Arguments.Clear();
 		}
 		public void Dispose()
 		{
@@ -2104,19 +2205,19 @@ namespace modProject
 		public List<KeyValuePair<string, clsUniformSet>> Uniforms { private set; get; } = new List<KeyValuePair<string, clsUniformSet>>();
 		public List<KeyValuePair<string, string>> UniformShaderLinks { private set; get; } = new List<KeyValuePair<string, string>>();
 		public List<clsEventScript> EventScripts { private set; get; } = new List<clsEventScript>();
-		public delegate void ScriptHandler(params object[] args);
+		public delegate void ScriptHandler(EventType eventType, params object[] args);
 		public event ScriptHandler Load;
 		public event ScriptHandler Render;
 		public event ScriptHandler Resize;
 		public event ScriptHandler PointerStart;
 		public event ScriptHandler PointerMove;
 		public event ScriptHandler PointerEnd;
-		public void RaiseLoadEvent() { if (Load != null) Load.Invoke(); }
-		public void RaiseRenderEvent(double dt, double t) { if (Render != null) Render.Invoke(dt, t); }
-		public void RaiseResizeEvent(int Width, int Height) { if (Resize != null) Resize.Invoke(Width, Height); }
-		public void RaisePointerStartEvent() { if (PointerStart != null) PointerStart.Invoke(); }
-		public void RaisePointerMoveEvent() { if (PointerMove != null) PointerMove.Invoke(); }
-		public void RaisePointerEndEvent() { if (PointerEnd != null) PointerEnd.Invoke(); }
+		public void RaiseLoadEvent() { if (Load != null) Load.Invoke(EventType.OnLoad); }
+		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { if (Render != null) Render.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
+		public void RaiseResizeEvent(int Width, int Height) { if (Resize != null) Resize.Invoke(EventType.OnResize, Width, Height); }
+		public void RaisePointerStartEvent() { if (PointerStart != null) PointerStart.Invoke(EventType.OnPointerStart); }
+		public void RaisePointerMoveEvent() { if (PointerMove != null) PointerMove.Invoke(EventType.OnPointerMove); }
+		public void RaisePointerEndEvent() { if (PointerEnd != null) PointerEnd.Invoke(EventType.OnPointerEnd); }
 		public clsRender() : base(ProjectObjectTypes.Render)
 		{
 			AddToCollection();

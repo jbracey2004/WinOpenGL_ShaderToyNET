@@ -236,6 +236,7 @@ namespace WinOpenGL_ShaderToy
 			this.datagridEvents.Size = new System.Drawing.Size(643, 166);
 			this.datagridEvents.TabIndex = 7;
 			this.datagridEvents.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridEvents_CellValueChanged);
+			this.datagridEvents.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.datagridEvents_EditingControlShowing);
 			this.datagridEvents.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridEvents_UserAddedRow);
 			this.datagridEvents.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.datagridEvents_UserDeletingRow);
 			// 

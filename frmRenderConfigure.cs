@@ -383,9 +383,8 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridEvents_UserAddedRow(object sender, DataGridViewRowEventArgs e)
 		{
-			clsEventScriptCell cell = e.Row.Cells[0] as clsEventScriptCell;
-			clsEventScript scriptNew = new clsEventScript();
-			scriptNew.Subject = RenderSubject;
+			clsEventScriptCell cell = datagridEvents.CurrentCell as clsEventScriptCell;
+			clsEventScript scriptNew = cell.Tag as clsEventScript;
 			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptNew);
 			scriptNew.Compile();
 			RenderSubject.EventScripts.Add(scriptNew);
@@ -403,6 +402,17 @@ namespace WinOpenGL_ShaderToy
 			clsEventScript scriptTmp = RenderSubject.EventScripts[e.RowIndex];
 			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptTmp);
 			scriptTmp.Compile();
+		}
+		private void datagridEvents_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+		{
+			clsEventScriptCell cell = datagridEvents.CurrentCell as clsEventScriptCell;
+			if (cell == null) return;
+			controlEventScript control = e.Control as controlEventScript;
+			if (control == null) return;
+			clsEventScript scriptNew = new clsEventScript();
+			scriptNew.Subject = RenderSubject;
+			cell.Tag = scriptNew;
+			control.ScriptContext = scriptNew.ScriptContext;
 		}
 		public void UpdateDataGrid()
 		{
