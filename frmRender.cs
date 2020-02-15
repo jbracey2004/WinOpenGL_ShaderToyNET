@@ -17,13 +17,15 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmRender(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsRender Render { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsRender; } }
-		public GLControl glMain;
+		public GLControl glRender;
 		private frmRenderConfigure ConfigureDialog;
 		private clsHPTimer timerRender;
 		private infoFramePerformance tsRender;
 		private infoFramePerformance tsRenderTimer;
 		private Stopwatch timeRun;
-		private double tsPrevious;
+		public double CurrentTimeStamp { get; private set; }
+		public double PreviousTimeStamp { get; private set; }
+		public double DeltaTimeStamp { get => CurrentTimeStamp - PreviousTimeStamp; }
 		private void FrmGLMain_Load(object sender, EventArgs e)
 		{
 			InitDialog();
@@ -60,67 +62,68 @@ namespace WinOpenGL_ShaderToy
 			tsRender = new infoFramePerformance();
 			tsRenderTimer = new infoFramePerformance();
 			tsRenderTimer.HistoryDuration = 1.0;
-			glMain = new GLControl();
-			glMain.Parent = panelMain.Content;
-			glMain.Dock = DockStyle.Fill;
-			glMain.HandleCreated += glMain_HandleCreated;
-			glMain.SizeChanged += glMain_Resized;
-			glMain.MakeCurrent();
+			glRender = new GLControl();
+			glRender.Parent = panelMain.Content;
+			glRender.Dock = DockStyle.Fill;
+			glRender.HandleCreated += glMain_HandleCreated;
+			glRender.SizeChanged += glMain_Resized;
+			glRender.MakeCurrent();
 			UpdateGeometryRouting();
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
-			double tsCurrent = timeRun.Elapsed.TotalSeconds;
-			double tsDelta = tsCurrent - tsPrevious;
-			Render.RaiseRenderEvent(tsDelta, tsCurrent);
-			tsPrevious = tsCurrent;
+			PreviousTimeStamp = CurrentTimeStamp;
+			CurrentTimeStamp = timeRun.Elapsed.TotalSeconds;
+			double tsDelta = CurrentTimeStamp - PreviousTimeStamp;
+			Render?.RaiseRenderEvent(tsDelta, CurrentTimeStamp);
 			glMain_Render();
 			tsRenderTimer.StopInterval();
 			tsRenderTimer.SampleInterval();
 			btnFPS.Text = string.Format("{0,15:#,##0.00000 FPS}", tsRenderTimer.Median_Rate);
-			btnInterval.Text = string.Format("{0,15:#,##0.00000 ms}", tsRenderTimer.Median*1000.0);
+			btnInterval.Text = string.Format("{0,15:#,##0.00000 ms}", tsRenderTimer.Median * 1000.0);
 			tsRenderTimer.ResetInterval();
 			tsRenderTimer.StartInterval();
-			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median*1000.0);
+			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median * 1000.0);
 			lblRenderFreq.Text = string.Format("{0,15:##,##0.00000 Hz}", tsRender.Median_Rate);
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
-			Render.RaiseResizeEvent(glMain.Width, glMain.Height);
+			Render?.RaiseResizeEvent(glRender.Width, glRender.Height);
 		}
 		private void glMain_HandleCreated(object sender, EventArgs e)
 		{
-			glMain.MakeCurrent();
+			glRender.MakeCurrent();
 			UpdateGeometryRouting();
 		}
 		private void glMain_Render()
 		{
-			glMain.Context.Update(glMain.WindowInfo);
-			GL.Viewport(glMain.ClientRectangle);
-			glMain.MakeCurrent();
+			glRender.Context.Update(glRender.WindowInfo);
+			GL.Viewport(glRender.ClientRectangle);
+			glRender.MakeCurrent();
 			tsRender.ResetInterval();
 			tsRender.StartInterval();
+			GL.ClearColor(glRender.BackColor);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 			UpdateUniformRouting();
 			if (Render.Program != null)
 			{
 				GL.UseProgram(Render.Program.glID);
-				if(Render.Geometry != null)
+				if (Render.Geometry != null)
 				{
 					GL.EnableClientState(ArrayCap.IndexArray);
 					GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
 					GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
 				}
 			}
-			glMain.Context.SwapBuffers();
+			glRender.Context.SwapBuffers();
 			tsRender.StopInterval();
-			tsRender.SampleInterval((float)timeRun.Elapsed.TotalSeconds);
+			tsRender.SampleInterval(timeRun.Elapsed.TotalSeconds);
 		}
 		public void UpdateGeometryRouting()
 		{
 			if (Render.Program != null)
 			{
-				glMain.MakeCurrent();
+				glRender.MakeCurrent();
 				GL.UseProgram(Render.Program.glID);
 				if (Render.Geometry != null)
 				{
@@ -142,7 +145,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			if(Render.Program != null)
 			{
-				glMain.MakeCurrent();
+				glRender.MakeCurrent();
 				GL.UseProgram(Render.Program.glID);
 				foreach (KeyValuePair<string, clsUniformSet> itm in Render.Uniforms)
 				{

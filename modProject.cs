@@ -243,7 +243,7 @@ namespace modProject
 			if (intComponentType == -1) { intComponentCount = 1; } else { intComponentCount = UniformType_ComponentCount(enumType); }
 			List<object[]> aryRet = new List<object[]>();
 			if (!str.Contains("(") && !str.Contains(")")) { str = "(" + str + ")"; }
-			foreach (Match regMatch in Regex.Matches(str, @"\((\-{0,}\d+(\.\d+){0,}\s{0,}\,{0,}\s{0,}){1,}\)"))
+			foreach (Match regMatch in Regex.Matches(str, @"\((\S+?\s{0,}\,{0,}\s{0,}){1,}\)"))
 			{
 				string[] aryStr = regMatch.Value.Split(',');
 				List<object> elem = new List<object>();
@@ -290,7 +290,11 @@ namespace modProject
 				if (ary.Count > 1) strRet += "(";
 				for (int itrComp = 0; itrComp < ary[itr].Length; itrComp++)
 				{
-					strRet += Convert.ChangeType(ary[itr][itrComp], typObj).ToString();
+					object objData = ary[itr][itrComp];
+					if (objData == null) objData = 0;
+					objData = Convert.ChangeType(objData, typObj);
+					string str = objData.ToString();
+					strRet += str;
 					if (itrComp < ary[itr].Length - 1) strRet += ", ";
 				}
 				if (ary.Count > 1) { strRet += ")"; if (itr < ary.Count - 1) strRet += " "; };
@@ -347,7 +351,7 @@ namespace modProject
 		}
 		public override string ToString()
 		{
-			return $"<{Type}> " + clsUniformSet.ArrayToString(Data, Type);
+			return $"<{Type}> " + ArrayToString(Data, Type);
 		}
 	}
 	public class clsEventScript
@@ -364,7 +368,7 @@ namespace modProject
 		public static ParameterInfo[] EventType_Parameters(EventType typ)
 		{
 			string str = $"Raise{typ.ToString().Replace("On", "")}Event";
-			return typeof(clsRender).GetMethod(str).GetParameters();
+			return typeof(clsRender).GetMethod(str)?.GetParameters();
 		}
 		public static clsEventScript EventScript_FromString(string str)
 		{
@@ -380,7 +384,6 @@ namespace modProject
 		public static void EventScript_FromString(string str, out EventType typ, out string src)
 		{
 			typ = EventType.OnLoad;
-			src = "";
 			Match mch;
 			mch = Regex.Match(str, @"\w+\s{0,}");
 			if (mch.Success)
@@ -411,6 +414,8 @@ namespace modProject
 		}
 		public class clsEventScriptContext
 		{
+			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
+			public event delegateArgumentsUpdated ArgumentsUpdated;
 			public clsRender RenderSubject { get; set; }
 			public clsUniformSetCollection Uniforms { get; set; }
 			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
@@ -575,6 +580,112 @@ namespace modProject
 					}
 				}
 			}
+			[Browsable(false)]
+			public void SetArguments(EventType typeEvent, params object[] args)
+			{
+				Arguments.Clear();
+				ParameterInfo[] EventParams = EventType_Parameters(typeEvent);
+				for (int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
+				{
+					Arguments.Add(EventParams[paramI].Name, args[paramI]);
+				}
+				ArgumentsUpdated?.Invoke(Arguments);
+			}
+			[Browsable(false)]
+			public void InitArguments(EventType typeEvent)
+			{
+				if (RenderSubject == null) return;
+				frmRenderConfigure RenderSubjectConfigure = frmRenderConfigure.FormWithSubjectObject(RenderSubject);
+				if (RenderSubjectConfigure == null) return;
+				frmRender RenderSubjectForm = RenderSubjectConfigure.RenderSubjectForm;
+				if (RenderSubjectForm == null) return;
+				object[] args = Array.Empty<object>();
+				switch(typeEvent)
+				{
+					case EventType.OnLoad:
+						args = Array.Empty<object>();
+						break;
+					case EventType.OnRender:
+						args = new object[] {RenderSubjectForm.DeltaTimeStamp, RenderSubjectForm.CurrentTimeStamp};
+						break;
+					case EventType.OnResize:
+						args = new object[] {RenderSubjectForm.glRender.Width, RenderSubjectForm.glRender.Height};
+						break;
+					case EventType.OnPointerStart:
+
+						break;
+					case EventType.OnPointerMove:
+
+						break;
+					case EventType.OnPointerEnd:
+
+						break;
+				}
+				Arguments.Clear();
+				ParameterInfo[] EventParams = EventType_Parameters(typeEvent);
+				for (int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
+				{
+					Arguments.Add(EventParams[paramI].Name, args[paramI]);
+				}
+				ArgumentsUpdated?.Invoke(Arguments);
+			}
+			[Browsable(false)]
+			public void ClearArguments()
+			{
+				Arguments.Clear();
+			}
+			[Browsable(false)]
+			public void AttachUpdateArguments(EventType eventType)
+			{
+				if (RenderSubject == null) return;
+				switch (eventType)
+				{
+					case EventType.OnLoad:
+						RenderSubject.Load += SetArguments;
+						break;
+					case EventType.OnRender:
+						RenderSubject.Render += SetArguments;
+						break;
+					case EventType.OnResize:
+						RenderSubject.Resize += SetArguments;
+						break;
+					case EventType.OnPointerStart:
+						RenderSubject.PointerStart += SetArguments;
+						break;
+					case EventType.OnPointerMove:
+						RenderSubject.PointerMove += SetArguments;
+						break;
+					case EventType.OnPointerEnd:
+						RenderSubject.PointerEnd += SetArguments;
+						break;
+				}
+			}
+			[Browsable(false)]
+			public void DetachUpdateArguments(EventType eventType)
+			{
+				if (RenderSubject == null) return;
+				switch (eventType)
+				{
+					case EventType.OnLoad:
+						RenderSubject.Load -= SetArguments;
+						break;
+					case EventType.OnRender:
+						RenderSubject.Render -= SetArguments;
+						break;
+					case EventType.OnResize:
+						RenderSubject.Resize -= SetArguments;
+						break;
+					case EventType.OnPointerStart:
+						RenderSubject.PointerStart -= SetArguments;
+						break;
+					case EventType.OnPointerMove:
+						RenderSubject.PointerMove -= SetArguments;
+						break;
+					case EventType.OnPointerEnd:
+						RenderSubject.PointerEnd -= SetArguments;
+						break;
+				}
+			}
 		}
 		private Script script;
 		public clsEventScriptContext ScriptContext { get; set; } = new clsEventScriptContext();
@@ -677,18 +788,15 @@ namespace modProject
 		}
 		public void Compile()
 		{
+			if (Source == null) return;
 			ScriptOptions opts = ScriptOptions.Default;
 			script = CSharpScript.Create(Source, opts, ScriptContext.GetType());
 			script.Compile();
 		}
 		public void Run(EventType eventType, params object[] args)
 		{
-			ScriptContext.Arguments.Clear();
-			ParameterInfo[] EventParams = EventType_Parameters(eventType);
-			for(int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
-			{
-				ScriptContext.Arguments.Add(EventParams[paramI].Name, args[paramI]);
-			}
+			if (script == null) return;
+			ScriptContext.SetArguments(eventType, args);
 			try
 			{
 				script.RunAsync(ScriptContext).Wait();
@@ -696,9 +804,8 @@ namespace modProject
 			{
 				
 			}
-			//if (renderSubject != null) renderSubject.FormatUniforms();
 			if(ConfigureForm != null) ConfigureForm.UpdateDataGrid();
-			ScriptContext.Arguments.Clear();
+			ScriptContext.ClearArguments();
 		}
 		public void Dispose()
 		{
@@ -737,7 +844,7 @@ namespace modProject
 			List<string> ret = new List<string>();
 			string strTmp = Regex.Replace(str+" ", @"\{(\s|.)+\}", "{...};");
 			strTmp = Regex.Replace(strTmp, @"\((\s|.)+\)", "(...)");
-			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d{{0,}})\s+(?<name>\w+)")))
+			foreach (Match match in (Regex.Matches(strTmp, $@"({prefix})\s+(?<typ>\w+\d{{0,}})\s+(?<name>(\w|\d|_)+)")))
 			{
 				ret.Add(match.Groups["name"].Value);
 			}
@@ -1322,11 +1429,7 @@ namespace modProject
 			}
 			internal void RaiseUpdated()
 			{
-				if(Updated != null)
-				{
-					delegateUpdated evnt = new delegateUpdated(Updated);
-					evnt?.Invoke();
-				}
+				Updated?.Invoke();
 			}
 			public clsVertexDescriptionComponent this[int index]
 			{

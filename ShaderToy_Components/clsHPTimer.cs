@@ -39,7 +39,7 @@ public class clsHPTimer : IDisposable
 		fRunTimestamp = ts.Elapsed.TotalMilliseconds;
 		bolRunning = true;
 		threadLoop = new Thread(Loop);
-		threadLoop.Priority = ThreadPriority.Lowest;
+		threadLoop.Priority = ThreadPriority.Normal;
 		threadLoop.Start();
 	}
 	public void Stop()
@@ -58,7 +58,7 @@ public class clsHPTimer : IDisposable
 			fRunTimestamp = ts.Elapsed.TotalMilliseconds;
 			double fRunDelta = fRunTimestamp - fLastRunTimestamp;
 			fElapsed += fRunDelta;
-			Performence.SampleFrame((float)fRunDelta*0.001f, (float)fRunTimestamp*0.001f);
+			Performence.SampleFrame(fRunDelta*0.001, fRunTimestamp*0.001);
 			if (fElapsed >= Interval)
 			{
 				fElapsed = 0.0;
@@ -71,7 +71,7 @@ public class clsHPTimer : IDisposable
 							HPIntervalEventHandler evnt = IntervalEnd;
 							if(evnt != null)
 							{
-								Application.DoEvents();
+								//Application.DoEvents();
 								Parent.Invoke(evnt, this, new HPIntervalEventArgs(DateTime.Now));
 							}
 						}
@@ -99,10 +99,23 @@ public class clsHPTimer : IDisposable
 		}
 		threadLoop = null;
 	}
+	bool bolIsDisposed = false;
+	protected virtual void Dispose(bool bolDisposing)
+	{
+		if(!bolIsDisposed)
+		{
+			if(bolDisposing)
+			{
+				this.Stop();
+				this.Parent = null;
+				this.Performence.Dispose();
+				this.Performence = null;
+			}
+		}
+	}
 	public void Dispose()
 	{
-		this.Stop();
-		this.Parent = null;
-		this.Performence = null;
+		Dispose(true);
+		GC.SuppressFinalize(this);
 	}
 }

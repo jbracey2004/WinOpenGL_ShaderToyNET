@@ -112,7 +112,7 @@
 			this.MainMenuStrip = this.menusMain;
 			this.Name = "frmMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Shader Templete";
+			this.Text = "OpenGL - ShaderToy";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
 			this.Load += new System.EventHandler(this.FormMain_Load);
 			this.menuWindows.ResumeLayout(false);

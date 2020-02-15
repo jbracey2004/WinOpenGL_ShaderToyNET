@@ -77,7 +77,8 @@ namespace WinOpenGL_ShaderToy
 				Geometry.Triangles = newTriangles;
 			}
 			Geometry.glUpdateBuffers();
-			propsGeometry.SelectedObject = new { Vertices = Geometry.Vertices, Triangles = Geometry.Triangles};
+			propsGeometry.SelectedObject = new { Geometry.Vertices, Geometry.Triangles};
+			if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated += Geometry_VertexDescription_Updated;
 			UpdateLists();
 			matxView.Row3 = new Vector4(0, 0, -2, 1);
 			timerUpdateLists = new clsHPTimer(this);
@@ -95,14 +96,16 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FrmGeometry_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated -= Geometry_VertexDescription_Updated;
+			tsRender.Dispose();
 			tsRender = null;
 			timerUpdateLists.Stop();
+			timerUpdateLists.Dispose();
 			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
 		}
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{
-			propsGeometry.Refresh();
 			Geometry.glUpdateBuffers();
 			glRender_Init();
 			UpdateLists();
@@ -161,7 +164,9 @@ namespace WinOpenGL_ShaderToy
 			propsVertexDescriptionItem itm = lstVertexDesc.SelectedItem as propsVertexDescriptionItem;
 			if(itm != null)
 			{
+				if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated -= Geometry_VertexDescription_Updated;
 				Geometry.VertexDescription = itm.Description;
+				itm.Description.Updated += Geometry_VertexDescription_Updated;
 			}
 		}
 		private propsSplitter containerMain_SplitterOpposite(propsSplitter objSplitter, clsCollapsePanel objPanel)
@@ -232,7 +237,6 @@ namespace WinOpenGL_ShaderToy
 					matxProjection = Matrix4.CreateOrthographic(2, 2, -1, 1);
 				}
 			}
-			GL.ClearColor(glRender.BackColor);
 			glRender.Invalidate();
 		}
 		private void glRender_HandleCreated(object sender, EventArgs e)
@@ -254,6 +258,7 @@ namespace WinOpenGL_ShaderToy
 			tsRender.ResetInterval();
 			tsRender.StartInterval();
 			glRender.MakeCurrent();
+			GL.ClearColor(glRender.BackColor);
 			GL.Clear(ClearBufferMask.ColorBufferBit);
 			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
 			if(itmBuff != null)
@@ -288,8 +293,14 @@ namespace WinOpenGL_ShaderToy
 				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 			}
 			glRender.Context.SwapBuffers();
-			tsRender.SampleInterval((float)timeRun.Elapsed.TotalSeconds);
+			tsRender.SampleInterval(timeRun.Elapsed.TotalSeconds);
 			tsRender.StopInterval();
+		}
+		private void Geometry_VertexDescription_Updated()
+		{
+			propsGeometry.Refresh();
+			Geometry.glUpdateBuffers();
+			glRender_Init();
 		}
 		private void PropsGeometry_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{

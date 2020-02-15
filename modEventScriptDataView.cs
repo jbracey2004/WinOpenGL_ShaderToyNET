@@ -41,6 +41,7 @@ namespace modEventScriptView
 			base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			clsEventScriptEditor ctl = DataGridView.EditingControl as clsEventScriptEditor;
 			ctl.Text = (Value.ToString() != null)?(Value as string):"OnLoad() {}";
+			ctl.Open();
 		}
 		public override void DetachEditingControl()
 		{
@@ -53,6 +54,7 @@ namespace modEventScriptView
 				Value = ctl.Text;
 				ctl.Parent = ctl.EditingPanel;
 				ctl.EditingPanel = null;
+				ctl.Close();
 			}
 			base.DetachEditingControl();
 		}

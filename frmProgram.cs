@@ -33,11 +33,13 @@ namespace WinOpenGL_ShaderToy
 			timerAutoLink.IntervalEnd += new HPIntervalEventHandler(timerAutoLink_EndInterval);
 			timerAutoLink.Start();			
 		}
-		private void FrmProgram_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+		private void FrmProgram_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			timerAutoLink.Stop();
+			timerAutoLink.Dispose();
 			timerAutoLink = null;
 			timerUpdateLists.Stop();
+			timerUpdateLists.Dispose();
 			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
 		}
@@ -204,6 +206,11 @@ namespace WinOpenGL_ShaderToy
 				clsShader shd = projectMain.ProjectObjects.Find(itm => (cell.EditedFormattedValue != null) ? (itm.ToString() == (string)cell.EditedFormattedValue) : false) as clsShader;
 				Program.Shaders[e.RowIndex] = shd;
 			}
+		}
+
+		private void datagridShaderLinks_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+		{
+
 		}
 	}
 }

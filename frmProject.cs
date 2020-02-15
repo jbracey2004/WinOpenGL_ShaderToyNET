@@ -42,6 +42,7 @@ namespace WinOpenGL_ShaderToy
 		private void FrmProject_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			timerUpdate.Stop();
+			timerUpdate.Dispose();
 			timerUpdate = null;
 		}
 

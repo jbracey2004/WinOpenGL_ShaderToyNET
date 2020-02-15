@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Threading;
 
 public class generalUtils
 {
@@ -70,10 +71,6 @@ public class generalUtils
 		object objMax = fieldMax?.GetValue(null);
 		ret[0] = (double)Convert.ChangeType(objMin, typeof(double));
 		ret[1] = (double)Convert.ChangeType(objMax, typeof(double));
-		/*string strMin = (objMin != null) ? objMin.ToString() : " ";
-		string strMax = (objMax != null) ? objMax.ToString() : " ";
-		double.TryParse(strMin, out ret[0]);
-		double.TryParse(strMax, out ret[1]);*/
 		return ret;
 	}
 	public static double RangeTValue(object value, double min, double max)
@@ -118,38 +115,52 @@ public class generalUtils
 	[TypeConverter(typeof(ExpandableObjectConverter))]
 	public class infoFramePerformance : IDisposable
 	{
-		public double HistoryDuration = 10.0;
+		public struct propTimeStampData
+		{
+			public propTimeStampData(double ts, double dt)
+			{
+				TimeStamp = ts;
+				Duration = dt;
+			}
+			public double TimeStamp { get; set; }
+			public double Duration { get; set; }
+			public double Rate { get => 1.0 / Duration; 
+								 set { Duration = 1.0 / value; } }
+			public override string ToString()
+			{
+				return $"({TimeStamp.ToString()}, {Duration.ToString()})";
+			}
+		}
+		public infoFramePerformance()
+		{
+			
+		}
+		public double HistoryDuration { get; set; } = 10.0;
 		private Stopwatch tsInterval = new Stopwatch();
 		[Browsable(false)]
-		public List<KeyValuePair<float, float>> Data { get; private set; } = new List<KeyValuePair<float, float>> { };
+		public List<propTimeStampData> Data { get; private set; } = new List<propTimeStampData> { };
 		[Browsable(false)]
-		public List<KeyValuePair<float, float>> Data_Sorted { get; private set; } = new List<KeyValuePair<float, float>> { };
-		[Browsable(false)]
-		public List<float> Data_TimeStamps { get; private set; } = new List<float> { };
-		[Browsable(false)]
-		public List<float> Data_Durations { get; private set; } = new List<float> { };
-		[Browsable(false)]
-		public List<float> Data_Rates { get; private set; } = new List<float> { };
+		public List<propTimeStampData> Data_Sorted { get; private set; } = new List<propTimeStampData> { };
 		[TypeConverter(typeof(NumberConverter))]
-		public float Accumulated { get; private set; } = 0;
+		public double Accumulated { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
-		public float TimeAccumulated { get { return (Data.Count > 0) ? Data[Data.Count - 1].Key : 0.0f; } }
+		public double TimeAccumulated { get { return (Data.Count > 0) ? Data[Data.Count - 1].TimeStamp : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float TimeSpan { get { return (Data.Count > 0) ? Data[Data.Count - 1].Key - Data[0].Key : 0.0f; } }
+		public double TimeSpan { get { return (Data.Count > 0) ? Data[Data.Count - 1].TimeStamp - Data[0].TimeStamp : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float DataAccumulated { get; private set; } = 0;
+		public double DataAccumulated { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
-		public float Current { get; private set; } = 0;
+		public double Current { get; private set; } = 0;
 		[TypeConverter(typeof(NumberConverter))]
-		public float Longest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[Data_Sorted.Count - 1].Value : 0.0f; } }
+		public double Longest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[Data_Sorted.Count - 1].Duration : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float Shortest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[0].Value : 0.0f; } }
+		public double Shortest { get { return (Data_Sorted.Count > 0) ? Data_Sorted[0].Duration : 0.0f; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float Average { get { return Accumulated / Count; } }
+		public double Average { get { return Accumulated / Count; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float DataAvarage { get { return DataAccumulated / Data.Count; } }
+		public double DataAvarage { get { return DataAccumulated / Data.Count; } }
 		[TypeConverter(typeof(NumberConverter))]
-		public float Median
+		public double Median
 		{
 			get
 			{
@@ -157,11 +168,11 @@ public class generalUtils
 				int idxMid = (Data_Sorted.Count - 1) / 2;
 				if (Data_Sorted.Count % 2 == 0)
 				{
-					return (Data_Sorted[idxMid].Value + Data_Sorted[idxMid + 1].Value) / 2;
+					return (Data_Sorted[idxMid].Duration + Data_Sorted[idxMid + 1].Duration) / 2;
 				}
 				else
 				{
-					return Data_Sorted[idxMid].Value;
+					return Data_Sorted[idxMid].Duration;
 				}
 			}
 		}
@@ -183,15 +194,15 @@ public class generalUtils
 		{
 			tsInterval.Start();
 		}
-		public float IntervalElapsed()
+		public double IntervalElapsed()
 		{
-			return (float)tsInterval.Elapsed.TotalSeconds;
+			return (double)tsInterval.Elapsed.TotalSeconds;
 		}
 		public void StopInterval()
 		{
 			tsInterval.Stop();
 		}
-		public void SampleInterval(float ts = float.NaN)
+		public void SampleInterval(double ts = double.NaN)
 		{
 			SampleFrame(IntervalElapsed(), ts);
 		}
@@ -199,51 +210,40 @@ public class generalUtils
 		{
 			tsInterval.Reset();
 		}
-		public void SampleFrame(float value, float ts = float.NaN)
+		private bool bolUpdateLock = false;
+		public void SampleFrame(double value, double ts = double.NaN)
 		{
-			if (value > 0.0)
-			{
-				Current = value;
-				Accumulated += Current;
-				DataAccumulated += Current;
-				float xval = (!double.IsNaN(ts)) ? ts : Accumulated;
-				KeyValuePair<float, float> itmNew = new KeyValuePair<float, float>(xval, Current);
-				double historyCut = xval - HistoryDuration;
-				Data.RemoveAll(itm => itm.Key < historyCut);
-				Data_Sorted.RemoveAll(itm => { if (itm.Key < historyCut) { DataAccumulated -= itm.Value; return true; } else { return false; } });
-				Data_TimeStamps.RemoveAll(itm => itm < historyCut);
-				if (Data_Durations.Count - Data.Count > 0) Data_Durations.RemoveRange(0, Data_Durations.Count - Data.Count);
-				if(Data_Rates.Count - Data.Count > 0) Data_Rates.RemoveRange(0, Data_Rates.Count - Data.Count);
-				int idxNew = FindSortedInsert(Data_Sorted.ToArray(), itmNew, (itmAdding, itm) => Math.Sign(itmAdding.Value - itm.Value));
-				Data.Add(itmNew);
-				Data_TimeStamps.Add(xval);
-				Data_Durations.Add(Current);
-				Data_Rates.Add(1.0f / Current);
-				Data_Sorted.Insert(idxNew, itmNew);
-				Count++;
-			}
+			while (bolUpdateLock) { }
+			bolUpdateLock = true;
+			Current = value;
+			Accumulated += value;
+			DataAccumulated += value;
+			double xval = (!double.IsNaN(ts)) ? ts : Accumulated;
+			propTimeStampData itmNew = new propTimeStampData(xval, value);
+			double historyCut = xval - HistoryDuration;
+			_ = Data.RemoveAll(itm => (itm.TimeStamp < historyCut));
+			_ = Data_Sorted.RemoveAll(itm => { if (itm.TimeStamp < historyCut) { DataAccumulated -= itm.Duration; return true; } else { return false; } });
+			int idxNew = FindSortedInsert(Data_Sorted, itmNew, (itmAdding, itm) => Math.Sign(itmAdding.Duration - itm.Duration));
+			Data.Add(itmNew);
+			Data_Sorted.Insert(idxNew, itmNew);
+			Count++;
+			bolUpdateLock = false;
 		}
 		public override string ToString()
 		{
 			return this.Median_Rate.ToString();
 		}
 		private bool bolIsDisposed = false;
-	    protected  virtual void Dispose(bool Disposing)
+	    protected virtual void Dispose(bool Disposing)
 		{
-			if(!bolIsDisposed)
+			if (!bolIsDisposed)
 			{
 				if(Disposing)
 				{
-					this.Data.Clear();
-					this.Data = null;
-					this.Data_Sorted.Clear();
-					this.Data_Sorted = null;
-					this.Data_Durations.Clear();
-					this.Data_Durations = null;
-					this.Data_Rates.Clear();
-					this.Data_Rates = null;
-					this.Data_TimeStamps.Clear();
-					this.Data_TimeStamps = null;
+					Data.Clear();
+					Data = null;
+					Data_Sorted.Clear();
+					Data_Sorted = null;
 				}
 			}
 		}
@@ -254,10 +254,10 @@ public class generalUtils
 		}
 	}
 
-	public static int FindSortedInsert<T>(T[] ary, T value, Func<T, T, int> lamdaCompare, int idx = -1, int idxStart = -1, int idxEnd = -1)
+	public static int FindSortedInsert<T>(List<T> ary, T value, Func<T, T, int> lamdaCompare, int idx = -1, int idxStart = -1, int idxEnd = -1)
 	{
 		if (idxStart == -1) idxStart = 0;
-		if (idxEnd == -1) idxEnd = ary.Length - 1;
+		if (idxEnd == -1) idxEnd = ary.Count - 1;
 		if (idxEnd <= 0) return 0;
 		if (idx == -1) idx = idxEnd;
 		int c = lamdaCompare(value, ary[idx]);

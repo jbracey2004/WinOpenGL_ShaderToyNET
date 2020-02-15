@@ -160,7 +160,7 @@ namespace WinOpenGL_ShaderToy
 			this.datagridUniformsRouting.Dock = System.Windows.Forms.DockStyle.Top;
 			this.datagridUniformsRouting.Location = new System.Drawing.Point(0, 274);
 			this.datagridUniformsRouting.Name = "datagridUniformsRouting";
-			this.datagridUniformsRouting.Size = new System.Drawing.Size(643, 128);
+			this.datagridUniformsRouting.Size = new System.Drawing.Size(643, 157);
 			this.datagridUniformsRouting.TabIndex = 3;
 			this.datagridUniformsRouting.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsRouting_CellValueChanged);
 			this.datagridUniformsRouting.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.datagridUniformsRouting_DataError);
@@ -207,7 +207,7 @@ namespace WinOpenGL_ShaderToy
 			this.datagridUniformsValues.TabIndex = 5;
 			this.datagridUniformsValues.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsValues_CellValueChanged);
 			this.datagridUniformsValues.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserAddedRow);
-			this.datagridUniformsValues.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserDeletedRow);
+			this.datagridUniformsValues.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.datagridUniformsValues_UserDeletingRow);
 			// 
 			// columnVariableName
 			// 
@@ -217,7 +217,7 @@ namespace WinOpenGL_ShaderToy
 			// splitter3
 			// 
 			this.splitter3.Dock = System.Windows.Forms.DockStyle.Top;
-			this.splitter3.Location = new System.Drawing.Point(0, 402);
+			this.splitter3.Location = new System.Drawing.Point(0, 431);
 			this.splitter3.Margin = new System.Windows.Forms.Padding(0);
 			this.splitter3.MinExtra = 0;
 			this.splitter3.MinSize = 0;
@@ -231,9 +231,9 @@ namespace WinOpenGL_ShaderToy
 			this.datagridEvents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.datagridEvents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.datagridEvents.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.datagridEvents.Location = new System.Drawing.Point(0, 408);
+			this.datagridEvents.Location = new System.Drawing.Point(0, 437);
 			this.datagridEvents.Name = "datagridEvents";
-			this.datagridEvents.Size = new System.Drawing.Size(643, 166);
+			this.datagridEvents.Size = new System.Drawing.Size(643, 137);
 			this.datagridEvents.TabIndex = 7;
 			this.datagridEvents.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridEvents_CellValueChanged);
 			this.datagridEvents.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.datagridEvents_EditingControlShowing);

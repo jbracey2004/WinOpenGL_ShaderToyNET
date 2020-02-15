@@ -34,11 +34,15 @@ namespace WinOpenGL_ShaderToy
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(controlEventScript));
 			this.txtSource = new FastColoredTextBoxNS.FastColoredTextBox();
 			this.panelMain = new System.Windows.Forms.Panel();
-			this.panelEventDescription = new System.Windows.Forms.FlowLayoutPanel();
+			this.panelEventDescription = new System.Windows.Forms.Panel();
+			this.panelEventArguments_Container = new System.Windows.Forms.Panel();
+			this.panelEventArguments = new System.Windows.Forms.Panel();
 			this.lstEventType = new System.Windows.Forms.ComboBox();
+			this.scrollerEventArguments = new System.Windows.Forms.HScrollBar();
 			((System.ComponentModel.ISupportInitialize)(this.txtSource)).BeginInit();
 			this.panelMain.SuspendLayout();
 			this.panelEventDescription.SuspendLayout();
+			this.panelEventArguments_Container.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// txtSource
@@ -69,14 +73,14 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.txtSource.LeftBracket = '(';
 			this.txtSource.LeftBracket2 = '{';
-			this.txtSource.Location = new System.Drawing.Point(0, 27);
+			this.txtSource.Location = new System.Drawing.Point(0, 24);
 			this.txtSource.Name = "txtSource";
 			this.txtSource.Paddings = new System.Windows.Forms.Padding(0);
 			this.txtSource.RightBracket = ')';
 			this.txtSource.RightBracket2 = '}';
 			this.txtSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
 			this.txtSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtSource.ServiceColors")));
-			this.txtSource.Size = new System.Drawing.Size(575, 133);
+			this.txtSource.Size = new System.Drawing.Size(575, 136);
 			this.txtSource.TabIndex = 1;
 			this.txtSource.Zoom = 100;
 			// 
@@ -93,28 +97,61 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelEventDescription
 			// 
+			this.panelEventDescription.Controls.Add(this.panelEventArguments_Container);
 			this.panelEventDescription.Controls.Add(this.lstEventType);
 			this.panelEventDescription.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelEventDescription.Location = new System.Drawing.Point(0, 0);
 			this.panelEventDescription.Name = "panelEventDescription";
-			this.panelEventDescription.Size = new System.Drawing.Size(575, 27);
+			this.panelEventDescription.Size = new System.Drawing.Size(575, 24);
 			this.panelEventDescription.TabIndex = 1;
+			// 
+			// panelEventArguments_Container
+			// 
+			this.panelEventArguments_Container.BackColor = System.Drawing.Color.Transparent;
+			this.panelEventArguments_Container.Controls.Add(this.panelEventArguments);
+			this.panelEventArguments_Container.Controls.Add(this.scrollerEventArguments);
+			this.panelEventArguments_Container.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelEventArguments_Container.Location = new System.Drawing.Point(146, 0);
+			this.panelEventArguments_Container.Margin = new System.Windows.Forms.Padding(0);
+			this.panelEventArguments_Container.Name = "panelEventArguments_Container";
+			this.panelEventArguments_Container.Size = new System.Drawing.Size(429, 24);
+			this.panelEventArguments_Container.TabIndex = 2;
+			// 
+			// panelEventArguments
+			// 
+			this.panelEventArguments.AutoSize = true;
+			this.panelEventArguments.BackColor = System.Drawing.Color.Transparent;
+			this.panelEventArguments.Location = new System.Drawing.Point(0, 0);
+			this.panelEventArguments.Margin = new System.Windows.Forms.Padding(0);
+			this.panelEventArguments.Name = "panelEventArguments";
+			this.panelEventArguments.Padding = new System.Windows.Forms.Padding(3, 0, 3, 0);
+			this.panelEventArguments.Size = new System.Drawing.Size(6, 18);
+			this.panelEventArguments.TabIndex = 1;
 			// 
 			// lstEventType
 			// 
+			this.lstEventType.Dock = System.Windows.Forms.DockStyle.Left;
 			this.lstEventType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.lstEventType.FormattingEnabled = true;
-			this.lstEventType.Location = new System.Drawing.Point(3, 3);
+			this.lstEventType.Location = new System.Drawing.Point(0, 0);
 			this.lstEventType.Name = "lstEventType";
 			this.lstEventType.Size = new System.Drawing.Size(146, 21);
 			this.lstEventType.TabIndex = 0;
+			this.lstEventType.SelectedIndexChanged += new System.EventHandler(this.lstEventType_SelectedIndexChanged);
+			// 
+			// scrollerEventArguments
+			// 
+			this.scrollerEventArguments.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.scrollerEventArguments.Location = new System.Drawing.Point(0, 18);
+			this.scrollerEventArguments.Name = "scrollerEventArguments";
+			this.scrollerEventArguments.Size = new System.Drawing.Size(429, 6);
+			this.scrollerEventArguments.TabIndex = 2;
 			// 
 			// controlEventScript
 			// 
-			//this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			//this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this.panelMain);
+			this.DoubleBuffered = true;
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "controlEventScript";
 			this.Padding = new System.Windows.Forms.Padding(0, 0, 4, 4);
@@ -122,6 +159,8 @@ namespace WinOpenGL_ShaderToy
 			((System.ComponentModel.ISupportInitialize)(this.txtSource)).EndInit();
 			this.panelMain.ResumeLayout(false);
 			this.panelEventDescription.ResumeLayout(false);
+			this.panelEventArguments_Container.ResumeLayout(false);
+			this.panelEventArguments_Container.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -129,7 +168,10 @@ namespace WinOpenGL_ShaderToy
 		#endregion
 		private FastColoredTextBoxNS.FastColoredTextBox txtSource;
 		private System.Windows.Forms.Panel panelMain;
-		private System.Windows.Forms.FlowLayoutPanel panelEventDescription;
-		private System.Windows.Forms.ComboBox lstEventType;
+		private Panel panelEventDescription;
+		private ComboBox lstEventType;
+		private Panel panelEventArguments;
+		private Panel panelEventArguments_Container;
+		private HScrollBar scrollerEventArguments;
 	}
 }

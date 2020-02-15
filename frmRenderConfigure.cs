@@ -280,8 +280,9 @@ namespace WinOpenGL_ShaderToy
 			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet> (strName, objValue));
 			UpdateUniformVariableList();
 		}
-		private void datagridUniformsValues_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
+		private void datagridUniformsValues_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
+			if (e.Row.Index < 0) return;
 			RenderSubject.Uniforms.RemoveAt(e.Row.Index);
 			UpdateUniformVariableList();
 		}
