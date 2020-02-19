@@ -274,7 +274,7 @@ namespace WinOpenGL_ShaderToy
 				GL.MatrixMode(MatrixMode.Modelview);
 				GL.LoadIdentity();
 				if (itmBuff.Component.ElementCount >= 3) GL.LoadMatrix(ref matxView);
-				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.DstColor);
+				GL.BlendFunc(BlendingFactor.OneMinusSrcAlpha, BlendingFactor.DstColor);
 				GL.EnableClientState(ArrayCap.VertexArray);
 				GL.EnableClientState(ArrayCap.IndexArray);
 				GL.BindBuffer(BufferTarget.ArrayBuffer, Geometry.glBuffers[comp.Index]);

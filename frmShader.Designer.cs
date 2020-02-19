@@ -104,6 +104,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelSourceEdit
 			// 
+			this.panelSourceEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(16)))), ((int)(((byte)(24)))));
 			this.panelSourceEdit.Controls.Add(this.txtSource);
 			this.panelSourceEdit.Controls.Add(this.txtmapSource);
 			this.panelSourceEdit.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -127,18 +128,22 @@ namespace WinOpenGL_ShaderToy
         '\"',
         '\'',
         '\''};
-			this.txtSource.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
-    "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
+			this.txtSource.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);\r\n";
 			this.txtSource.AutoScrollMinSize = new System.Drawing.Size(27, 14);
 			this.txtSource.BackBrush = null;
+			this.txtSource.BackColor = System.Drawing.Color.Transparent;
+			this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.txtSource.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
+			this.txtSource.CaretColor = System.Drawing.Color.White;
 			this.txtSource.CharHeight = 14;
 			this.txtSource.CharWidth = 8;
 			this.txtSource.Cursor = System.Windows.Forms.Cursors.IBeam;
-			this.txtSource.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+			this.txtSource.DisabledColor = System.Drawing.Color.Gray;
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSource.ForeColor = System.Drawing.Color.LightGray;
+			this.txtSource.IndentBackColor = System.Drawing.Color.Transparent;
 			this.txtSource.IsReplaceMode = false;
-			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
+			this.txtSource.Language = FastColoredTextBoxNS.Language.JS;
 			this.txtSource.LeftBracket = '(';
 			this.txtSource.LeftBracket2 = '{';
 			this.txtSource.Location = new System.Drawing.Point(0, 0);
@@ -146,11 +151,11 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Paddings = new System.Windows.Forms.Padding(0);
 			this.txtSource.RightBracket = ')';
 			this.txtSource.RightBracket2 = '}';
-			this.txtSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+			this.txtSource.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(128)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
 			this.txtSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtSource.ServiceColors")));
 			this.txtSource.ShowCaretWhenInactive = true;
 			this.txtSource.ShowFoldingLines = true;
-			this.txtSource.Size = new System.Drawing.Size(713, 381);
+			this.txtSource.Size = new System.Drawing.Size(675, 381);
 			this.txtSource.TabIndex = 0;
 			this.txtSource.TextAreaBorder = FastColoredTextBoxNS.TextAreaBorderType.Shadow;
 			this.txtSource.Zoom = 100;
@@ -160,9 +165,9 @@ namespace WinOpenGL_ShaderToy
 			// 
 			this.txtmapSource.Dock = System.Windows.Forms.DockStyle.Right;
 			this.txtmapSource.ForeColor = System.Drawing.Color.Maroon;
-			this.txtmapSource.Location = new System.Drawing.Point(713, 0);
+			this.txtmapSource.Location = new System.Drawing.Point(675, 0);
 			this.txtmapSource.Name = "txtmapSource";
-			this.txtmapSource.Size = new System.Drawing.Size(85, 381);
+			this.txtmapSource.Size = new System.Drawing.Size(123, 381);
 			this.txtmapSource.TabIndex = 1;
 			this.txtmapSource.Target = this.txtSource;
 			// 
@@ -340,7 +345,13 @@ namespace WinOpenGL_ShaderToy
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(800, 449);
 			this.Controls.Add(this.panelMain);
+			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
 			this.Name = "frmShader";
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Unknown;
 			this.Text = "Designer_ProjectObject";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmShader_FormClosing);
 			this.Load += new System.EventHandler(this.FrmShader_Load);

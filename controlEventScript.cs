@@ -387,7 +387,6 @@ namespace WinOpenGL_ShaderToy
 			set { txtSource.Text = value; }
 		}
 		private List<Label> aryLabelArguments = new List<Label>();
-		private List<Splitter> arySplitterArguments = new List<Splitter>();
 		private void ScriptContext_ArgumentsUpdated(Dictionary<string, object> args)
 		{
 			int intOldCount = aryLabelArguments.Count;
@@ -398,8 +397,6 @@ namespace WinOpenGL_ShaderToy
 				{
 					aryLabelArguments[itr]?.Dispose();
 					aryLabelArguments[itr] = null;
-					arySplitterArguments[itr]?.Dispose();
-					arySplitterArguments[itr] = null;
 				}
 			}
 			generalUtils.ResizeList(ref aryLabelArguments, args.Count, (idx) =>
@@ -410,25 +407,12 @@ namespace WinOpenGL_ShaderToy
 				itm.TextAlign = ContentAlignment.MiddleLeft;
 				itm.AutoEllipsis = false;
 				itm.Dock = DockStyle.Left;
+				itm.BringToFront();
 				itm.Font = new Font(FontFamily.GenericMonospace, 8f);
 				itm.Margin = new Padding(3);
 				itm.AutoSize = true;
 				return itm;
 			});
-			/*generalUtils.ResizeList(ref arySplitterArguments, args.Count, (idx) =>
-			{
-				Splitter itm = new Splitter();
-				itm.Parent = panelEventArguments;
-				itm.BorderStyle = BorderStyle.Fixed3D;
-				itm.Dock = DockStyle.Left;
-				itm.Cursor = Cursors.VSplit;
-				return itm;
-			});
-			for(int itr = 0; itr < args.Count; itr++)
-			{
-				int intIdx = panelEventArguments.Controls.GetChildIndex(aryLabelArguments[itr]);
-				panelEventArguments.Controls.SetChildIndex(arySplitterArguments[itr], intIdx);
-			}*/
 			for (int itr = 0; itr < args.Count; itr++)
 			{
 				aryLabelArguments[itr].Text = $"{aryKeys[itr]}: {args[aryKeys[itr]].ToString()}";

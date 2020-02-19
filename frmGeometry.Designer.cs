@@ -40,10 +40,10 @@
 			this.panelGeometry = new System.Windows.Forms.Panel();
 			this.propsGeometry = new System.Windows.Forms.PropertyGrid();
 			this.lblName = new System.Windows.Forms.Label();
-			this.lblPositionAttr = new System.Windows.Forms.Label();
-			this.lstPositionAttr = new System.Windows.Forms.ComboBox();
 			this.lblVertexDesc = new System.Windows.Forms.Label();
 			this.lstVertexDesc = new System.Windows.Forms.ComboBox();
+			this.lblPositionAttr = new System.Windows.Forms.Label();
+			this.lstPositionAttr = new System.Windows.Forms.ComboBox();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
@@ -107,10 +107,10 @@
 			// 
 			// glRender
 			// 
-			this.glRender.BackColor = System.Drawing.SystemColors.Control;
+			this.glRender.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.glRender.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.glRender.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.glRender.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.glRender.ForeColor = System.Drawing.SystemColors.Control;
 			this.glRender.Location = new System.Drawing.Point(8, 0);
 			this.glRender.Name = "glRender";
 			this.glRender.Size = new System.Drawing.Size(604, 477);
@@ -204,28 +204,6 @@
 			this.lblName.Text = "Geometry";
 			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// lblPositionAttr
-			// 
-			this.lblPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblPositionAttr.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.lblPositionAttr.Location = new System.Drawing.Point(547, 0);
-			this.lblPositionAttr.Name = "lblPositionAttr";
-			this.lblPositionAttr.Size = new System.Drawing.Size(109, 29);
-			this.lblPositionAttr.TabIndex = 4;
-			this.lblPositionAttr.Text = "Position Attribute";
-			this.lblPositionAttr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// lstPositionAttr
-			// 
-			this.lstPositionAttr.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.lstPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lstPositionAttr.FormattingEnabled = true;
-			this.lstPositionAttr.Location = new System.Drawing.Point(662, 3);
-			this.lstPositionAttr.Name = "lstPositionAttr";
-			this.lstPositionAttr.Size = new System.Drawing.Size(190, 24);
-			this.lstPositionAttr.TabIndex = 5;
-			this.lstPositionAttr.SelectedIndexChanged += new System.EventHandler(this.LstPositionAttr_SelectedIndexChanged);
-			// 
 			// lblVertexDesc
 			// 
 			this.lblVertexDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -248,14 +226,42 @@
 			this.lstVertexDesc.TabIndex = 7;
 			this.lstVertexDesc.SelectedIndexChanged += new System.EventHandler(this.lstVertexDesc_SelectedIndexChanged);
 			// 
+			// lblPositionAttr
+			// 
+			this.lblPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblPositionAttr.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblPositionAttr.Location = new System.Drawing.Point(547, 0);
+			this.lblPositionAttr.Name = "lblPositionAttr";
+			this.lblPositionAttr.Size = new System.Drawing.Size(109, 29);
+			this.lblPositionAttr.TabIndex = 4;
+			this.lblPositionAttr.Text = "Position Attribute";
+			this.lblPositionAttr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lstPositionAttr
+			// 
+			this.lstPositionAttr.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lstPositionAttr.FormattingEnabled = true;
+			this.lstPositionAttr.Location = new System.Drawing.Point(662, 3);
+			this.lstPositionAttr.Name = "lstPositionAttr";
+			this.lstPositionAttr.Size = new System.Drawing.Size(190, 24);
+			this.lstPositionAttr.TabIndex = 5;
+			this.lstPositionAttr.SelectedIndexChanged += new System.EventHandler(this.LstPositionAttr_SelectedIndexChanged);
+			// 
 			// frmGeometry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(871, 509);
 			this.Controls.Add(this.panelMain);
+			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom) 
+            | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
 			this.DoubleBuffered = true;
 			this.Name = "frmGeometry";
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Unknown;
 			this.Text = "Designer_ProjectObject";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmGeometry_FormClosing);
 			this.Load += new System.EventHandler(this.FrmGeometry_Load);
