@@ -31,7 +31,7 @@
 			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.panelCollapse = new System.Windows.Forms.Panel();
-			this.glRender = new OpenTK.GLControl();
+			this.glRender = new controlRender();
 			this.splitterLeft = new System.Windows.Forms.Splitter();
 			this.splitterRight = new System.Windows.Forms.Splitter();
 			this.panelLeft = new System.Windows.Forms.Panel();
@@ -94,7 +94,6 @@
 			// panelCollapse
 			// 
 			this.panelCollapse.BackColor = System.Drawing.SystemColors.Control;
-			this.panelCollapse.Controls.Add(this.glRender);
 			this.panelCollapse.Controls.Add(this.splitterLeft);
 			this.panelCollapse.Controls.Add(this.splitterRight);
 			this.panelCollapse.Controls.Add(this.panelLeft);
@@ -104,18 +103,6 @@
 			this.panelCollapse.Name = "panelCollapse";
 			this.panelCollapse.Size = new System.Drawing.Size(869, 477);
 			this.panelCollapse.TabIndex = 10;
-			// 
-			// glRender
-			// 
-			this.glRender.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.glRender.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.glRender.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.glRender.ForeColor = System.Drawing.SystemColors.Control;
-			this.glRender.Location = new System.Drawing.Point(8, 0);
-			this.glRender.Name = "glRender";
-			this.glRender.Size = new System.Drawing.Size(604, 477);
-			this.glRender.TabIndex = 13;
-			this.glRender.VSync = false;
 			// 
 			// splitterLeft
 			// 
@@ -282,7 +269,6 @@
 		private ShaderToy_Components.controlProjectObject panelMain;
 		private System.Windows.Forms.Label lblName;
 		private System.Windows.Forms.Panel panelCollapse;
-		private OpenTK.GLControl glRender;
 		private System.Windows.Forms.Splitter splitterLeft;
 		private System.Windows.Forms.Splitter splitterRight;
 		private System.Windows.Forms.Panel panelLeft;

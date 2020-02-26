@@ -1,16 +1,8 @@
 ﻿using modProject;
 using OpenTK;
-using OpenTK.Platform;
-using static OpenTK.Platform.Utilities;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using static WinOpenGL_ShaderToy.ProjectDef;
@@ -19,7 +11,6 @@ using static generalUtils;
 using static clsHPTimer;
 using static WinOpenGL_ShaderToy.clsCollapsePanel;
 using static modProject.clsGeometry;
-using System.Text.RegularExpressions;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -27,6 +18,7 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmGeometry(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsGeometry Geometry { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsGeometry; } }
+		private controlRender glRender;
 		private Matrix4 matxView = Matrix4.Identity;
 		private Matrix4 matxProjection = Matrix4.Identity;
 		private clsCollapsePanel containerMain;
@@ -35,9 +27,18 @@ namespace WinOpenGL_ShaderToy
 		private clsHPTimer timerUpdateLists;
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{
+			glRender = new controlRender();
+			glRender.Name = "glRender";
+			glRender.Parent = panelCollapse;
+			glRender.Dock = DockStyle.Fill;
+			glRender.BringToFront();
+			glRender.BackColor = SystemColors.ControlDarkDark;
+			glRender.ForeColor = SystemColors.Control;
+			glRender.BorderStyle = BorderStyle.FixedSingle;
+			glRender.VSync = false;
 			containerMain = new clsCollapsePanel(panelCollapse);
-			containerMain.CollapseStateChanged += new CollapseStateChangeHandler(containerMain_CollapseChange);
-			containerMain.CollapseDistanceChanged += new CollapseStateChangeHandler(containerMain_CollapseDistanceChange);
+			containerMain.CollapseStateChanged += containerMain_CollapseChange;
+			containerMain.CollapseDistanceChanged += containerMain_CollapseDistanceChange;
 			if (Geometry.VertexDescription == null)
 			{
 				clsVertexDescription newDesc = null;
@@ -80,17 +81,18 @@ namespace WinOpenGL_ShaderToy
 			propsGeometry.SelectedObject = new { Geometry.Vertices, Geometry.Triangles};
 			if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated += Geometry_VertexDescription_Updated;
 			UpdateLists();
+			lstPositionAttr.SelectedIndex = Math.Min(lstPositionAttr.Items.Count - 1, 1);
 			matxView.Row3 = new Vector4(0, 0, -2, 1);
 			timerUpdateLists = new clsHPTimer(this);
 			timerUpdateLists.Interval = 1000.0;
 			timerUpdateLists.SleepInterval = 500;
-			timerUpdateLists.IntervalEnd += new HPIntervalEventHandler(timerUpdateLists_EndInterval);
+			timerUpdateLists.IntervalEnd += timerUpdateLists_EndInterval;
 			timerUpdateLists.Start();
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
-			glRender.HandleCreated += new EventHandler(glRender_HandleCreated);
-			glRender.ClientSizeChanged += new EventHandler(glRender_Resize);
-			glRender.Paint += new PaintEventHandler(glRender_Paint);
+			glRender.HandleCreated += glRender_HandleCreated;
+			glRender.ClientSizeChanged += glRender_Resize;
+			glRender.Paint += glRender_Paint;
 			timeRun.Start();
 			glRender_Init();
 		}

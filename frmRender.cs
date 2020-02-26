@@ -1,5 +1,4 @@
 ﻿using modProject;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Diagnostics;
@@ -10,6 +9,7 @@ using static clsHPTimer;
 using static generalUtils;
 using System.Collections.Generic;
 using static modProject.clsGeometry;
+using static modCommon.modWndProcInterop.clsTouchInterface;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -17,7 +17,7 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmRender(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsRender Render { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsRender; } }
-		public GLControl glRender;
+		public controlRender glRender;
 		private frmRenderConfigure ConfigureDialog;
 		private clsHPTimer timerRender;
 		private infoFramePerformance tsRender;
@@ -39,12 +39,9 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FrmGLMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if(timerRender != null)
-			{
-				timerRender.Stop();
-				timerRender = null;
-				panelMain.ProjectObject = null;
-			}
+			timerRender?.Stop();
+			timerRender = null;
+			panelMain.ProjectObject = null;
 		}
 		private void InitDialog()
 		{
@@ -61,14 +58,29 @@ namespace WinOpenGL_ShaderToy
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
 			tsRenderTimer = new infoFramePerformance();
-			tsRenderTimer.HistoryDuration = 1.0;
-			glRender = new GLControl();
+			tsRenderTimer.HistoryDuration = 10.0;
+			glRender = new controlRender();
 			glRender.Parent = panelMain.Content;
 			glRender.Dock = DockStyle.Fill;
 			glRender.HandleCreated += glMain_HandleCreated;
 			glRender.SizeChanged += glMain_Resized;
+			glRender.PointerStart += glMain_PointerStart;
+			glRender.PointerMove += glMain_PointerMove;
+			glRender.PointerEnd += glMain_PointerEnd;
 			glRender.MakeCurrent();
 			UpdateGeometryRouting();
+		}
+		private void glMain_PointerStart(object sender, TouchEventArgs e)
+		{
+			Render?.RaisePointerStartEvent(e.Touch);
+		}
+		private void glMain_PointerMove(object sender, TouchEventArgs e)
+		{
+			Render?.RaisePointerMoveEvent(e.Touch);
+		}
+		private void glMain_PointerEnd(object sender, TouchEventArgs e)
+		{
+			Render?.RaisePointerEndEvent(e.Touch);
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{

@@ -26,6 +26,7 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using WinOpenGL_ShaderToy;
 using static modProject.clsEventScript;
+using static modCommon.modWndProcInterop.clsTouchInterface;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -612,7 +613,7 @@ namespace modProject
 						args = new object[] {RenderSubjectForm.glRender.Width, RenderSubjectForm.glRender.Height};
 						break;
 					case EventType.OnPointerStart:
-
+						
 						break;
 					case EventType.OnPointerMove:
 
@@ -2315,12 +2316,12 @@ namespace modProject
 		public event ScriptHandler PointerStart;
 		public event ScriptHandler PointerMove;
 		public event ScriptHandler PointerEnd;
-		public void RaiseLoadEvent() { if (Load != null) Load.Invoke(EventType.OnLoad); }
-		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { if (Render != null) Render.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
-		public void RaiseResizeEvent(int Width, int Height) { if (Resize != null) Resize.Invoke(EventType.OnResize, Width, Height); }
-		public void RaisePointerStartEvent() { if (PointerStart != null) PointerStart.Invoke(EventType.OnPointerStart); }
-		public void RaisePointerMoveEvent() { if (PointerMove != null) PointerMove.Invoke(EventType.OnPointerMove); }
-		public void RaisePointerEndEvent() { if (PointerEnd != null) PointerEnd.Invoke(EventType.OnPointerEnd); }
+		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
+		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
+		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
+		public void RaisePointerStartEvent(TouchPoint TouchPoint) { PointerStart?.Invoke(EventType.OnPointerStart, TouchPoint); }
+		public void RaisePointerMoveEvent(TouchPoint TouchPoint) { PointerMove?.Invoke(EventType.OnPointerMove, TouchPoint); }
+		public void RaisePointerEndEvent(TouchPoint TouchPoint) { PointerEnd?.Invoke(EventType.OnPointerEnd, TouchPoint); }
 		public clsRender() : base(ProjectObjectTypes.Render)
 		{
 			AddToCollection();
