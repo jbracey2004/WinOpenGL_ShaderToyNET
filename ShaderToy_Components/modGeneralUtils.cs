@@ -135,7 +135,7 @@ public class generalUtils
 		{
 			
 		}
-		public double HistoryDuration { get; set; } = 10.0;
+		public double HistoryDuration { get; set; } = 1.0;
 		private Stopwatch tsInterval = new Stopwatch();
 		[Browsable(false)]
 		public List<propTimeStampData> Data { get; private set; } = new List<propTimeStampData> { };
