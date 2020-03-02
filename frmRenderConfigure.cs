@@ -275,9 +275,9 @@ namespace WinOpenGL_ShaderToy
 
 		private void datagridUniformsValues_UserAddedRow(object sender, DataGridViewRowEventArgs e)
 		{
-			string strName = e.Row.Cells["columnVariableName"].Value as string;
-			clsUniformSet objValue = e.Row.Cells["columnVariableValue"].Value as clsUniformSet;
-			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet> (strName, objValue));
+			clsUniformSet objValue = new clsUniformSet("<Float> 0");
+			datagridUniformsValues.CurrentRow.Cells["columnVariableValue"].Value = objValue.ToString();
+			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet> (null, objValue));
 			UpdateUniformVariableList();
 		}
 		private void datagridUniformsValues_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -385,8 +385,15 @@ namespace WinOpenGL_ShaderToy
 		private void datagridEvents_UserAddedRow(object sender, DataGridViewRowEventArgs e)
 		{
 			clsEventScriptCell cell = datagridEvents.CurrentCell as clsEventScriptCell;
+			clsEventScriptEditor cellEdit = datagridEvents.EditingControl as clsEventScriptEditor;
 			clsEventScript scriptNew = cell.Tag as clsEventScript;
-			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptNew);
+			if (cellEdit.Source == "")
+			{
+				datagridEvents.Rows.RemoveAt(cell.RowIndex);
+				scriptNew.Dispose();
+				return;
+			}
+			clsEventScript.EventScript_FromString(cellEdit.Text, ref scriptNew);
 			scriptNew.Compile();
 			RenderSubject.EventScripts.Add(scriptNew);
 		}

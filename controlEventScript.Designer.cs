@@ -37,8 +37,8 @@ namespace WinOpenGL_ShaderToy
 			this.panelEventDescription = new System.Windows.Forms.Panel();
 			this.panelEventArguments_Container = new System.Windows.Forms.Panel();
 			this.panelEventArguments = new System.Windows.Forms.Panel();
-			this.lstEventType = new System.Windows.Forms.ComboBox();
 			this.scrollerEventArguments = new System.Windows.Forms.HScrollBar();
+			this.lstEventType = new System.Windows.Forms.ComboBox();
 			((System.ComponentModel.ISupportInitialize)(this.txtSource)).BeginInit();
 			this.panelMain.SuspendLayout();
 			this.panelEventDescription.SuspendLayout();
@@ -128,6 +128,14 @@ namespace WinOpenGL_ShaderToy
 			this.panelEventArguments.Size = new System.Drawing.Size(6, 18);
 			this.panelEventArguments.TabIndex = 1;
 			// 
+			// scrollerEventArguments
+			// 
+			this.scrollerEventArguments.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.scrollerEventArguments.Location = new System.Drawing.Point(0, 18);
+			this.scrollerEventArguments.Name = "scrollerEventArguments";
+			this.scrollerEventArguments.Size = new System.Drawing.Size(429, 6);
+			this.scrollerEventArguments.TabIndex = 2;
+			// 
 			// lstEventType
 			// 
 			this.lstEventType.Dock = System.Windows.Forms.DockStyle.Left;
@@ -138,14 +146,6 @@ namespace WinOpenGL_ShaderToy
 			this.lstEventType.Size = new System.Drawing.Size(146, 21);
 			this.lstEventType.TabIndex = 0;
 			this.lstEventType.SelectedIndexChanged += new System.EventHandler(this.lstEventType_SelectedIndexChanged);
-			// 
-			// scrollerEventArguments
-			// 
-			this.scrollerEventArguments.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.scrollerEventArguments.Location = new System.Drawing.Point(0, 18);
-			this.scrollerEventArguments.Name = "scrollerEventArguments";
-			this.scrollerEventArguments.Size = new System.Drawing.Size(429, 6);
-			this.scrollerEventArguments.TabIndex = 2;
 			// 
 			// controlEventScript
 			// 

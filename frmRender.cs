@@ -62,6 +62,7 @@ namespace WinOpenGL_ShaderToy
 			glRender = new controlRender();
 			glRender.Parent = panelMain.Content;
 			glRender.Dock = DockStyle.Fill;
+			glRender.VSync = false;
 			glRender.HandleCreated += glMain_HandleCreated;
 			glRender.SizeChanged += glMain_Resized;
 			glRender.PointerStart += glMain_PointerStart;
@@ -100,20 +101,24 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
+			glRender.Context.Update(glRender.WindowInfo);
+			glRender.Context.MakeCurrent(glRender.WindowInfo);
+			GL.Viewport(glRender.ClientRectangle);
 			Render?.RaiseResizeEvent(glRender.Width, glRender.Height);
 		}
 		private void glMain_HandleCreated(object sender, EventArgs e)
 		{
-			glRender.MakeCurrent();
+			glRender.Context.Update(glRender.WindowInfo);
+			glRender.Context.MakeCurrent(glRender.WindowInfo);
+			GL.Viewport(glRender.ClientRectangle);
 			UpdateGeometryRouting();
 		}
 		private void glMain_Render()
 		{
-			glRender.Context.Update(glRender.WindowInfo);
-			GL.Viewport(glRender.ClientRectangle);
 			glRender.MakeCurrent();
 			tsRender.ResetInterval();
 			tsRender.StartInterval();
+			GL.Viewport(glRender.ClientRectangle);
 			GL.ClearColor(glRender.BackColor);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 			UpdateUniformRouting();
@@ -133,43 +138,38 @@ namespace WinOpenGL_ShaderToy
 		}
 		public void UpdateGeometryRouting()
 		{
-			if (Render.Program != null)
+			if (Render == null) return;
+			if (Render.Program == null) return;
+			if (Render.Geometry == null) return;
+			GL.UseProgram(Render.Program.glID);
+			GL.Viewport(glRender.ClientRectangle);
+			foreach (KeyValuePair<string, clsVertexDescriptionComponent> itrItm in Render.GeometryShaderLinks)
 			{
-				glRender.MakeCurrent();
-				GL.UseProgram(Render.Program.glID);
-				if (Render.Geometry != null)
-				{
-					foreach (KeyValuePair<string, clsVertexDescriptionComponent> itrItm in Render.GeometryShaderLinks)
-					{
-						string strAttr = itrItm.Key;
-						clsVertexDescriptionComponent comp = itrItm.Value as clsVertexDescriptionComponent;
-						if (strAttr == null) continue;
-						if (comp == null) continue;
-						int intUniformLocation = GL.GetAttribLocation(Render.Program.glID, strAttr);
-						GL.EnableVertexAttribArray(intUniformLocation);
-						GL.BindBuffer(BufferTarget.ArrayBuffer, Render.Geometry.glBuffers[comp.Index]);
-						GL.VertexAttribPointer(intUniformLocation, comp.ElementCount, comp.ElementGLType, false, 0, 0);
-					}
-				}
+				string strAttr = itrItm.Key;
+				clsVertexDescriptionComponent comp = itrItm.Value as clsVertexDescriptionComponent;
+				if (strAttr == null) continue;
+				if (comp == null) continue;
+				int intUniformLocation = GL.GetAttribLocation(Render.Program.glID, strAttr);
+				GL.EnableVertexAttribArray(intUniformLocation);
+				GL.BindBuffer(BufferTarget.ArrayBuffer, Render.Geometry.glBuffers[comp.Index]);
+				GL.VertexAttribPointer(intUniformLocation, comp.ElementCount, comp.ElementGLType, false, 0, 0);
 			}
 		}
 		public void UpdateUniformRouting()
 		{
-			if(Render.Program != null)
+			if (Render == null) return;
+			if (Render.Program == null) return;
+			GL.UseProgram(Render.Program.glID);
+			foreach (KeyValuePair<string, clsUniformSet> itm in Render.Uniforms)
 			{
-				glRender.MakeCurrent();
-				GL.UseProgram(Render.Program.glID);
-				foreach (KeyValuePair<string, clsUniformSet> itm in Render.Uniforms)
+				if (itm.Key != null)
 				{
-					if (itm.Key != null)
+					foreach (KeyValuePair<string, string> uni in Render.UniformShaderLinks.FindAll(x => x.Value == itm.Key))
 					{
-						foreach (KeyValuePair<string, string> uni in Render.UniformShaderLinks.FindAll(x => x.Value == itm.Key))
+						int glLoc = GL.GetUniformLocation(Render.Program.glID, uni.Key);
+						if(glLoc >= 0)
 						{
-							int glLoc = GL.GetUniformLocation(Render.Program.glID, uni.Key);
-							if(glLoc >= 0)
-							{
-								clsUniformSet.UniformBindDelegate[itm.Value.Type](glLoc, itm.Value.Data.Count, itm.Value.DataInlined);
-							}
+							clsUniformSet.UniformBindDelegate[itm.Value.Type](glLoc, itm.Value.Data.Count, itm.Value.DataInlined);
 						}
 					}
 				}

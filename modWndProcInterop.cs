@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -10,14 +9,16 @@ namespace modCommon
 {
 	public class modWndProcInterop
 	{
-		[DllImport("user32", BestFitMapping = true, ExactSpelling = true, PreserveSig = true, SetLastError = true)] 
-		private static extern bool RegisterTouchWindow(IntPtr hWnd, int param);
-		[DllImport("user32", BestFitMapping = true, ExactSpelling = true, PreserveSig = true, SetLastError = true)] 
-		private static extern bool UnregisterTouchWindow(IntPtr hWnd);
-		[DllImport("user32", EntryPoint = "GetTouchInputInfo", BestFitMapping = true, ExactSpelling = true, PreserveSig = true, SetLastError = true)] 
-		private static extern bool GetTouchInputInfo(IntPtr hTouchInput, int cInputs, [In, Out] TOUCHINPUT[] pInputs, int cbSize);
-		[DllImport("user32", BestFitMapping = true, ExactSpelling = true, PreserveSig = true, SetLastError = true)] 
-		private static extern int CloseTouchInputHandle(IntPtr hTouchInput);
+		public delegate IntPtr delegateProc(int code, IntPtr wParam, IntPtr lParam);
+		[DllImport("user32", SetLastError = true)] private static extern bool RegisterTouchWindow(IntPtr hWnd, int param);
+		[DllImport("user32", SetLastError = true)] private static extern bool UnregisterTouchWindow(IntPtr hWnd);
+		[DllImport("user32", SetLastError = true)] private static extern bool GetTouchInputInfo(IntPtr hTouchInput, int cInputs, [In, Out] TOUCHINPUT[] pInputs, int cbSize);
+		[DllImport("user32", SetLastError = true)] private static extern int CloseTouchInputHandle(IntPtr hTouchInput);
+		[DllImport("user32.dll", SetLastError = true)] private static extern bool UnhookWindowsHookEx(IntPtr hookPtr);
+		[DllImport("user32.dll", SetLastError = true)] private static extern IntPtr CallNextHookEx(IntPtr hookPtr, int nCode, IntPtr wordParam, IntPtr longParam);
+		[DllImport("user32.dll", SetLastError = true)] private static extern IntPtr SetWindowsHookEx(int hookType, delegateProc hookProc, IntPtr hModule, uint threadID);
+		[DllImport("kernel32.dll", SetLastError = true)] private static extern uint GetCurrentThreadId();
+		[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)] private static extern IntPtr GetModuleHandle(string lpModuleName);
 		public static int Int32MakeWord(short loWord, short hiWord) => ((int)hiWord << 16) | ((int)loWord & short.MaxValue);
 		public static short Int32LoWord(int word) => (short)(word & short.MaxValue);
 		public static short Int32HiWord(int word) => (short)((word >> 16));
@@ -32,10 +33,31 @@ namespace modCommon
 			RightButtonUp = 0x0205,
 			MiddleButtonDown = 0x0207,
 			MiddleButtonUp = 0x0208,
-			Activate = 0x006,
-			SetFocus = 0x007, 
+			Activate = 0x0006,
+			SetFocus = 0x0007, 
+			SetCursor = 0x0020,
 			Tablet_Debase = 0x02C0,
 			Tablet_GestureSatus = Tablet_Debase + 12
+		}
+		public enum WinHook
+		{
+			Min = (-1),
+			MsgFilter = (-1),
+			JournalRecord = 0x0000,
+			JournalPlayback = 0x0001,
+			Keyboard = 0x0002,
+			GetMessage = 0x0003,
+			CallWinProcess = 0x0004,
+			WH_CBT = 0x0005,
+			SysMsgFilter = 0x0006,
+			Mouse = 0x0007,
+			Hardware = 0x0008,
+			Debug = 0x0009,
+			Shell = 0x000A,
+			ForegroundIdle = 0x000B,
+			CallWinProcessReturn = 0x000C,
+			Keyboard_LL = 0x000D,
+			Mouse_LL = 0x000E
 		}
 		public enum WinTabletStatus
 		{
@@ -69,22 +91,37 @@ namespace modCommon
 			Down = 0x0002,
 			Up = 0x0004
 		}
-		public struct TOUCHINPUT
-		{
-			public int X;
-			public int Y;
-			public IntPtr hSource;
-			public int dwID;
-			public int dwFlags;
-			public int dwMask;
-			public int dwTime;
-			public IntPtr dwExtraInfo;
-			public int cxContact;
-			public int cyContact;
-		}
-		public static int TOUCHINPUT_Size = Marshal.SizeOf(new TOUCHINPUT());
 		public class clsTouchInterface : IDisposable
 		{
+			public struct TOUCHINPUT
+			{
+				public int X;
+				public int Y;
+				public IntPtr hSource;
+				public int dwID;
+				public int dwFlags;
+				public int dwMask;
+				public int dwTime;
+				public IntPtr dwExtraInfo;
+				public int cxContact;
+				public int cyContact;
+			}
+			public struct MOUSEHOOKSTRUCT
+			{
+				public Point pt;
+				public IntPtr hwnd;
+				public uint wHitTestCode;
+				public IntPtr dwExtraInfo;
+			}
+			public struct MOUSELLHOOKSTRUCT
+			{
+				public Point pt;
+				public uint mouseData;
+				public uint flags;
+				public uint time;
+				public IntPtr dwExtraInfo;
+			}
+			public static int TOUCHINPUT_Size = Marshal.SizeOf(new TOUCHINPUT());
 			public struct TouchPoint
 			{
 				public Size ControlSize { get; set; }
@@ -116,29 +153,68 @@ namespace modCommon
 			public EventHandler<TouchEventArgs> TouchStart;
 			public EventHandler<TouchEventArgs> TouchMove;
 			public EventHandler<TouchEventArgs> TouchEnd;
+			private IntPtr hookMouse;
+			private IntPtr handleModule;
+			private uint ptrThreadID;
+			private delegateProc dalegateMouseHook;
 			public Control Widget { private set; get; }
 			public List<clsTouchInput> Touches { private set; get; } = new List<clsTouchInput>();
 			public clsTouchInterface(Control widget)
 			{
 				Widget = widget;
-				bool bolRes = RegisterTouchWindow(Widget.Handle, 0);
-				if (!bolRes)
+				if (!RegisterTouchWindow(Widget.Handle, 0))
 				{
 					int intErr = Marshal.GetLastWin32Error();
 					Console.WriteLine($"Touch Interface Handle {Widget.Handle.ToString()} Failed To Register. Error {intErr}");
 				}
+				handleModule = GetModuleHandle(null);
+				ptrThreadID = GetCurrentThreadId();
+				dalegateMouseHook = HookMessageProc;
+				hookMouse = SetWindowsHookEx((int)WinHook.Mouse, dalegateMouseHook, handleModule, ptrThreadID);
+				if(hookMouse == IntPtr.Zero)
+				{
+					int intErr = Marshal.GetLastWin32Error();
+					Console.WriteLine($"Mouse Hook Failed To Initialize. Error {intErr}");
+				}
+			}
+			private const uint MOUSEEVENTF_MASK = 0xFFFFFF00;
+			private const uint TOUCH_FLAG = 0xFF515700;
+			private IntPtr HookMessageProc(int code, IntPtr wParam, IntPtr lParam)
+			{
+				if(code > 0) 
+				{
+					var mouseInfo = Marshal.PtrToStructure<MOUSEHOOKSTRUCT>(lParam);
+					if(mouseInfo.hwnd == Widget.Handle)
+					{
+						long EventInfo = mouseInfo.dwExtraInfo.ToInt64();
+						long EventFlags = EventInfo & MOUSEEVENTF_MASK;
+						Console.WriteLine($"Message Hooked: {code}, W={wParam}, L={lParam}, Info={EventInfo} Flags={EventFlags}");
+						if (EventFlags == TOUCH_FLAG) 
+						{
+							return new IntPtr(1);
+						}
+					}
+				}
+				return CallNextHookEx(hookMouse, code, wParam, lParam);
 			}
 			private bool disposedValue = false;
 			protected virtual void Dispose(bool disposing)
 			{
 				if (!disposedValue)
 				{
-					bool bolRes = UnregisterTouchWindow(Widget.Handle);
-					if (!bolRes)
+					if(!UnhookWindowsHookEx(hookMouse))
+					{
+						int intErr = Marshal.GetLastWin32Error();
+						Console.WriteLine($"Hook Process Handle {hookMouse} Failed To Release. Error {intErr}");
+					}
+					dalegateMouseHook = null;
+					if (!UnregisterTouchWindow(Widget.Handle))
 					{
 						int intErr = Marshal.GetLastWin32Error();
 						Console.WriteLine($"Touch Interface Handle {Widget.Handle.ToString()} Failed To UnRegister. Error {intErr}");
 					}
+					handleModule = IntPtr.Zero;
+					ptrThreadID = 0;
 					Widget = null;
 					disposedValue = true;
 				}
@@ -146,7 +222,6 @@ namespace modCommon
 			public void Dispose()
 			{
 				Dispose(true);
-				// GC.SuppressFinalize(this);
 			}
 		}
 		public static bool WinProc_HandleHitRegions(Control sender, ref Message msg, Dictionary<WinHitTest, Rectangle> regions)

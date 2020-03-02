@@ -35,7 +35,9 @@ namespace WinOpenGL_ShaderToy
 			glRender.BackColor = SystemColors.ControlDarkDark;
 			glRender.ForeColor = SystemColors.Control;
 			glRender.BorderStyle = BorderStyle.FixedSingle;
-			glRender.VSync = false;
+			glRender.HandleCreated += glRender_HandleCreated;
+			glRender.ClientSizeChanged += glRender_Resize;
+			glRender.Paint += glRender_Paint;
 			containerMain = new clsCollapsePanel(panelCollapse);
 			containerMain.CollapseStateChanged += containerMain_CollapseChange;
 			containerMain.CollapseDistanceChanged += containerMain_CollapseDistanceChange;
@@ -90,9 +92,6 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateLists.Start();
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
-			glRender.HandleCreated += glRender_HandleCreated;
-			glRender.ClientSizeChanged += glRender_Resize;
-			glRender.Paint += glRender_Paint;
 			timeRun.Start();
 			glRender_Init();
 		}
@@ -249,7 +248,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			glRender_Init();
 		}
-		private void glRender_Paint(object sender, PaintEventArgs e)
+		private void glRender_Paint(object sender, EventArgs e)
 		{
 			glRender_Render();
 		}
@@ -259,9 +258,8 @@ namespace WinOpenGL_ShaderToy
 			GL.Viewport(glRender.ClientRectangle);
 			tsRender.ResetInterval();
 			tsRender.StartInterval();
-			glRender.MakeCurrent();
 			GL.ClearColor(glRender.BackColor);
-			GL.Clear(ClearBufferMask.ColorBufferBit);
+			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
 			if(itmBuff != null)
 			{
@@ -276,19 +274,19 @@ namespace WinOpenGL_ShaderToy
 				GL.MatrixMode(MatrixMode.Modelview);
 				GL.LoadIdentity();
 				if (itmBuff.Component.ElementCount >= 3) GL.LoadMatrix(ref matxView);
-				GL.BlendFunc(BlendingFactor.OneMinusSrcAlpha, BlendingFactor.DstColor);
+				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.DstColor);
 				GL.EnableClientState(ArrayCap.VertexArray);
 				GL.EnableClientState(ArrayCap.IndexArray);
 				GL.BindBuffer(BufferTarget.ArrayBuffer, Geometry.glBuffers[comp.Index]);
 				GL.VertexPointer(comp.ElementCount, clsVertexDescriptionComponent.VertexPointerTypes[comp.ElementGLType], comp.ComponentSize, 0);
 				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Geometry.glIndexBuffer);
-				GL.Color4(Color.FromArgb(96, ForeColor));
+				GL.Color4(Color.FromArgb(96, glRender.ForeColor));
 				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-				GL.Color4(Color.FromArgb(108, ForeColor));
+				GL.Color4(Color.FromArgb(108, glRender.ForeColor));
 				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
 				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-				GL.Color4(Color.FromArgb(128, ForeColor));
+				GL.Color4(Color.FromArgb(128, glRender.ForeColor));
 				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Point);
 				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
 				GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);

@@ -12,7 +12,21 @@ namespace WinOpenGL_ShaderToy
 		public EventHandler<TouchEventArgs> PointerMove;
 		public EventHandler<TouchEventArgs> PointerEnd;
 		private clsTouchInterface TouchInterface;
-		public controlRender()
+		private void InitializeComponent()
+		{
+			this.SuspendLayout();
+			// 
+			// controlRender
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.ForeColor = System.Drawing.Color.White;
+			this.Name = "controlRender";
+			this.Size = new System.Drawing.Size(256, 256);
+			this.ResumeLayout(true);
+
+		}
+		public controlRender() : base()
 		{
 			InitializeComponent();
 		}
@@ -43,6 +57,7 @@ namespace WinOpenGL_ShaderToy
 			TouchInterface.Dispose();
 			TouchInterface = null;
 		}
+		public bool DoubleBuffering { get => base.DoubleBuffered; set { base.DoubleBuffered = value; } } 
 		private void TouchInterface_TouchStart(object sender, TouchEventArgs e)
 		{
 			PointerStart?.Invoke(this, e);
@@ -84,10 +99,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			bool bolHandled = WinProc_HandleTouch(this, ref m, ref TouchInterface);
 			base.WndProc(ref m);
-			if(bolHandled)
-			{
-				m.Result = new IntPtr(1);
-			}
+			if (bolHandled) m.Result = new IntPtr(1);
 		}
 	}
 }

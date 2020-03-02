@@ -31,7 +31,6 @@
 			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.panelCollapse = new System.Windows.Forms.Panel();
-			this.glRender = new controlRender();
 			this.splitterLeft = new System.Windows.Forms.Splitter();
 			this.splitterRight = new System.Windows.Forms.Splitter();
 			this.panelLeft = new System.Windows.Forms.Panel();
@@ -99,6 +98,7 @@
 			this.panelCollapse.Controls.Add(this.panelLeft);
 			this.panelCollapse.Controls.Add(this.panelRight);
 			this.panelCollapse.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelCollapse.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.panelCollapse.Location = new System.Drawing.Point(0, 0);
 			this.panelCollapse.Name = "panelCollapse";
 			this.panelCollapse.Size = new System.Drawing.Size(869, 477);
@@ -241,14 +241,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(871, 509);
 			this.Controls.Add(this.panelMain);
-			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
 			this.DoubleBuffered = true;
 			this.Name = "frmGeometry";
-			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Unknown;
 			this.Text = "Designer_ProjectObject";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmGeometry_FormClosing);
 			this.Load += new System.EventHandler(this.FrmGeometry_Load);

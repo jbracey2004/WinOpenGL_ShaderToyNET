@@ -34,7 +34,7 @@ namespace modUniformDataView
 	{
 		public clsUniformDataCell() : base()
 		{
-			Value = "0";
+			Value = null;
 		}
 		public UniformType DataUniformType = UniformType.Int;
 		public List<object[]> DataObject
@@ -54,7 +54,7 @@ namespace modUniformDataView
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
 			if (this.Value == null)
 			{
-				ctl.Text = this.DefaultNewRowValue as string;
+				ctl.Text = "<Float> 0";
 			}
 			else
 			{
@@ -108,7 +108,7 @@ namespace modUniformDataView
 		{
 			get
 			{
-				return "0";
+				return null;
 			}
 		}
 		public override Type FormattedValueType => base.FormattedValueType;
