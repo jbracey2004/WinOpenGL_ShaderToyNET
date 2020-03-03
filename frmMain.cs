@@ -1,5 +1,7 @@
 ﻿using modProject;
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using static WinOpenGL_ShaderToy.ProjectDef;
@@ -12,7 +14,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			InitializeComponent();
 		}
-		private DockContent windowProject;
+		private frmProject windowProject;
 		private void FormMain_Load(object sender, EventArgs e)
 		{
 			formMain = this;
@@ -27,23 +29,8 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Array ary = projectMain.ProjectObjects.ToArray();
-			foreach(clsProjectObject obj in ary)
-			{
-				if (obj.ParentControl != null)
-				{
-					if (obj.ParentControl.ParentForm != null)
-					{
-						obj.ParentControl.ParentForm.Close();
-					}
-					else
-					{
-						obj.ParentControl.Dispose();
-					}
-				}
-				obj.Dispose();
-			}
-			projectMain.ProjectObjects.Clear();
+			projectMain.Dispose();
+			projectMain = null;
 			if(windowProject != null)
 			{
 				windowProject.HideOnClose = false;
@@ -67,6 +54,29 @@ namespace WinOpenGL_ShaderToy
 			{
 				windowProject.Hide();
 			}
+		}
+
+		private void menuFile_SaveProject_Click(object sender, EventArgs e)
+		{
+			dialogSave.ShowDialog();
+			Stream file = dialogSave.OpenFile();
+			BinaryFormatter writeBin = new BinaryFormatter();
+			writeBin.Serialize(file, projectMain);
+			file.Close();
+			file.Dispose();
+		}
+		private void menuFile_LoadProject_Click(object sender, EventArgs e)
+		{
+			dialogLoad.ShowDialog();
+			Stream file = dialogLoad.OpenFile();
+			BinaryFormatter readBin = new BinaryFormatter();
+			projectMain.Dispose();
+			projectMain = null;
+			projectMain = (clsProject)readBin.Deserialize(file);
+			file.Close();
+			file.Dispose();
+			windowProject.Project = projectMain;
+			windowProject.UpdateProjectTree();
 		}
 	}
 }

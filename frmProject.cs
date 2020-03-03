@@ -13,7 +13,7 @@ namespace WinOpenGL_ShaderToy
 {
 	public partial class frmProject : DockContent
 	{
-		public clsProject Project { private set; get; }
+		public clsProject Project { get; set; }
 		public frmProject(clsProject refProject)
 		{
 			InitializeComponent();
@@ -51,7 +51,7 @@ namespace WinOpenGL_ShaderToy
 			UpdateProjectTree();
 			UpdateAllNodes(treeMain);
 		}
-		private void UpdateProjectTree()
+		public void UpdateProjectTree()
 		{
 			List<clsProjectObject> aryObjsCurrent = new List<clsProjectObject>();
 			List<clsProjectObject> aryObjsToAdd = new List<clsProjectObject>();

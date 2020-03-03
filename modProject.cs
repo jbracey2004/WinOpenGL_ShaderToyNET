@@ -69,11 +69,32 @@ namespace WinOpenGL_ShaderToy
 }
 namespace modProject
 {
+	[Serializable]
 	public class clsProject
 	{
 		public string Name { set; get; }
 		public string Path { set; get; }
 		public List<clsProjectObject> ProjectObjects { set; get; } = new List<clsProjectObject>() { };
+		public void Dispose()
+		{
+			Array ary = ProjectObjects.ToArray();
+			foreach (clsProjectObject obj in ary)
+			{
+				if (obj.ParentControl != null)
+				{
+					if (obj.ParentControl.ParentForm != null)
+					{
+						obj.ParentControl.ParentForm.Close();
+					}
+					else
+					{
+						obj.ParentControl.Dispose();
+					}
+				}
+				obj.Dispose();
+			}
+			ProjectObjects.Clear();
+		}
 	}
 	public class clsKeyCollection<TKey, TValue>
 	{
@@ -104,6 +125,7 @@ namespace modProject
 			}
 		}
 	}
+	[Serializable]
 	public class clsUniformSet
 	{
 		public enum UniformType
@@ -302,6 +324,7 @@ namespace modProject
 			}
 			return strRet;
 		}
+		[Serializable]
 		public class clsUniformSetCollection
 		{
 			public List<KeyValuePair<string, clsUniformSet>> Collection;
@@ -355,6 +378,7 @@ namespace modProject
 			return $"<{Type}> " + ArrayToString(Data, Type);
 		}
 	}
+	[Serializable]
 	public class clsEventScript
 	{
 		public enum EventType
@@ -413,6 +437,7 @@ namespace modProject
 			}
 			return $"{typ.ToString()} ( {str} ) {{ {src} }}";
 		}
+		[Serializable]
 		public class clsEventScriptContext
 		{
 			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
@@ -688,8 +713,10 @@ namespace modProject
 				}
 			}
 		}
+		[NonSerialized]
 		private Script script;
-		public clsEventScriptContext ScriptContext { get; set; } = new clsEventScriptContext();
+		[NonSerialized]
+		public clsEventScriptContext ScriptContext = new clsEventScriptContext();
 		private EventType typEvent;
 		public EventType Type 
 		{ 
@@ -702,6 +729,7 @@ namespace modProject
 				AttachSubject(subj); 
 			} 
 		}
+		[NonSerialized]
 		private clsRender renderSubject;
 		public clsRender Subject 
 		{ 
@@ -813,6 +841,7 @@ namespace modProject
 			DetachSubject();
 		}
 	}
+	[Serializable]
 	public class clsShader : clsProjectObject
 	{
 		private ShaderType typeShader;
@@ -888,6 +917,7 @@ namespace modProject
 			return Regex.Replace(Type.ToString(), @"Arb\z", "") + "_" + name;
 		}
 	}
+	[Serializable]
 	public class clsProgram : clsProjectObject
 	{
 		public List<clsShader> Shaders { private set; get; } = new List<clsShader>() { };
@@ -949,6 +979,7 @@ namespace modProject
 			base.Dispose();
 		}
 	}
+	[Serializable]
 	public class clsGeometry : clsProjectObject
 	{
 		public class VertexCollectionConverter : ArrayConverter
@@ -1300,6 +1331,7 @@ namespace modProject
 				}
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
@@ -1418,6 +1450,7 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescription : clsProjectObject, IList<clsVertexDescriptionComponent>
 		{
@@ -1552,6 +1585,7 @@ namespace modProject
 				base.Dispose();
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(VertexPropertyConverter))]
 		public class clsVertexProperty
 		{
@@ -1624,6 +1658,7 @@ namespace modProject
 				return $"{ComponentName}: ({strComponents})";
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(VertexConverter))]
 		public class clsVertex
 		{
@@ -1695,6 +1730,7 @@ namespace modProject
 				return strRet;
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(VertexCollectionConverter))]
 		public class clsVertexCollection : IDisposable, IList<clsVertex>
 		{
@@ -1922,6 +1958,7 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(TriagnelCollectionConverter))]
 		public class clsTriangleCollection : IDisposable, IList<clsTriangle>
 		{
@@ -2056,6 +2093,7 @@ namespace modProject
 				return $"Count={Count}";
 			}
 		}
+		[Serializable]
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsTriangle
 		{
@@ -2114,6 +2152,7 @@ namespace modProject
 		public clsVertexDescription VertexDescription { set; get; } = null;
 		public clsVertexCollection Vertices { set; get; } = null;
 		public clsTriangleCollection Triangles { set; get; } = null;
+		[NonSerialized]
 		public int glIndexBuffer = -1;
 		public List<int> glBuffers = new List<int>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
@@ -2179,6 +2218,7 @@ namespace modProject
 			base.Dispose();
 		}
 	}
+	[Serializable]
 	public class clsInfoString
 	{
 		public class InfoLocation
@@ -2300,6 +2340,7 @@ namespace modProject
 			return Info;
 		}
 	}
+	[Serializable]
 	public class clsRender : clsProjectObject
 	{
 		public double RenderInterval { get; set; } = 1000.0 / 60.0;

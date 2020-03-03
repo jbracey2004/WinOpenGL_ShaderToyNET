@@ -17,11 +17,17 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmRender(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsRender Render { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsRender; } }
+		[NonSerialized]
 		public controlRender glRender;
+		[NonSerialized]
 		private frmRenderConfigure ConfigureDialog;
+		[NonSerialized]
 		private clsHPTimer timerRender;
+		[NonSerialized]
 		private infoFramePerformance tsRender;
+		[NonSerialized]
 		private infoFramePerformance tsRenderTimer;
+		[NonSerialized]
 		private Stopwatch timeRun;
 		public double CurrentTimeStamp { get; private set; }
 		public double PreviousTimeStamp { get; private set; }

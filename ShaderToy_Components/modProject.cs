@@ -6,6 +6,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace modProject
 {
+	[Serializable]
 	public class clsProjectObject : IDisposable
 	{
 		public enum ProjectObjectTypes
@@ -23,7 +24,8 @@ namespace modProject
 		public static List<clsProjectObject> All { private set; get; } = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
 		public string Name { set; get; }
-		public controlProjectObject ParentControl { set; get; } = null;
+		[NonSerialized]
+		public controlProjectObject ParentControl = null;
 		public clsProjectObject(ProjectObjectTypes typ)
 		{
 			ProjectObjType = typ;
