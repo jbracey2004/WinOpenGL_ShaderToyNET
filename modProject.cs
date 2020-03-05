@@ -78,7 +78,9 @@ namespace modProject
 			typeof(Xml_Render),
 			typeof(Xml_Geometry),
 			typeof(Xml_VertexDescription),
-			typeof(Xml_VertexDescriptionComponent)
+			typeof(Xml_VertexDescriptionComponent),
+			typeof(Xml_Shader),
+			typeof(Xml_Program)
 		};
 		public class Xml_Project
 		{
@@ -87,6 +89,15 @@ namespace modProject
 			public Xml_Project(clsProject obj)
 			{
 				ProjectObjects = obj.ProjectObjects.ConvertAll(itm => itm.Xml);
+			}
+			public void InitObject(ref clsProject obj)
+			{
+				foreach(var itm in ProjectObjects)
+				{
+					clsProjectObject objNew = new clsProjectObject(itm.ObjectType);
+					itm.InitObject(ref objNew);
+					obj.ProjectObjects.Add(objNew);
+				}
 			}
 		}
 		public class Xml_Render : Xml_ProjectObject
@@ -125,6 +136,12 @@ namespace modProject
 				{
 					EventScripts.Add(itm.ToString());
 				}
+			}
+			public override clsRender NewObject()
+			{
+				clsRender ret = new clsRender();
+				
+				return ret;
 			}
 		}
 		public class Xml_Geometry : Xml_ProjectObject
@@ -170,6 +187,35 @@ namespace modProject
 			public VertexAttribPointerType ElementGLType;
 			public int ElementCount;
 			public Xml_VertexDescriptionComponent() { }
+		}
+		public class Xml_Shader : Xml_ProjectObject
+		{
+			public clsShader.ShaderType ShaderType;
+			public string Source;
+			public Xml_Shader() : base() { }
+			public Xml_Shader(clsShader obj) : base(obj)
+			{
+				ShaderType = obj.Type;
+				Source = obj.Source;
+			}
+			public override void InitObject(ref clsShader obj)
+			{
+				obj.Type = ShaderType;
+				base.InitObject(ref obj);
+			}
+		}
+		public class Xml_Program : Xml_ProjectObject
+		{
+			public List<string> Shaders;
+			public Xml_Program() : base() { }
+			public Xml_Program(clsProgram obj) : base(obj)
+			{
+				Shaders = new List<string>();
+				foreach(var itm in obj.Shaders)
+				{
+					Shaders.Add(itm.ToString());
+				}
+			}
 		}
 		public class Xml_KeyValuePair<TKey, TValue>
 		{
@@ -1033,6 +1079,11 @@ namespace modProject
 		{
 			return Regex.Replace(Type.ToString(), @"Arb\z", "") + "_" + name;
 		}
+		
+		public override Xml_ProjectObject Xml
+		{
+			get => new Xml_Shader(this);
+		}
 	}
 	
 	public class clsProgram : clsProjectObject
@@ -1094,6 +1145,11 @@ namespace modProject
 		{
 			Delete();
 			base.Dispose();
+		}
+		
+		public override Xml_ProjectObject Xml
+		{
+			get => new Xml_Program(this);
 		}
 	}
 	

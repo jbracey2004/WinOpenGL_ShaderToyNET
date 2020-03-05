@@ -32,6 +32,11 @@ namespace modProject
 				Name = obj.Name;
 				ObjectType = obj.ProjectObjType;
 			}
+			public virtual void InitObject(ref clsProjectObject obj)
+			{
+				obj.AddToCollection();
+				obj.Name = clsProjectObject.NextFreeName(obj.ToFullString(""), Name, obj);
+			}
 		}
 		public static List<clsProjectObject> All = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
