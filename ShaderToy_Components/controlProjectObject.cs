@@ -86,7 +86,7 @@ namespace ShaderToy_Components
 			}
 		}
 		public static clsDesigner objPlaceHolder = new clsDesigner();
-		public Control ParentControl { set; get; } = null;
+		public Control ParentControl = null;
 		private clsProjectObject objProjectObject;
 		public clsProjectObject ProjectObject
 		{

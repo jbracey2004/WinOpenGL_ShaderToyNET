@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace modProject
 {
-	[Serializable]
+	
 	public class clsProjectObject : IDisposable
 	{
 		public enum ProjectObjectTypes
@@ -21,10 +22,20 @@ namespace modProject
 			IOLinks = 5,
 			Render = 6
 		}
-		public static List<clsProjectObject> All { private set; get; } = new List<clsProjectObject>() { };
+		public class Xml_ProjectObject
+		{
+			public string Name;
+			public ProjectObjectTypes ObjectType;
+			public Xml_ProjectObject() { }
+			public Xml_ProjectObject(clsProjectObject obj)
+			{
+				Name = obj.Name;
+				ObjectType = obj.ProjectObjType;
+			}
+		}
+		public static List<clsProjectObject> All = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
 		public string Name { set; get; }
-		[NonSerialized]
 		public controlProjectObject ParentControl = null;
 		public clsProjectObject(ProjectObjectTypes typ)
 		{
@@ -88,6 +99,10 @@ namespace modProject
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		public virtual Xml_ProjectObject Xml
+		{
+			get => new Xml_ProjectObject(this);
 		}
 	}
 }

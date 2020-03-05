@@ -27,6 +27,8 @@ using System.Collections.Immutable;
 using WinOpenGL_ShaderToy;
 using static modProject.clsEventScript;
 using static modCommon.modWndProcInterop.clsTouchInterface;
+using System.Xml.Serialization;
+using static modProject.modXml;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -69,7 +71,118 @@ namespace WinOpenGL_ShaderToy
 }
 namespace modProject
 {
-	[Serializable]
+	public static class modXml
+	{
+		public static Type[] ProjectXmlTypes = new Type[]
+		{
+			typeof(Xml_Render),
+			typeof(Xml_Geometry),
+			typeof(Xml_VertexDescription),
+			typeof(Xml_VertexDescriptionComponent)
+		};
+		public class Xml_Project
+		{
+			public List<Xml_ProjectObject> ProjectObjects;
+			public Xml_Project() { }
+			public Xml_Project(clsProject obj)
+			{
+				ProjectObjects = obj.ProjectObjects.ConvertAll(itm => itm.Xml);
+			}
+		}
+		public class Xml_Render : Xml_ProjectObject
+		{
+			public double RenderInterval;
+			public string Geometry;
+			public string Program;
+			public List<Xml_KeyValuePair<string, int>> GeometryShaderLinks;
+			public List<Xml_KeyValuePair<string, string>> UniformShaderLinks;
+			public List<Xml_KeyValuePair<string, string>> Uniforms;
+			public List<string> EventScripts;
+			public Xml_Render() : base() { }
+			public Xml_Render(clsRender obj) : base(obj)
+			{
+				if (obj == null) return;
+				RenderInterval = obj.RenderInterval;
+				Geometry = obj.Geometry?.ToString();
+				Program = obj.Program?.ToString();
+				GeometryShaderLinks = new List<Xml_KeyValuePair<string, int>>();
+				foreach (var itm in obj.GeometryShaderLinks)
+				{
+					GeometryShaderLinks.Add(new Xml_KeyValuePair<string, int>(itm.Key, itm.Value.Index));
+				}
+				Uniforms = new List<Xml_KeyValuePair<string, string>>();
+				foreach (var itm in obj.Uniforms)
+				{
+					Uniforms.Add(new Xml_KeyValuePair<string, string>(itm.Key, itm.Value.ToString()));
+				}
+				UniformShaderLinks = new List<Xml_KeyValuePair<string, string>>();
+				foreach (var itm in obj.UniformShaderLinks)
+				{
+					UniformShaderLinks.Add(new Xml_KeyValuePair<string, string>(itm.Key, itm.Value));
+				}
+				EventScripts = new List<string>();
+				foreach (var itm in obj.EventScripts)
+				{
+					EventScripts.Add(itm.ToString());
+				}
+			}
+		}
+		public class Xml_Geometry : Xml_ProjectObject
+		{
+			public string VertexDescription;
+			public List<Xml_KeyValuePair<string, List<object>>> VertexData;
+			public List<uint> TriangleData;
+			public Xml_Geometry() : base() { }
+			public Xml_Geometry(clsGeometry obj) : base(obj)
+			{
+				VertexDescription = obj.VertexDescription.ToString();
+				VertexData = new List<Xml_KeyValuePair<string, List<object>>>();
+				foreach (var itm in obj.Vertices.Data)
+				{
+					VertexData.Add(new Xml_KeyValuePair<string, List<object>>(itm.Key.Name, itm.Value));
+				}
+				TriangleData = new List<uint>(obj.Triangles.Indices);
+			}
+		}
+		public class Xml_VertexDescription : Xml_ProjectObject
+		{
+			public List<Xml_VertexDescriptionComponent> Components;
+			public Xml_VertexDescription() : base() { }
+			public Xml_VertexDescription(clsVertexDescription obj) : base(obj)
+			{
+				Components = new List<Xml_VertexDescriptionComponent>();
+				foreach (var itm in obj)
+				{
+					Components.Add(new Xml_VertexDescriptionComponent()
+					{
+						Name = itm.Name,
+						Index = itm.Index,
+						ElementGLType = itm.ElementGLType,
+						ElementCount = itm.ElementCount
+					});
+				}
+			}
+		}
+		public class Xml_VertexDescriptionComponent
+		{
+			public string Name;
+			public int Index;
+			public VertexAttribPointerType ElementGLType;
+			public int ElementCount;
+			public Xml_VertexDescriptionComponent() { }
+		}
+		public class Xml_KeyValuePair<TKey, TValue>
+		{
+			public TKey Key;
+			public TValue Value;
+			public Xml_KeyValuePair() { }
+			public Xml_KeyValuePair(TKey objKey, TValue objValue)
+			{
+				Key = objKey;
+				Value = objValue;
+			}
+		}
+	}
 	public class clsProject
 	{
 		public string Name { set; get; }
@@ -94,6 +207,10 @@ namespace modProject
 				obj.Dispose();
 			}
 			ProjectObjects.Clear();
+		}
+		public Xml_Project Xml
+		{
+			get => new Xml_Project(this);
 		}
 	}
 	public class clsKeyCollection<TKey, TValue>
@@ -125,7 +242,7 @@ namespace modProject
 			}
 		}
 	}
-	[Serializable]
+	
 	public class clsUniformSet
 	{
 		public enum UniformType
@@ -324,7 +441,7 @@ namespace modProject
 			}
 			return strRet;
 		}
-		[Serializable]
+		
 		public class clsUniformSetCollection
 		{
 			public List<KeyValuePair<string, clsUniformSet>> Collection;
@@ -378,7 +495,7 @@ namespace modProject
 			return $"<{Type}> " + ArrayToString(Data, Type);
 		}
 	}
-	[Serializable]
+	
 	public class clsEventScript
 	{
 		public enum EventType
@@ -437,7 +554,7 @@ namespace modProject
 			}
 			return $"{typ.ToString()} ( {str} ) {{ {src} }}";
 		}
-		[Serializable]
+		
 		public class clsEventScriptContext
 		{
 			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
@@ -713,9 +830,9 @@ namespace modProject
 				}
 			}
 		}
-		[NonSerialized]
+		
 		private Script script;
-		[NonSerialized]
+		
 		public clsEventScriptContext ScriptContext = new clsEventScriptContext();
 		private EventType typEvent;
 		public EventType Type 
@@ -729,7 +846,7 @@ namespace modProject
 				AttachSubject(subj); 
 			} 
 		}
-		[NonSerialized]
+		
 		private clsRender renderSubject;
 		public clsRender Subject 
 		{ 
@@ -841,7 +958,7 @@ namespace modProject
 			DetachSubject();
 		}
 	}
-	[Serializable]
+	
 	public class clsShader : clsProjectObject
 	{
 		private ShaderType typeShader;
@@ -917,7 +1034,7 @@ namespace modProject
 			return Regex.Replace(Type.ToString(), @"Arb\z", "") + "_" + name;
 		}
 	}
-	[Serializable]
+	
 	public class clsProgram : clsProjectObject
 	{
 		public List<clsShader> Shaders { private set; get; } = new List<clsShader>() { };
@@ -979,7 +1096,7 @@ namespace modProject
 			base.Dispose();
 		}
 	}
-	[Serializable]
+	
 	public class clsGeometry : clsProjectObject
 	{
 		public class VertexCollectionConverter : ArrayConverter
@@ -1331,7 +1448,7 @@ namespace modProject
 				}
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
@@ -1450,7 +1567,7 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescription : clsProjectObject, IList<clsVertexDescriptionComponent>
 		{
@@ -1584,8 +1701,13 @@ namespace modProject
 				aryComponents.Clear();
 				base.Dispose();
 			}
+
+			public override Xml_ProjectObject Xml
+			{
+				get => new Xml_VertexDescription(this);
+			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(VertexPropertyConverter))]
 		public class clsVertexProperty
 		{
@@ -1658,7 +1780,7 @@ namespace modProject
 				return $"{ComponentName}: ({strComponents})";
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(VertexConverter))]
 		public class clsVertex
 		{
@@ -1730,7 +1852,7 @@ namespace modProject
 				return strRet;
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(VertexCollectionConverter))]
 		public class clsVertexCollection : IDisposable, IList<clsVertex>
 		{
@@ -1958,7 +2080,7 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(TriagnelCollectionConverter))]
 		public class clsTriangleCollection : IDisposable, IList<clsTriangle>
 		{
@@ -2093,7 +2215,7 @@ namespace modProject
 				return $"Count={Count}";
 			}
 		}
-		[Serializable]
+		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsTriangle
 		{
@@ -2152,7 +2274,6 @@ namespace modProject
 		public clsVertexDescription VertexDescription { set; get; } = null;
 		public clsVertexCollection Vertices { set; get; } = null;
 		public clsTriangleCollection Triangles { set; get; } = null;
-		[NonSerialized]
 		public int glIndexBuffer = -1;
 		public List<int> glBuffers = new List<int>();
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
@@ -2217,8 +2338,63 @@ namespace modProject
 			glBuffers.Clear();
 			base.Dispose();
 		}
+
+		public override Xml_ProjectObject Xml
+		{
+			get => new Xml_Geometry(this);
+		}
 	}
-	[Serializable]
+	public class clsRender : clsProjectObject
+	{
+		public double RenderInterval { get; set; } = 1000.0 / 60.0;
+		public clsGeometry Geometry { get; set; } = null;
+		public clsProgram Program { get; set; } = null;
+		public List<KeyValuePair<string, clsVertexDescriptionComponent>> GeometryShaderLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
+		public List<KeyValuePair<string, clsUniformSet>> Uniforms { private set; get; } = new List<KeyValuePair<string, clsUniformSet>>();
+		public List<KeyValuePair<string, string>> UniformShaderLinks { private set; get; } = new List<KeyValuePair<string, string>>();
+		public List<clsEventScript> EventScripts { private set; get; } = new List<clsEventScript>();
+		public delegate void ScriptHandler(EventType eventType, params object[] args);
+		public event ScriptHandler Load;
+		public event ScriptHandler Render;
+		public event ScriptHandler Resize;
+		public event ScriptHandler PointerStart;
+		public event ScriptHandler PointerMove;
+		public event ScriptHandler PointerEnd;
+		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
+		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
+		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
+		public void RaisePointerStartEvent(TouchPoint TouchPoint) { PointerStart?.Invoke(EventType.OnPointerStart, TouchPoint); }
+		public void RaisePointerMoveEvent(TouchPoint TouchPoint) { PointerMove?.Invoke(EventType.OnPointerMove, TouchPoint); }
+		public void RaisePointerEndEvent(TouchPoint TouchPoint) { PointerEnd?.Invoke(EventType.OnPointerEnd, TouchPoint); }
+		public clsRender() : base(ProjectObjectTypes.Render)
+		{
+			AddToCollection();
+		}
+		public void FormatUniforms()
+		{
+			foreach (KeyValuePair<string, clsUniformSet> itm in Uniforms)
+			{
+				clsUniformSet uni = itm.Value;
+				UniformType typUni = itm.Value.Type;
+				Type typ = UniformType_ComponentType[typUni];
+				for (int elemI = 0; elemI < uni.Data.Count; elemI++)
+				{
+					for (int compI = 0; compI < uni.Data[elemI].Length; compI++)
+					{
+						uni.Data[elemI][compI] = Convert.ChangeType(uni.Data[elemI][compI], typ);
+					}
+				}
+			}
+		}
+		public new void Dispose()
+		{
+			base.Dispose();
+		}
+		public override Xml_ProjectObject Xml
+		{
+			get => new Xml_Render(this);
+		}
+	}
 	public class clsInfoString
 	{
 		public class InfoLocation
@@ -2338,54 +2514,6 @@ namespace modProject
 		public override string ToString()
 		{
 			return Info;
-		}
-	}
-	[Serializable]
-	public class clsRender : clsProjectObject
-	{
-		public double RenderInterval { get; set; } = 1000.0 / 60.0;
-		public clsGeometry Geometry { get; set; } = null;
-		public clsProgram Program { get; set; } = null;
-		public List<KeyValuePair<string, clsVertexDescriptionComponent>> GeometryShaderLinks { private set; get; } = new List<KeyValuePair<string, clsVertexDescriptionComponent>>();
-		public List<KeyValuePair<string, clsUniformSet>> Uniforms { private set; get; } = new List<KeyValuePair<string, clsUniformSet>>();
-		public List<KeyValuePair<string, string>> UniformShaderLinks { private set; get; } = new List<KeyValuePair<string, string>>();
-		public List<clsEventScript> EventScripts { private set; get; } = new List<clsEventScript>();
-		public delegate void ScriptHandler(EventType eventType, params object[] args);
-		public event ScriptHandler Load;
-		public event ScriptHandler Render;
-		public event ScriptHandler Resize;
-		public event ScriptHandler PointerStart;
-		public event ScriptHandler PointerMove;
-		public event ScriptHandler PointerEnd;
-		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
-		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
-		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
-		public void RaisePointerStartEvent(TouchPoint TouchPoint) { PointerStart?.Invoke(EventType.OnPointerStart, TouchPoint); }
-		public void RaisePointerMoveEvent(TouchPoint TouchPoint) { PointerMove?.Invoke(EventType.OnPointerMove, TouchPoint); }
-		public void RaisePointerEndEvent(TouchPoint TouchPoint) { PointerEnd?.Invoke(EventType.OnPointerEnd, TouchPoint); }
-		public clsRender() : base(ProjectObjectTypes.Render)
-		{
-			AddToCollection();
-		}
-		public void FormatUniforms()
-		{
-			foreach(KeyValuePair<string, clsUniformSet> itm in Uniforms)
-			{
-				clsUniformSet uni = itm.Value;
-				UniformType typUni = itm.Value.Type;
-				Type typ = UniformType_ComponentType[typUni];
-				for(int elemI = 0; elemI < uni.Data.Count; elemI++)
-				{
-					for (int compI = 0; compI < uni.Data[elemI].Length; compI++)
-					{
-						uni.Data[elemI][compI] = Convert.ChangeType(uni.Data[elemI][compI], typ);
-					}
-				}
-			}
-		}
-		public new void Dispose()
-		{
-			base.Dispose();
 		}
 	}
 }

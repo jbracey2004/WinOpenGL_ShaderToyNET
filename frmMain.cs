@@ -3,7 +3,9 @@ using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using WeifenLuo.WinFormsUI.Docking;
+using static modProject.modXml;
 using static WinOpenGL_ShaderToy.ProjectDef;
 
 namespace WinOpenGL_ShaderToy
@@ -60,8 +62,8 @@ namespace WinOpenGL_ShaderToy
 		{
 			dialogSave.ShowDialog();
 			Stream file = dialogSave.OpenFile();
-			BinaryFormatter writeBin = new BinaryFormatter();
-			writeBin.Serialize(file, projectMain);
+			XmlSerializer writeBin = new XmlSerializer(typeof(Xml_Project), ProjectXmlTypes);
+			writeBin.Serialize(file, projectMain.Xml);
 			file.Close();
 			file.Dispose();
 		}
@@ -69,10 +71,8 @@ namespace WinOpenGL_ShaderToy
 		{
 			dialogLoad.ShowDialog();
 			Stream file = dialogLoad.OpenFile();
-			BinaryFormatter readBin = new BinaryFormatter();
-			projectMain.Dispose();
-			projectMain = null;
-			projectMain = (clsProject)readBin.Deserialize(file);
+			XmlSerializer readBin = new XmlSerializer(typeof(Xml_Project), ProjectXmlTypes);
+			Xml_Project XmlProject = (Xml_Project)readBin.Deserialize(file);
 			file.Close();
 			file.Dispose();
 			windowProject.Project = projectMain;

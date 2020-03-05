@@ -18,19 +18,12 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmGeometry(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsGeometry Geometry { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsGeometry; } }
-		[NonSerialized]
 		private controlRender glRender;
-		[NonSerialized]
 		private Matrix4 matxView = Matrix4.Identity;
-		[NonSerialized]
 		private Matrix4 matxProjection = Matrix4.Identity;
-		[NonSerialized]
 		private clsCollapsePanel containerMain;
-		[NonSerialized]
 		private Stopwatch timeRun;
-		[NonSerialized]
 		private infoFramePerformance tsRender;
-		[NonSerialized]
 		private clsHPTimer timerUpdateLists;
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{

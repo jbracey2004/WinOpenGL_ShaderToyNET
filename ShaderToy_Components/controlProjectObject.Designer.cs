@@ -32,18 +32,19 @@ namespace ShaderToy_Components
 			this.panelContent = new System.Windows.Forms.Panel();
 			this.panelStatus = new System.Windows.Forms.FlowLayoutPanel();
 			this.txtName = new System.Windows.Forms.TextBox();
+			this.panelContent.SuspendLayout();
 			this.panelStatus.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelContent
 			// 
-			this.panelContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelContent.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.panelContent.Location = new System.Drawing.Point(0, 0);
-			this.panelContent.Name = "panelContent";
-			this.panelContent.Size = new System.Drawing.Size(739, 480);
-			this.panelContent.TabIndex = 2;
+			this.Content.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Content.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.Content.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.Content.Location = new System.Drawing.Point(0, 0);
+			this.Content.Name = "panelContent";
+			this.Content.Size = new System.Drawing.Size(739, 480);
+			this.Content.TabIndex = 2;
 			// 
 			// panelStatus
 			// 
@@ -69,7 +70,7 @@ namespace ShaderToy_Components
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.panelContent);
+			this.Controls.Add(this.Content);
 			this.Controls.Add(this.panelStatus);
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "controlProjectObject";
@@ -77,6 +78,8 @@ namespace ShaderToy_Components
 			this.HandleCreated += new System.EventHandler(this.FrmProjectObject_HandleCreated);
 			this.HandleDestroyed += new System.EventHandler(this.FrmProjectObject_HandleDestroyed);
 			this.Disposed += new System.EventHandler(this.FrmProjectObject_Disposed);
+			this.panelContent.ResumeLayout(false);
+			this.panelContent.PerformLayout();
 			this.panelStatus.ResumeLayout(false);
 			this.panelStatus.PerformLayout();
 			this.ResumeLayout(false);
