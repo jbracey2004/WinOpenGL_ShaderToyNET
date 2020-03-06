@@ -52,6 +52,24 @@ namespace WinOpenGL_ShaderToy
 					return null;
 			}
 		}
+		public static clsProjectObject NewProjectObject(ProjectObjectTypes typ)
+		{
+			switch (typ)
+			{
+				case ProjectObjectTypes.VertexDescription:
+					return new clsVertexDescription();
+				case ProjectObjectTypes.Geometry:
+					return new clsGeometry();
+				case ProjectObjectTypes.Shader:
+					return new clsShader(ShaderType.VertexShader);
+				case ProjectObjectTypes.Render:
+					return new clsRender();
+				case ProjectObjectTypes.Program:
+					return new clsProgram();
+				default:
+					return null;
+			}
+		}
 		public static frmMain formMain;
 		public static clsProject projectMain;
 		public static DockPanel dockMainPanel;
@@ -92,12 +110,19 @@ namespace modProject
 			}
 			public void InitObject(ref clsProject obj)
 			{
-				foreach(var itm in ProjectObjects)
+				List<Xml_KeyValuePair<Xml_ProjectObject, clsProjectObject>> lstTags = new List<Xml_KeyValuePair<Xml_ProjectObject, clsProjectObject>>();
+				foreach (var itm in ProjectObjects)
 				{
-					clsProjectObject objNew = new clsProjectObject(itm.ObjectType);
+					clsProjectObject objNew = NewProjectObject(itm.ObjectType);
 					itm.InitObject(ref objNew);
 					obj.ProjectObjects.Add(objNew);
+					lstTags.Add(new Xml_KeyValuePair<Xml_ProjectObject, clsProjectObject>(itm, objNew));
 				}
+				foreach(var itrTag in lstTags)
+				{
+					itrTag.Key.UpdateObject(ref itrTag.Value);
+				}
+				lstTags.Clear();
 			}
 		}
 		public class Xml_Render : Xml_ProjectObject
@@ -137,11 +162,10 @@ namespace modProject
 					EventScripts.Add(itm.ToString());
 				}
 			}
-			public override clsRender NewObject()
+			public override void UpdateObject(ref clsProjectObject obj)
 			{
-				clsRender ret = new clsRender();
-				
-				return ret;
+				clsRender rend = obj as clsRender;
+				if (rend == null) return;
 			}
 		}
 		public class Xml_Geometry : Xml_ProjectObject
@@ -149,6 +173,8 @@ namespace modProject
 			public string VertexDescription;
 			public List<Xml_KeyValuePair<string, List<object>>> VertexData;
 			public List<uint> TriangleData;
+			public int VertexCount;
+			public int TriangleCount;
 			public Xml_Geometry() : base() { }
 			public Xml_Geometry(clsGeometry obj) : base(obj)
 			{
@@ -159,6 +185,35 @@ namespace modProject
 					VertexData.Add(new Xml_KeyValuePair<string, List<object>>(itm.Key.Name, itm.Value));
 				}
 				TriangleData = new List<uint>(obj.Triangles.Indices);
+				VertexCount = obj.Vertices.Count;
+				TriangleCount = obj.Triangles.Count;
+			}
+			public override void UpdateObject(ref clsProjectObject obj)
+			{
+				clsGeometry geom = obj as clsGeometry;
+				if (geom == null) return;
+				clsVertexDescription desc = clsProjectObject.All.First(itm => (itm.ToString() == VertexDescription)) as clsVertexDescription;
+				if (desc == null) return;
+				geom.VertexDescription = desc;
+				geom.Vertices = new clsVertexCollection(geom);
+				geom.Triangles = new clsTriangleCollection(geom);
+				geom.Vertices.Count = VertexCount;
+				geom.Triangles.Count = TriangleCount;
+				foreach(var itrVrt in VertexData)
+				{
+					clsVertexDescriptionComponent compDesc = desc.First(itm => (itm.Name == itrVrt.Key));
+					if (compDesc == null) continue;
+					geom.Vertices.Data[compDesc] = itrVrt.Value;
+				}
+				for (int itr = 0; itr < TriangleCount; itr++)
+				{
+					geom.Triangles[itr].Items = new uint[]
+					{
+						TriangleData[0 + itr*3],
+						TriangleData[1 + itr*3],
+						TriangleData[2 + itr*3]
+					};
+				}
 			}
 		}
 		public class Xml_VertexDescription : Xml_ProjectObject
@@ -179,6 +234,16 @@ namespace modProject
 					});
 				}
 			}
+			public override void InitObject(ref clsProjectObject obj)
+			{
+				base.InitObject(ref obj);
+				clsVertexDescription desc = obj as clsVertexDescription;
+				if (desc == null) return;
+				foreach (var itrDesc in Components)
+				{
+					desc.Add(new clsVertexDescriptionComponent(desc, itrDesc.ElementGLType, itrDesc.Name, itrDesc.ElementCount, 0));
+				}
+			}
 		}
 		public class Xml_VertexDescriptionComponent
 		{
@@ -190,7 +255,7 @@ namespace modProject
 		}
 		public class Xml_Shader : Xml_ProjectObject
 		{
-			public clsShader.ShaderType ShaderType;
+			public ShaderType ShaderType;
 			public string Source;
 			public Xml_Shader() : base() { }
 			public Xml_Shader(clsShader obj) : base(obj)
@@ -198,10 +263,18 @@ namespace modProject
 				ShaderType = obj.Type;
 				Source = obj.Source;
 			}
-			public override void InitObject(ref clsShader obj)
+			public override void InitObject(ref clsProjectObject obj)
 			{
-				obj.Type = ShaderType;
+				clsShader shd = obj as clsShader;
+				if(shd != null) shd.Type = ShaderType;
 				base.InitObject(ref obj);
+			}
+			public override void UpdateObject(ref clsProjectObject obj)
+			{
+				clsShader shd = obj as clsShader;
+				if (shd == null) return;
+				shd.Source = Source;
+				shd.Compile();
 			}
 		}
 		public class Xml_Program : Xml_ProjectObject
@@ -215,6 +288,17 @@ namespace modProject
 				{
 					Shaders.Add(itm.ToString());
 				}
+			}
+			public override void UpdateObject(ref clsProjectObject obj)
+			{
+				clsProgram prog = obj as clsProgram;
+				if (prog == null) return;
+				foreach(var strItm in Shaders)
+				{
+					clsShader refShader = clsProjectObject.All.First(itm => (itm.ToString() == strItm)) as clsShader;
+					if (refShader != null) prog.Shaders.Add(refShader);
+				}
+				prog.Link();
 			}
 		}
 		public class Xml_KeyValuePair<TKey, TValue>
@@ -1937,7 +2021,10 @@ namespace modProject
 					{
 						refDesc.Updated -= desc_Updated;
 					}
-					value.Updated += desc_Updated;
+					if(value != null)
+					{
+						value.Updated += desc_Updated;
+					}
 					refDesc = value;
 					desc_Updated();
 				}
@@ -2042,6 +2129,7 @@ namespace modProject
 			}
 			private void desc_Updated()
 			{
+				if (refDesc == null) return;
 				KeyValuePair<clsVertexDescriptionComponent, List<object>>[] aryComp = Data.ToArray();
 				for(int itr = 0; itr < aryComp.Length; itr++)
 				{

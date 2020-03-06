@@ -58,6 +58,11 @@ namespace WinOpenGL_ShaderToy
 			}
 		}
 
+		private void menuFile_NewProject_Click(object sender, EventArgs e)
+		{
+			projectMain.Dispose();
+			windowProject.UpdateProjectTree();
+		}
 		private void menuFile_SaveProject_Click(object sender, EventArgs e)
 		{
 			dialogSave.ShowDialog();
@@ -75,6 +80,8 @@ namespace WinOpenGL_ShaderToy
 			Xml_Project XmlProject = (Xml_Project)readBin.Deserialize(file);
 			file.Close();
 			file.Dispose();
+			projectMain.Dispose();
+			XmlProject.InitObject(ref projectMain);
 			windowProject.Project = projectMain;
 			windowProject.UpdateProjectTree();
 		}

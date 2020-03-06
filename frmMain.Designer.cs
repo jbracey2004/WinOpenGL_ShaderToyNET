@@ -41,6 +41,7 @@
 			this.menuFile_SaveProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.dialogLoad = new System.Windows.Forms.OpenFileDialog();
 			this.dialogSave = new System.Windows.Forms.SaveFileDialog();
+			this.menuFile_NewProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuWindows.SuspendLayout();
 			this.menusMain.SuspendLayout();
 			this.SuspendLayout();
@@ -67,6 +68,7 @@
             this.menuProject,
             this.menuStats});
 			this.menuWindows.Name = "menuWindows";
+			this.menuWindows.OwnerItem = this.menusWindows;
 			this.menuWindows.Size = new System.Drawing.Size(121, 48);
 			this.menuWindows.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.MenuWindows_Closing);
 			// 
@@ -108,6 +110,7 @@
 			// menuFile
 			// 
 			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFile_NewProject,
             this.menuFile_LoadProject,
             this.menuFile_SaveProject});
 			this.menuFile.Name = "menuFile";
@@ -131,6 +134,13 @@
 			// dialogLoad
 			// 
 			this.dialogLoad.FileName = "openFileDialog1";
+			// 
+			// menuFile_NewProject
+			// 
+			this.menuFile_NewProject.Name = "menuFile_NewProject";
+			this.menuFile_NewProject.Size = new System.Drawing.Size(180, 22);
+			this.menuFile_NewProject.Text = "New Project";
+			this.menuFile_NewProject.Click += new System.EventHandler(this.menuFile_NewProject_Click);
 			// 
 			// frmMain
 			// 
@@ -169,6 +179,7 @@
 		private System.Windows.Forms.ToolStripMenuItem menuFile_SaveProject;
 		private System.Windows.Forms.OpenFileDialog dialogLoad;
 		private System.Windows.Forms.SaveFileDialog dialogSave;
+		private System.Windows.Forms.ToolStripMenuItem menuFile_NewProject;
 	}
 }
 

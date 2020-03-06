@@ -34,9 +34,10 @@ namespace modProject
 			}
 			public virtual void InitObject(ref clsProjectObject obj)
 			{
-				obj.AddToCollection();
-				obj.Name = clsProjectObject.NextFreeName(obj.ToFullString(""), Name, obj);
+				if(!All.Contains(obj)) obj.AddToCollection();
+				obj.Name = NextFreeName(obj.ToFullString(""), Name, obj);
 			}
+			public virtual void UpdateObject(ref clsProjectObject obj) { }
 		}
 		public static List<clsProjectObject> All = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
