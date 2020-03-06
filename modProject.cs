@@ -169,21 +169,26 @@ namespace modProject
 				rend.RenderInterval = RenderInterval;
 				rend.Geometry = clsProjectObject.All.First(itm => (itm.ToString() == Geometry)) as clsGeometry;
 				rend.Program = clsProjectObject.All.First(itm => (itm.ToString() == Program)) as clsProgram;
-				foreach(var itm in GeometryShaderLinks)
+				if(rend.Geometry != null)
 				{
-					
+					foreach(var itr in GeometryShaderLinks)
+					{
+						clsVertexDescriptionComponent compDesc = desc.First(itm => (itm.Index == itr.Value));
+						if(compDesc == null) continue;
+						rend.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(itr.Key, compDesc));
+					}
 				}
-				foreach(var itm in Uniforms)
+				foreach(var itr in Uniforms)
 				{
-					
+					rend.Uniforms.Add(new KeyValuePair<string, clsUniformSet>(itr.Key, new clsUniformSet(itr.Value)));
 				}
-				foreach(var itm in UniformShaderLinks)
+				foreach(var itr in UniformShaderLinks)
 				{
-					
+					rend.UniformShaderLinks.Add(new KeyValuePair<string, string>(itr.Key, itr.Value));
 				}
-				foreach(var itm in EventScripts)
+				foreach(var itr in EventScripts)
 				{
-					
+					rend.EventScripts.Add(clsEventScript EventScript_FromString(itr));
 				}
 			}
 		}
