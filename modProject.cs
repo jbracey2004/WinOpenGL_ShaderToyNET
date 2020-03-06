@@ -166,6 +166,25 @@ namespace modProject
 			{
 				clsRender rend = obj as clsRender;
 				if (rend == null) return;
+				rend.RenderInterval = RenderInterval;
+				rend.Geometry = clsProjectObject.All.First(itm => (itm.ToString() == Geometry)) as clsGeometry;
+				rend.Program = clsProjectObject.All.First(itm => (itm.ToString() == Program)) as clsProgram;
+				foreach(var itm in GeometryShaderLinks)
+				{
+					
+				}
+				foreach(var itm in Uniforms)
+				{
+					
+				}
+				foreach(var itm in UniformShaderLinks)
+				{
+					
+				}
+				foreach(var itm in EventScripts)
+				{
+					
+				}
 			}
 		}
 		public class Xml_Geometry : Xml_ProjectObject
