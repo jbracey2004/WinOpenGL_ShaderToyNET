@@ -188,7 +188,7 @@ namespace modProject
 				}
 				foreach(var itr in EventScripts)
 				{
-					rend.EventScripts.Add(clsEventScript EventScript_FromString(itr));
+					rend.EventScripts.Add(clsEventScript.EventScript_FromString(itr));
 				}
 			}
 		}
