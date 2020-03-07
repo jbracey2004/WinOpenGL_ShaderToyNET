@@ -29,6 +29,8 @@ using static modProject.clsEventScript;
 using static modCommon.modWndProcInterop.clsTouchInterface;
 using System.Xml.Serialization;
 using static modProject.modXml;
+using System.Xml;
+using System.Text;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -100,6 +102,19 @@ namespace modProject
 			typeof(Xml_Shader),
 			typeof(Xml_Program)
 		};
+		public static string GetXmlString(object obj)
+		{
+			StringBuilder TextStream = new StringBuilder();
+			XmlSerializer parse = new XmlSerializer(obj.GetType(), ProjectXmlTypes);
+			XmlWriter writer = XmlWriter.Create(TextStream);
+			parse.Serialize(writer, obj);
+			string strRet = TextStream.ToString();
+			writer.Close();
+			writer.Dispose();
+			TextStream.Clear();
+			TextStream = null;
+			return strRet;
+		}
 		public class Xml_Project
 		{
 			public List<Xml_ProjectObject> ProjectObjects;
@@ -123,6 +138,10 @@ namespace modProject
 					itrTag.Key.UpdateObject(ref itrTag.Value);
 				}
 				lstTags.Clear();
+			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
 			}
 		}
 		public class Xml_Render : Xml_ProjectObject
@@ -171,9 +190,10 @@ namespace modProject
 				rend.Program = clsProjectObject.All.First(itm => (itm.ToString() == Program)) as clsProgram;
 				if(rend.Geometry != null)
 				{
+					clsVertexDescription Desc = rend.Geometry.VertexDescription;
 					foreach(var itr in GeometryShaderLinks)
 					{
-						clsVertexDescriptionComponent compDesc = desc.First(itm => (itm.Index == itr.Value));
+						clsVertexDescriptionComponent compDesc = Desc.First(itm => (itm.Index == itr.Value));
 						if(compDesc == null) continue;
 						rend.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(itr.Key, compDesc));
 					}
@@ -188,8 +208,15 @@ namespace modProject
 				}
 				foreach(var itr in EventScripts)
 				{
-					rend.EventScripts.Add(clsEventScript.EventScript_FromString(itr));
+					clsEventScript script = clsEventScript.EventScript_FromString(itr);
+					script.Subject = rend;
+					script.Compile();
+					rend.EventScripts.Add(script);
 				}
+			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
 			}
 		}
 		public class Xml_Geometry : Xml_ProjectObject
@@ -238,6 +265,11 @@ namespace modProject
 						TriangleData[2 + itr*3]
 					};
 				}
+				geom.glUpdateBuffers();
+			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
 			}
 		}
 		public class Xml_VertexDescription : Xml_ProjectObject
@@ -268,6 +300,10 @@ namespace modProject
 					desc.Add(new clsVertexDescriptionComponent(desc, itrDesc.ElementGLType, itrDesc.Name, itrDesc.ElementCount, 0));
 				}
 			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
+			}
 		}
 		public class Xml_VertexDescriptionComponent
 		{
@@ -276,6 +312,10 @@ namespace modProject
 			public VertexAttribPointerType ElementGLType;
 			public int ElementCount;
 			public Xml_VertexDescriptionComponent() { }
+			public override string ToString()
+			{
+				return GetXmlString(this);
+			}
 		}
 		public class Xml_Shader : Xml_ProjectObject
 		{
@@ -299,6 +339,10 @@ namespace modProject
 				if (shd == null) return;
 				shd.Source = Source;
 				shd.Compile();
+			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
 			}
 		}
 		public class Xml_Program : Xml_ProjectObject
@@ -324,6 +368,10 @@ namespace modProject
 				}
 				prog.Link();
 			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
+			}
 		}
 		public class Xml_KeyValuePair<TKey, TValue>
 		{
@@ -334,6 +382,10 @@ namespace modProject
 			{
 				Key = objKey;
 				Value = objValue;
+			}
+			public override string ToString()
+			{
+				return GetXmlString(this);
 			}
 		}
 	}
@@ -649,7 +701,7 @@ namespace modProject
 			return $"<{Type}> " + ArrayToString(Data, Type);
 		}
 	}
-	
+
 	public class clsEventScript
 	{
 		public enum EventType
@@ -708,7 +760,11 @@ namespace modProject
 			}
 			return $"{typ.ToString()} ( {str} ) {{ {src} }}";
 		}
-		
+		public override string ToString()
+		{
+			return EventScript_ToString(this);
+		}
+
 		public class clsEventScriptContext
 		{
 			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
@@ -1038,6 +1094,7 @@ namespace modProject
 		public void AttachSubject(clsRender subject)
 		{
 			renderSubject = subject;
+			if (renderSubject == null) return;
 			switch(typEvent)
 			{
 				case EventType.OnLoad:

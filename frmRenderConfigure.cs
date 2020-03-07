@@ -99,17 +99,20 @@ namespace WinOpenGL_ShaderToy
 				if(geom != null)
 				{
 					lstGeometry.Items.Add(geom);
-					if (geom == geomItm) lstGeometry.SelectedItem = geom;
+					if (geom == geomItm) lstGeometry.SelectedItem = geomItm;
 				}
 			}
 			lstGeometry.EndUpdate();
-			bolUpdateLock = false;
 			geomItm = lstGeometry.SelectedItem as clsGeometry;
-			if (geomItm != RenderSubject.Geometry)
+			if (geomItm != renderSubject.Geometry)
 			{
-				RenderSubject.Geometry = geomItm;
+				if (lstGeometry.Items.Contains(renderSubject.Geometry))
+					lstGeometry.SelectedItem = renderSubject.Geometry;
+				else
+					lstGeometry.SelectedIndex = 0;
 				UpdateVertexDescriptionList();
 			}
+			bolUpdateLock = false;
 		}
 		private void UpdateProgramList()
 		{
@@ -124,24 +127,38 @@ namespace WinOpenGL_ShaderToy
 				if (prog != null)
 				{
 					lstProgram.Items.Add(prog);
-					if (prog == progItm) lstProgram.SelectedItem = prog;
+					if (prog == progItm) lstProgram.SelectedItem = progItm;
 				}
 			}
 			lstProgram.EndUpdate();
-			bolUpdateLock = false;
 			progItm = lstProgram.SelectedItem as clsProgram;
-			if (progItm != RenderSubject.Program)
+			if (progItm != renderSubject.Program)
 			{
-				RenderSubject.Program = progItm;
+				if (lstProgram.Items.Contains(renderSubject.Program))
+					lstProgram.SelectedItem = renderSubject.Program;
+				else
+					lstProgram.SelectedIndex = 0;
 				UpdateAttributeList();
 				UpdateUniformsList();
 			}
+			bolUpdateLock = false;
 		}
 		private void UpdateTables()
 		{
+			UpdateUniformsData();
 			UpdateGeometryRouting();
 			UpdateUniformRouting();
 			UpdateEventScripts();
+		}
+		private void UpdateUniformsData()
+		{
+			if (RenderSubject == null) return;
+			if (RenderSubject.Uniforms == null) return;
+			datagridUniformsValues.Rows.Clear();
+			foreach(KeyValuePair<string, clsUniformSet> itm in RenderSubject.Uniforms)
+			{
+				datagridUniformsValues.Rows.Add(new object[] { itm.Key as string, itm.Value.ToString() });
+			}
 		}
 		private void UpdateGeometryRouting()
 		{
@@ -166,10 +183,11 @@ namespace WinOpenGL_ShaderToy
 		private void UpdateEventScripts()
 		{
 			if (RenderSubject == null) return;
+			if (datagridEvents.ColumnCount <= 0) return;
 			datagridEvents.Rows.Clear();
 			foreach (clsEventScript itm in RenderSubject.EventScripts)
 			{
-				datagridEvents.Rows.Add();
+				datagridEvents.Rows.Add(itm.ToString());
 			}
 		}
 		private void lstGeometry_SelectedIndexChanged(object sender, EventArgs e)
@@ -238,7 +256,6 @@ namespace WinOpenGL_ShaderToy
 			RenderSubject.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(strShaderVar, descComp));
 			RenderSubjectForm.UpdateGeometryRouting();
 		}
-
 		private void datagridGeometryRouting_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
 			RenderSubject.GeometryShaderLinks.RemoveAt(e.Row.Index);
@@ -424,6 +441,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		public void UpdateDataGrid()
 		{
+			if (!(IsActivated && Visible)) return;
 			Invoke(new Action(() => 
 			{
 				bolUpdateLock = true;

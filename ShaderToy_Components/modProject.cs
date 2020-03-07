@@ -1,13 +1,14 @@
 ﻿using ShaderToy_Components;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Serialization;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace modProject
 {
-	
 	public class clsProjectObject : IDisposable
 	{
 		public enum ProjectObjectTypes
