@@ -41,24 +41,24 @@ namespace modUniformDataView
 		{
 			get
 			{
-				return StringToArray(Value as string, out int dummyCount, out int dummyType);
+				return StringToArray(Value.ToString(), out int dummyCount, out int dummyType);
 			}
 			set
 			{
-				this.Value = clsUniformSet.ArrayToString(value);
+				Value = clsUniformSet.ArrayToString(value);
 			}
 		}
 		public override void InitializeEditingControl(int rowIndex, object initialFormattedValue, DataGridViewCellStyle dataGridViewCellStyle)
 		{
 			base.InitializeEditingControl(rowIndex, initialFormattedValue, dataGridViewCellStyle);
 			clsUniformDataEditor ctl = DataGridView.EditingControl as clsUniformDataEditor;
-			if (this.Value == null)
+			if (Value == null)
 			{
 				ctl.Text = "<Float> 0";
 			}
 			else
 			{
-				ctl.Text = this.Value as string;
+				ctl.Text = Value.ToString();
 			}
 		}
 		public override void DetachEditingControl()

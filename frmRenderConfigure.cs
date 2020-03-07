@@ -157,8 +157,9 @@ namespace WinOpenGL_ShaderToy
 			datagridUniformsValues.Rows.Clear();
 			foreach(KeyValuePair<string, clsUniformSet> itm in RenderSubject.Uniforms)
 			{
-				datagridUniformsValues.Rows.Add(new object[] { itm.Key as string, itm.Value.ToString() });
+				datagridUniformsValues.Rows.Add(new object[] { itm.Key as string, itm.Value });
 			}
+			UpdateUniformVariableList();
 		}
 		private void UpdateGeometryRouting()
 		{
@@ -305,6 +306,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridUniformsValues_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
+			if (bolUpdateLock) return;
 			if (e.RowIndex < 0) return;
 			if (e.ColumnIndex < 0) return;
 			if (e.RowIndex >= RenderSubject.Uniforms.Count) return;
@@ -321,7 +323,7 @@ namespace WinOpenGL_ShaderToy
 				clsUniformDataCell cellUniformData = cell as clsUniformDataCell;
 				if(cellUniformData != null)
 				{
-					clsUniformSet valueNew = new clsUniformSet();
+					clsUniformSet valueNew = new clsUniformSet(cellUniformData.Value.ToString());
 					valueNew.Type = cellUniformData.DataUniformType;
 					valueNew.Data = cellUniformData.DataObject;
 					RenderSubject.Uniforms[e.RowIndex] = new KeyValuePair<string, clsUniformSet>(oldValue.Key, valueNew);
@@ -441,7 +443,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		public void UpdateDataGrid()
 		{
-			if (!(IsActivated && Visible)) return;
+			if (!Visible) return;
 			Invoke(new Action(() => 
 			{
 				bolUpdateLock = true;
@@ -456,7 +458,8 @@ namespace WinOpenGL_ShaderToy
 					if (cellValue == null) continue;
 					clsUniformSet objData = RenderSubject.Uniforms[idxRow].Value;
 					if (objData == null) continue;
-					cellValue.Value = objData.ToString();
+					cellValue.Value = objData;
+					datagridUniformsValues.InvalidateCell(cellValue);
 				}
 				bolUpdateLock = false;
 			}));
