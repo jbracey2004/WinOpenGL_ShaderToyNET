@@ -264,7 +264,6 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridGeometryRouting_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
-			if (bolUpdateLock) return;
 			if(e.RowIndex < 0) return;
 			DataGridViewRow row = datagridGeometryRouting.Rows[e.RowIndex];
 			DataGridViewColumn column = datagridGeometryRouting.Columns[e.ColumnIndex];
@@ -331,6 +330,31 @@ namespace WinOpenGL_ShaderToy
 			}
 			cell.Tag = null;
 		}
+		private void datagridUniformsValues_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Back)
+			{
+				foreach (var cellSelected in datagridUniformsValues.SelectedCells)
+				{
+					clsUniformDataCell cell = cellSelected as clsUniformDataCell;
+					if (cell == null) continue;
+					if (cell.OwningColumn.Name == "columnVariableValue")
+					{
+						clsUniformSet data = RenderSubject.Uniforms[cell.RowIndex].Value;
+						object[] dataReset = UniformType_InitialValues[data.Type];
+						for (int itr = 0; itr < data.Data.Count; itr++)
+						{
+							for (int itrElem = 0; itrElem < Math.Min(dataReset.Length, data.Data[itr].Length); itrElem++)
+							{
+								Type typ = data.Data[itr][itrElem].GetType();
+								data.Data[itr][itrElem] = Convert.ChangeType(dataReset[itrElem], typ);
+							}
+						}
+						cell.Value = data;
+					}
+				}
+			}
+		}
 		private void UpdateUniformVariableList()
 		{
 			DataGridViewComboBoxColumn lst = datagridUniformsRouting.Columns["columnVarName"] as DataGridViewComboBoxColumn;
@@ -343,7 +367,6 @@ namespace WinOpenGL_ShaderToy
 				}
 			}
 		}
-
 		private void datagridUniformsRouting_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
 		{
 			DataGridViewCell cell = datagridUniformsRouting.CurrentCell;

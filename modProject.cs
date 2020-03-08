@@ -1159,7 +1159,13 @@ namespace modProject
 				script.RunAsync(ScriptContext).Wait();
 			} catch(Exception err)
 			{
-				
+				string strErr = ""; Exception errInner = err;
+				while(errInner != null)
+				{
+					strErr += errInner.Message + "; ";
+					errInner = errInner.InnerException;
+				}
+				Console.WriteLine(strErr);
 			}
 			if(ConfigureForm != null) ConfigureForm.UpdateDataGrid();
 			ScriptContext.ClearArguments();
