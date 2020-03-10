@@ -135,8 +135,33 @@ namespace modCommon
 			public class clsTouchInput
 			{
 				public int ID { get; set; }
+				public int InputFlags { get; set; }
 				public TouchPoint CurrentTouchPoint { get => ((TouchPoints.Count > 0) ? (TouchPoints[TouchPoints.Count - 1]): (TouchPoint.Empty)); }
 				public TouchPoint PreviousTouchPoint { get => ((TouchPoints.Count > 1) ? (TouchPoints[TouchPoints.Count - 2]) : (TouchPoint.Empty)); }
+				public Point MoveDelta 
+				{ 
+					get
+					{
+						Point ret = Point.Empty;
+						if (TouchPoints.Count < 2) return ret;
+						Point pt1 = TouchPoints[TouchPoints.Count - 1].Location;
+						Point pt2 = TouchPoints[TouchPoints.Count - 2].Location;
+						ret = new Point(pt2.X - pt1.X, pt2.Y - pt1.Y);
+						return ret;
+					}
+				}
+				public Point MoveNetDelta
+				{
+					get
+					{
+						Point ret = Point.Empty;
+						if (TouchPoints.Count < 2) return ret;
+						Point pt1 = TouchPoints[TouchPoints.Count - 1].Location;
+						Point pt2 = TouchPoints[0].Location;
+						ret = new Point(pt2.X - pt1.X, pt2.Y - pt1.Y);
+						return ret;
+					}
+				}
 				public List<TouchPoint> TouchPoints { get; private set; } = new List<TouchPoint>();
 			}
 			public class TouchEventArgs : EventArgs
@@ -188,8 +213,12 @@ namespace modCommon
 					{
 						long EventInfo = mouseInfo.dwExtraInfo.ToInt64();
 						long EventFlags = EventInfo & MOUSEEVENTF_MASK;
-						Console.WriteLine($"Message Hooked: {code}, W={wParam}, L={lParam}, Info={EventInfo} Flags={EventFlags}");
+						//Console.WriteLine($"Message Hooked: {code}, W={wParam}, L={lParam}, Info={EventInfo} Flags={EventFlags}");
 						if (EventFlags == TOUCH_FLAG) 
+						{
+							return new IntPtr(1);
+						}
+						if ((EventInfo & 0x80) == 0x80)
 						{
 							return new IntPtr(1);
 						}

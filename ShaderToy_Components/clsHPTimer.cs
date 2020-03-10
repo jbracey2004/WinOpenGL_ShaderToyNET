@@ -17,19 +17,17 @@ public class clsHPTimer : IDisposable
 	public delegate void HPIntervalEventHandler(object sender, HPIntervalEventArgs e);
 	public event HPIntervalEventHandler IntervalEnd;
 	private Stopwatch ts;
-	public infoFramePerformance Performence { private set; get; }
 	public int SleepInterval { set; get; } = 0;
 	public double Interval { set; get; } = 1000.0;
 	private double fElapsed = 0.0;
 	private double fRunTimestamp = 0.0;
 	private double fLastRunTimestamp = 0.0;
 	private bool bolRunning = false;
-	public Control Parent;
+	public Control Parent { get; set;}
 	private Thread threadLoop;
 	public clsHPTimer(Control controlParent)
 	{
 		Parent = controlParent;
-		Performence = new infoFramePerformance();
 		ts = new Stopwatch();
 		ts.Start();
 	}
@@ -45,6 +43,7 @@ public class clsHPTimer : IDisposable
 	public void Stop()
 	{
 		bolRunning = false;
+		while (threadLoop != null) { Application.DoEvents(); }
 	}
 	public void Reset()
 	{
@@ -58,21 +57,23 @@ public class clsHPTimer : IDisposable
 			fRunTimestamp = ts.Elapsed.TotalMilliseconds;
 			double fRunDelta = fRunTimestamp - fLastRunTimestamp;
 			fElapsed += fRunDelta;
-			Performence.SampleFrame(fRunDelta*0.001, fRunTimestamp*0.001);
-			if (fElapsed >= Interval)
+			if (fElapsed > Interval)
 			{
-				fElapsed = 0.0;
+				fElapsed = 0;
 				try
 				{
-					if(Parent != null)
+					if (Parent != null)
 					{
 						if(!(Parent.IsDisposed || Parent.Disposing))
 						{
 							HPIntervalEventHandler evnt = IntervalEnd;
 							if(evnt != null)
 							{
-								//Application.DoEvents();
-								Parent.Invoke(evnt, this, new HPIntervalEventArgs(DateTime.Now));
+								Parent?.BeginInvoke(evnt, this, new HPIntervalEventArgs(DateTime.Now));
+							}
+							if (SleepInterval > 0)
+							{
+								Thread.Sleep(SleepInterval);
 							}
 						}
 					}
@@ -91,27 +92,22 @@ public class clsHPTimer : IDisposable
 					}
 				}
 			}
-			if(SleepInterval > 0)
-			{
-				Thread.Sleep(SleepInterval);
-			}
-			//Application.DoEvents();
 		}
 		threadLoop = null;
 	}
 	bool bolIsDisposed = false;
 	protected virtual void Dispose(bool bolDisposing)
 	{
-		if(!bolIsDisposed)
+		if (!bolIsDisposed)
 		{
-			if(bolDisposing)
+			if (bolDisposing)
 			{
-				this.Stop();
-				this.Parent = null;
-				this.Performence.Dispose();
-				this.Performence = null;
+				Parent = null;
+				ts.Stop();
+				Stop();
 			}
 		}
+		bolIsDisposed = true;
 	}
 	public void Dispose()
 	{

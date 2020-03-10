@@ -93,9 +93,5 @@ namespace WinOpenGL_ShaderToy
 		{
 			panelMain.ProjectObject = null;
 		}
-		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
-		{
-			
-		}
 	}
 }

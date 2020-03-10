@@ -44,6 +44,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void frmSRenderConfigure_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			DockPanel = null;
 			timerUpdateLists.Stop();
 			timerUpdateLists.Dispose();
 			timerUpdateLists = null;

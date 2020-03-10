@@ -96,6 +96,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FrmGeometry_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			DockPanel = null;
 			if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated -= Geometry_VertexDescription_Updated;
 			tsRender.Dispose();
 			tsRender = null;

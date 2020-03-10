@@ -35,12 +35,12 @@ namespace WinOpenGL_ShaderToy
 			timerUpdate = new clsHPTimer(this);
 			timerUpdate.Interval = 1000.0;
 			timerUpdate.SleepInterval = 250;
-			timerUpdate.Performence.HistoryDuration = timerUpdate.Interval / 1000.0;
 			timerUpdate.IntervalEnd += new HPIntervalEventHandler(timerUpdate_Tick);
 			timerUpdate.Start();
 		}
 		private void FrmProject_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			DockPanel = null;
 			timerUpdate.Stop();
 			timerUpdate.Dispose();
 			timerUpdate = null;

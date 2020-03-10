@@ -74,6 +74,7 @@ namespace WinOpenGL_ShaderToy
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			MouseTouch.ID = -1;
+			MouseTouch.InputFlags |= (int)e.Button;
 			MouseTouch.TouchPoints.Clear();
 			MouseTouch.TouchPoints.Add(new TouchPoint() { ControlSize = Size, Location = e.Location });
 			PointerStart?.Invoke(this, new TouchEventArgs(MouseTouch));
@@ -82,6 +83,7 @@ namespace WinOpenGL_ShaderToy
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			if (MouseTouch.ID != -1) MouseTouch.TouchPoints.Clear();
+			MouseTouch.InputFlags |= (int)e.Button;
 			MouseTouch.TouchPoints.Add(new TouchPoint() { ControlSize = Size, Location = e.Location });
 			PointerMove?.Invoke(this, new TouchEventArgs(MouseTouch));
 			base.OnMouseMove(e);
@@ -89,6 +91,7 @@ namespace WinOpenGL_ShaderToy
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			if (MouseTouch.ID != -1) MouseTouch.TouchPoints.Clear();
+			MouseTouch.InputFlags |= (int)e.Button;
 			MouseTouch.TouchPoints.Add(new TouchPoint() { ControlSize = Size, Location = e.Location });
 			PointerEnd?.Invoke(this, new TouchEventArgs(MouseTouch));
 			MouseTouch.TouchPoints.Clear();

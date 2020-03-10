@@ -130,7 +130,6 @@ namespace ShaderToy_Components
 			timerUpdate = new clsHPTimer(this);
 			timerUpdate.Interval = 1000.0;
 			timerUpdate.SleepInterval = 250;
-			timerUpdate.Performence.HistoryDuration = timerUpdate.Interval / 1000.0;
 			timerUpdate.IntervalEnd += new HPIntervalEventHandler(timerUpdate_Tick);
 			timerUpdate.Start();
 		}
@@ -139,6 +138,7 @@ namespace ShaderToy_Components
 			if(timerUpdate != null)
 			{
 				timerUpdate.Stop();
+				timerUpdate.Dispose();
 				timerUpdate = null;
 			}
 		}
