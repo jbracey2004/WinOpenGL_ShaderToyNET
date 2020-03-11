@@ -28,6 +28,7 @@ namespace WinOpenGL_ShaderToy
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{
 			glRender = new controlRender();
+			glRender.Name = Geometry.ToString();
 			glRender.Parent = panelCollapse;
 			glRender.Dock = DockStyle.Fill;
 			glRender.BringToFront();

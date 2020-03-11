@@ -75,6 +75,7 @@ public class clsHPTimer : IDisposable
 							{
 								Thread.Sleep(SleepInterval);
 							}
+							Application.DoEvents();
 						}
 					}
 				}
@@ -92,7 +93,9 @@ public class clsHPTimer : IDisposable
 					}
 				}
 			}
+			Application.DoEvents();
 		}
+		Application.DoEvents();
 		threadLoop = null;
 	}
 	bool bolIsDisposed = false;

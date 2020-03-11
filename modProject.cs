@@ -26,11 +26,12 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using WinOpenGL_ShaderToy;
 using static modProject.clsEventScript;
-using static modCommon.modWndProcInterop.clsTouchInterface;
+using static modCommon.modWndProcInterop.InputInterface;
 using System.Xml.Serialization;
 using static modProject.modXml;
 using System.Xml;
 using System.Text;
+using static modCommon.modWndProcInterop;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -2594,9 +2595,9 @@ namespace modProject
 		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
 		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
 		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
-		public void RaisePointerStartEvent(TouchPoint TouchPoint) { PointerStart?.Invoke(EventType.OnPointerStart, TouchPoint); }
-		public void RaisePointerMoveEvent(TouchPoint TouchPoint) { PointerMove?.Invoke(EventType.OnPointerMove, TouchPoint); }
-		public void RaisePointerEndEvent(TouchPoint TouchPoint) { PointerEnd?.Invoke(EventType.OnPointerEnd, TouchPoint); }
+		public void RaisePointerStartEvent(InputEventArgs InputInfo) { PointerStart?.Invoke(EventType.OnPointerStart, InputInfo); }
+		public void RaisePointerMoveEvent(InputEventArgs InputInfo) { PointerMove?.Invoke(EventType.OnPointerMove, InputInfo); }
+		public void RaisePointerEndEvent(InputEventArgs InputInfo) { PointerEnd?.Invoke(EventType.OnPointerEnd, InputInfo); }
 		public clsRender() : base(ProjectObjectTypes.Render)
 		{
 			AddToCollection();

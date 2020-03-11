@@ -9,7 +9,7 @@ using static clsHPTimer;
 using static generalUtils;
 using System.Collections.Generic;
 using static modProject.clsGeometry;
-using static modCommon.modWndProcInterop.clsTouchInterface;
+using static modCommon.modWndProcInterop.InputInterface;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -62,6 +62,7 @@ namespace WinOpenGL_ShaderToy
 			tsRenderTimer = new infoFramePerformance();
 			tsRenderTimer.HistoryDuration = 10.0;
 			glRender = new controlRender();
+			glRender.Name = Render.ToString();
 			glRender.Parent = panelMain.Content;
 			glRender.Dock = DockStyle.Fill;
 			glRender.VSync = false;
@@ -73,17 +74,17 @@ namespace WinOpenGL_ShaderToy
 			glRender.MakeCurrent();
 			UpdateGeometryRouting();
 		}
-		private void glMain_PointerStart(object sender, TouchEventArgs e)
+		private void glMain_PointerStart(object sender, InputEventArgs e)
 		{
-			Render?.RaisePointerStartEvent(e.Touch);
+			Render?.RaisePointerStartEvent(e);
 		}
-		private void glMain_PointerMove(object sender, TouchEventArgs e)
+		private void glMain_PointerMove(object sender, InputEventArgs e)
 		{
-			Render?.RaisePointerMoveEvent(e.Touch);
+			Render?.RaisePointerMoveEvent(e);
 		}
-		private void glMain_PointerEnd(object sender, TouchEventArgs e)
+		private void glMain_PointerEnd(object sender, InputEventArgs e)
 		{
-			Render?.RaisePointerEndEvent(e.Touch);
+			Render?.RaisePointerEndEvent(e);
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
