@@ -183,35 +183,32 @@ namespace WinOpenGL_ShaderToy
 			double val = 0.0;
 			if(double.TryParse(txtFPS.Text, out val))
 			{
-				timerRender.Interval = (1000.0 / val);
-				txtInterval.Text = (1000.0 / val).ToString("#.########");
+				if (Render == null) return;
+				Render.RenderInterval = (1000.0 / val);
+				timerRender.Interval = Render.RenderInterval;
+				int sleepTmp = (int)Math.Floor(timerRender.Interval * 0.125);
+				//timerRender.SleepInterval = (sleepTmp > 1) ? (sleepTmp) : (0);
 			}
 		}
 		private void BtnFPS_DropDownClosed(object sender, EventArgs e)
 		{
-			double val = 0.0;
-			if (!double.TryParse(txtFPS.Text, out val))
-			{
-				txtFPS.Text = (1000.0/timerRender.Interval).ToString("#.########");
-			}
+			txtFPS.Text = (1000.0 / Render.RenderInterval).ToString("#.########");
 		}
 		private void txtInterval_Change(object sender, EventArgs e)
 		{
 			double val = 0.0;
 			if (double.TryParse(txtInterval.Text, out val))
 			{
-				if (Render != null) Render.RenderInterval = val;
-				timerRender.Interval = val;
-				txtFPS.Text = (1000.0 / val).ToString("#.########");
+				if (Render == null) return;
+				Render.RenderInterval = val;
+				timerRender.Interval = Render.RenderInterval;
+				int sleepTmp = (int)Math.Floor(timerRender.Interval * 0.125);
+				//timerRender.SleepInterval = (sleepTmp > 1) ? (sleepTmp) : (0);
 			}
 		}
 		private void BtnInterval_DropDownClosed(object sender, EventArgs e)
 		{
-			double val = 0.0;
-			if (!double.TryParse(txtInterval.Text, out val))
-			{
-				txtInterval.Text = timerRender.Interval.ToString("#.########");
-			}
+			txtInterval.Text = (Render.RenderInterval).ToString("#.########");
 		}
 		private void btnConfigure_Click(object sender, EventArgs e)
 		{

@@ -267,11 +267,11 @@ namespace modCommon
 						//Console.WriteLine($"Message Hooked: {code}, W={wParam}, L={lParam}, Info={EventInfo} Flags={EventFlags}");
 						if (EventFlags == TOUCH_FLAG) 
 						{
-							return new IntPtr(1);
+							return new IntPtr(0xFF515700);
 						}
 						if ((EventInfo & 0x80) == 0x80)
 						{
-							return new IntPtr(1);
+							return new IntPtr(0xFF515700);
 						}
 					}
 				}

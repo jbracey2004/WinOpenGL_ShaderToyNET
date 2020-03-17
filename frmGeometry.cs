@@ -189,11 +189,11 @@ namespace WinOpenGL_ShaderToy
 			Control objContent = null;
 			if (objSplitter.Splitter == splitterLeft)
 			{
-				objContent = groupGeometry;
+				objContent = panelGeometry;
 			}
 			if (objSplitter.Splitter == splitterRight)
 			{
-				objContent = groupGeometry;
+				objContent = panelGeometry;
 			}
 			return objContent;
 		}

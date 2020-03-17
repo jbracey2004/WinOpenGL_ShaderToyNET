@@ -82,20 +82,20 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.ParentControl = this;
 			clsDesigner1.Name = "ProjectObject";
-			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(800, 449);
 			// 
 			// panelMain.Status
 			// 
+			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lstShaderType);
 			this.panelMain.Status.Controls.Add(this.btnLoad);
 			this.panelMain.Status.Controls.Add(this.btnSave);
 			this.panelMain.Status.Controls.Add(this.gadgetCompile);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 419);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(800, 30);
@@ -211,10 +211,12 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelCompileStatusHead
 			// 
+			this.panelCompileStatusHead.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelCompileStatusHead.Controls.Add(this.chkCompileWarnings);
 			this.panelCompileStatusHead.Controls.Add(this.chkCompileErrors);
 			this.panelCompileStatusHead.Controls.Add(this.lblCompileStatus);
 			this.panelCompileStatusHead.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelCompileStatusHead.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelCompileStatusHead.Location = new System.Drawing.Point(0, 0);
 			this.panelCompileStatusHead.Name = "panelCompileStatusHead";
 			this.panelCompileStatusHead.Size = new System.Drawing.Size(798, 23);
@@ -224,11 +226,12 @@ namespace WinOpenGL_ShaderToy
 			// 
 			this.chkCompileWarnings.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkCompileWarnings.AutoSize = true;
-			this.chkCompileWarnings.BackColor = System.Drawing.Color.Transparent;
+			this.chkCompileWarnings.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.chkCompileWarnings.Checked = true;
 			this.chkCompileWarnings.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkCompileWarnings.Dock = System.Windows.Forms.DockStyle.Left;
-			this.chkCompileWarnings.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.chkCompileWarnings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.chkCompileWarnings.ForeColor = System.Drawing.SystemColors.Window;
 			this.chkCompileWarnings.Location = new System.Drawing.Point(342, 0);
 			this.chkCompileWarnings.Name = "chkCompileWarnings";
 			this.chkCompileWarnings.Size = new System.Drawing.Size(74, 23);
@@ -241,11 +244,12 @@ namespace WinOpenGL_ShaderToy
 			// 
 			this.chkCompileErrors.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkCompileErrors.AutoSize = true;
-			this.chkCompileErrors.BackColor = System.Drawing.Color.Transparent;
+			this.chkCompileErrors.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.chkCompileErrors.Checked = true;
 			this.chkCompileErrors.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkCompileErrors.Dock = System.Windows.Forms.DockStyle.Left;
-			this.chkCompileErrors.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.chkCompileErrors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.chkCompileErrors.ForeColor = System.Drawing.SystemColors.Window;
 			this.chkCompileErrors.Location = new System.Drawing.Point(286, 0);
 			this.chkCompileErrors.Name = "chkCompileErrors";
 			this.chkCompileErrors.Size = new System.Drawing.Size(56, 23);
@@ -256,10 +260,11 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lblCompileStatus
 			// 
-			this.lblCompileStatus.BackColor = System.Drawing.Color.Transparent;
+			this.lblCompileStatus.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.lblCompileStatus.Dock = System.Windows.Forms.DockStyle.Left;
+			this.lblCompileStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lblCompileStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblCompileStatus.ForeColor = System.Drawing.Color.Green;
+			this.lblCompileStatus.ForeColor = System.Drawing.Color.Lime;
 			this.lblCompileStatus.Location = new System.Drawing.Point(0, 0);
 			this.lblCompileStatus.Name = "lblCompileStatus";
 			this.lblCompileStatus.Size = new System.Drawing.Size(286, 23);
@@ -269,7 +274,10 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lstShaderType
 			// 
+			this.lstShaderType.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lstShaderType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstShaderType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.lstShaderType.ForeColor = System.Drawing.SystemColors.Window;
 			this.lstShaderType.FormattingEnabled = true;
 			this.lstShaderType.Location = new System.Drawing.Point(3, 3);
 			this.lstShaderType.Name = "lstShaderType";
@@ -279,6 +287,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnLoad
 			// 
+			this.btnLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnLoad.Location = new System.Drawing.Point(310, 3);
 			this.btnLoad.Name = "btnLoad";
 			this.btnLoad.Size = new System.Drawing.Size(80, 21);
@@ -289,6 +298,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnSave
 			// 
+			this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnSave.Location = new System.Drawing.Point(396, 3);
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(85, 21);
@@ -308,15 +318,17 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnCompile
 			// 
+			this.btnCompile.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.btnCompile.Dock = System.Windows.Forms.DockStyle.Left;
 			this.btnCompile.Enabled = false;
+			this.btnCompile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.btnCompile.Location = new System.Drawing.Point(39, 0);
 			this.btnCompile.Margin = new System.Windows.Forms.Padding(0);
 			this.btnCompile.Name = "btnCompile";
 			this.btnCompile.Size = new System.Drawing.Size(56, 21);
 			this.btnCompile.TabIndex = 5;
 			this.btnCompile.Text = "Compile";
-			this.btnCompile.UseVisualStyleBackColor = true;
+			this.btnCompile.UseVisualStyleBackColor = false;
 			this.btnCompile.Click += new System.EventHandler(this.BtnCompile_Click);
 			// 
 			// chkAutoCompile
@@ -326,6 +338,7 @@ namespace WinOpenGL_ShaderToy
 			this.chkAutoCompile.Checked = true;
 			this.chkAutoCompile.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkAutoCompile.Dock = System.Windows.Forms.DockStyle.Left;
+			this.chkAutoCompile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.chkAutoCompile.Location = new System.Drawing.Point(0, 0);
 			this.chkAutoCompile.Margin = new System.Windows.Forms.Padding(0);
 			this.chkAutoCompile.Name = "chkAutoCompile";
@@ -345,13 +358,7 @@ namespace WinOpenGL_ShaderToy
 			this.BackColor = System.Drawing.SystemColors.Control;
 			this.ClientSize = new System.Drawing.Size(800, 449);
 			this.Controls.Add(this.panelMain);
-			this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)((((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockTop) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.DockBottom) 
-            | WeifenLuo.WinFormsUI.Docking.DockAreas.Document)));
 			this.Name = "frmShader";
-			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.Unknown;
 			this.Text = "Designer_ProjectObject";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmShader_FormClosing);
 			this.Load += new System.EventHandler(this.FrmShader_Load);

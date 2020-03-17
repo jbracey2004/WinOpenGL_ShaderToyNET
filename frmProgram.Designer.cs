@@ -73,14 +73,13 @@
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.ParentControl = this;
 			clsDesigner1.Name = "ProjectObject";
-			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(423, 280);
 			// 
 			// panelMain.Status
 			// 
+			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.gadgetLink);
@@ -96,6 +95,7 @@
 			this.datagridShaderLinks.AllowUserToResizeColumns = false;
 			this.datagridShaderLinks.AllowUserToResizeRows = false;
 			this.datagridShaderLinks.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+			this.datagridShaderLinks.BackgroundColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.datagridShaderLinks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.datagridShaderLinks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnShader});
@@ -130,9 +130,11 @@
 			// 
 			// panelLinkStatus
 			// 
+			this.panelLinkStatus.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelLinkStatus.Controls.Add(this.dataLinkStatus);
 			this.panelLinkStatus.Controls.Add(this.panelLinkStatusHead);
 			this.panelLinkStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelLinkStatus.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelLinkStatus.Location = new System.Drawing.Point(0, 224);
 			this.panelLinkStatus.Name = "panelLinkStatus";
 			this.panelLinkStatus.Size = new System.Drawing.Size(421, 24);
@@ -167,11 +169,12 @@
 			// 
 			this.chkLinkWarnings.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkLinkWarnings.AutoSize = true;
-			this.chkLinkWarnings.BackColor = System.Drawing.Color.Transparent;
+			this.chkLinkWarnings.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.chkLinkWarnings.Checked = true;
 			this.chkLinkWarnings.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkLinkWarnings.Dock = System.Windows.Forms.DockStyle.Left;
-			this.chkLinkWarnings.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.chkLinkWarnings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.chkLinkWarnings.ForeColor = System.Drawing.SystemColors.Window;
 			this.chkLinkWarnings.Location = new System.Drawing.Point(342, 0);
 			this.chkLinkWarnings.Name = "chkLinkWarnings";
 			this.chkLinkWarnings.Size = new System.Drawing.Size(74, 23);
@@ -184,11 +187,12 @@
 			// 
 			this.chkLinkErrors.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkLinkErrors.AutoSize = true;
-			this.chkLinkErrors.BackColor = System.Drawing.Color.Transparent;
+			this.chkLinkErrors.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.chkLinkErrors.Checked = true;
 			this.chkLinkErrors.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkLinkErrors.Dock = System.Windows.Forms.DockStyle.Left;
-			this.chkLinkErrors.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.chkLinkErrors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.chkLinkErrors.ForeColor = System.Drawing.SystemColors.Window;
 			this.chkLinkErrors.Location = new System.Drawing.Point(286, 0);
 			this.chkLinkErrors.Name = "chkLinkErrors";
 			this.chkLinkErrors.Size = new System.Drawing.Size(56, 23);
@@ -201,8 +205,9 @@
 			// 
 			this.lblLinkStatus.BackColor = System.Drawing.Color.Transparent;
 			this.lblLinkStatus.Dock = System.Windows.Forms.DockStyle.Left;
+			this.lblLinkStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lblLinkStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblLinkStatus.ForeColor = System.Drawing.Color.Green;
+			this.lblLinkStatus.ForeColor = System.Drawing.Color.Lime;
 			this.lblLinkStatus.Location = new System.Drawing.Point(0, 0);
 			this.lblLinkStatus.Name = "lblLinkStatus";
 			this.lblLinkStatus.Size = new System.Drawing.Size(286, 23);
@@ -215,6 +220,7 @@
 			this.lblName.AutoSize = true;
 			this.lblName.BackColor = System.Drawing.Color.Transparent;
 			this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblName.ForeColor = System.Drawing.SystemColors.Window;
 			this.lblName.Location = new System.Drawing.Point(3, 6);
 			this.lblName.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
 			this.lblName.Name = "lblName";
@@ -234,24 +240,30 @@
 			// 
 			// btnLink
 			// 
+			this.btnLink.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.btnLink.Dock = System.Windows.Forms.DockStyle.Left;
 			this.btnLink.Enabled = false;
+			this.btnLink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.btnLink.ForeColor = System.Drawing.SystemColors.Window;
 			this.btnLink.Location = new System.Drawing.Point(39, 0);
 			this.btnLink.Margin = new System.Windows.Forms.Padding(0);
 			this.btnLink.Name = "btnLink";
 			this.btnLink.Size = new System.Drawing.Size(56, 21);
 			this.btnLink.TabIndex = 5;
 			this.btnLink.Text = "Link";
-			this.btnLink.UseVisualStyleBackColor = true;
+			this.btnLink.UseVisualStyleBackColor = false;
 			this.btnLink.Click += new System.EventHandler(this.BtnLink_Click);
 			// 
 			// chkAutoLink
 			// 
 			this.chkAutoLink.Appearance = System.Windows.Forms.Appearance.Button;
 			this.chkAutoLink.AutoSize = true;
+			this.chkAutoLink.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.chkAutoLink.Checked = true;
 			this.chkAutoLink.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.chkAutoLink.Dock = System.Windows.Forms.DockStyle.Left;
+			this.chkAutoLink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.chkAutoLink.ForeColor = System.Drawing.SystemColors.Window;
 			this.chkAutoLink.Location = new System.Drawing.Point(0, 0);
 			this.chkAutoLink.Margin = new System.Windows.Forms.Padding(0);
 			this.chkAutoLink.Name = "chkAutoLink";
@@ -259,7 +271,7 @@
 			this.chkAutoLink.TabIndex = 4;
 			this.chkAutoLink.Text = "Auto";
 			this.chkAutoLink.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.chkAutoLink.UseVisualStyleBackColor = true;
+			this.chkAutoLink.UseVisualStyleBackColor = false;
 			this.chkAutoLink.CheckedChanged += new System.EventHandler(this.ChkAutoLink_CheckedChanged);
 			// 
 			// frmProgram

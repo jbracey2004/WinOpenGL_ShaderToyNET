@@ -52,7 +52,7 @@
             this.menuNew_Program,
             this.menuNew_Render});
 			this.menuNew.Name = "menuNew";
-			this.menuNew.Size = new System.Drawing.Size(197, 158);
+			this.menuNew.Size = new System.Drawing.Size(197, 114);
 			// 
 			// menuNew_VertexDescription
 			// 
@@ -90,10 +90,10 @@
 			// 
 			// treeMain
 			// 
-			this.treeMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+			this.treeMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.treeMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.treeMain.ForeColor = System.Drawing.Color.White;
+			this.treeMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.treeMain.Indent = 18;
 			this.treeMain.LabelEdit = true;
 			this.treeMain.LineColor = System.Drawing.Color.DarkGray;
@@ -112,6 +112,7 @@
 			this.treeMain.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeMain_AfterSelect);
 			this.treeMain.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TreeMain_MouseDoubleClick);
 			this.treeMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TreeMain_MouseDown);
+			this.treeMain.MouseLeave += new System.EventHandler(this.treeMain_MouseLeave);
 			this.treeMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TreeMain_MouseMove);
 			// 
 			// menuProjectObject

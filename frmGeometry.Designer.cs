@@ -35,9 +35,9 @@
 			this.splitterRight = new System.Windows.Forms.Splitter();
 			this.panelLeft = new System.Windows.Forms.Panel();
 			this.panelRight = new System.Windows.Forms.Panel();
-			this.groupGeometry = new System.Windows.Forms.GroupBox();
 			this.panelGeometry = new System.Windows.Forms.Panel();
 			this.propsGeometry = new System.Windows.Forms.PropertyGrid();
+			this.lblHeader_Geometry = new System.Windows.Forms.Label();
 			this.lblName = new System.Windows.Forms.Label();
 			this.lblVertexDesc = new System.Windows.Forms.Label();
 			this.lstVertexDesc = new System.Windows.Forms.ComboBox();
@@ -48,28 +48,27 @@
 			this.panelMain.SuspendLayout();
 			this.panelCollapse.SuspendLayout();
 			this.panelRight.SuspendLayout();
-			this.groupGeometry.SuspendLayout();
 			this.panelGeometry.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelMain
 			// 
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			// 
 			// panelMain.Content
 			// 
 			this.panelMain.Content.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Content.Controls.Add(this.panelCollapse);
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(871, 479);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.ParentControl = this;
 			clsDesigner1.Name = "ProjectObject";
 			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
@@ -77,6 +76,7 @@
 			// 
 			// panelMain.Status
 			// 
+			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.lblVertexDesc);
@@ -84,6 +84,7 @@
 			this.panelMain.Status.Controls.Add(this.lblPositionAttr);
 			this.panelMain.Status.Controls.Add(this.lstPositionAttr);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 479);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(871, 30);
@@ -92,13 +93,13 @@
 			// 
 			// panelCollapse
 			// 
-			this.panelCollapse.BackColor = System.Drawing.SystemColors.Control;
+			this.panelCollapse.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.panelCollapse.Controls.Add(this.splitterLeft);
 			this.panelCollapse.Controls.Add(this.splitterRight);
 			this.panelCollapse.Controls.Add(this.panelLeft);
 			this.panelCollapse.Controls.Add(this.panelRight);
 			this.panelCollapse.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelCollapse.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.panelCollapse.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelCollapse.Location = new System.Drawing.Point(0, 0);
 			this.panelCollapse.Name = "panelCollapse";
 			this.panelCollapse.Size = new System.Drawing.Size(869, 477);
@@ -139,50 +140,63 @@
 			// 
 			// panelRight
 			// 
-			this.panelRight.Controls.Add(this.groupGeometry);
+			this.panelRight.Controls.Add(this.panelGeometry);
 			this.panelRight.Dock = System.Windows.Forms.DockStyle.Right;
 			this.panelRight.Location = new System.Drawing.Point(620, 0);
 			this.panelRight.Name = "panelRight";
 			this.panelRight.Size = new System.Drawing.Size(249, 477);
 			this.panelRight.TabIndex = 1;
 			// 
-			// groupGeometry
-			// 
-			this.groupGeometry.BackColor = System.Drawing.Color.Transparent;
-			this.groupGeometry.Controls.Add(this.panelGeometry);
-			this.groupGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupGeometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.groupGeometry.Location = new System.Drawing.Point(0, 0);
-			this.groupGeometry.Name = "groupGeometry";
-			this.groupGeometry.Size = new System.Drawing.Size(249, 477);
-			this.groupGeometry.TabIndex = 7;
-			this.groupGeometry.TabStop = false;
-			this.groupGeometry.Text = "Geometry";
-			// 
 			// panelGeometry
 			// 
 			this.panelGeometry.BackColor = System.Drawing.Color.Transparent;
 			this.panelGeometry.Controls.Add(this.propsGeometry);
+			this.panelGeometry.Controls.Add(this.lblHeader_Geometry);
 			this.panelGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelGeometry.Location = new System.Drawing.Point(3, 18);
+			this.panelGeometry.Location = new System.Drawing.Point(0, 0);
 			this.panelGeometry.Name = "panelGeometry";
-			this.panelGeometry.Size = new System.Drawing.Size(243, 456);
+			this.panelGeometry.Size = new System.Drawing.Size(249, 477);
 			this.panelGeometry.TabIndex = 1;
 			// 
 			// propsGeometry
 			// 
+			this.propsGeometry.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.propsGeometry.CommandsDisabledLinkColor = System.Drawing.Color.Black;
+			this.propsGeometry.DisabledItemForeColor = System.Drawing.Color.Black;
 			this.propsGeometry.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propsGeometry.Location = new System.Drawing.Point(0, 0);
+			this.propsGeometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.propsGeometry.HelpBackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.propsGeometry.HelpBorderColor = System.Drawing.SystemColors.ControlLight;
+			this.propsGeometry.HelpForeColor = System.Drawing.SystemColors.Window;
+			this.propsGeometry.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+			this.propsGeometry.Location = new System.Drawing.Point(0, 24);
 			this.propsGeometry.Name = "propsGeometry";
-			this.propsGeometry.Size = new System.Drawing.Size(243, 456);
+			this.propsGeometry.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
+			this.propsGeometry.Size = new System.Drawing.Size(249, 453);
 			this.propsGeometry.TabIndex = 0;
+			this.propsGeometry.ToolbarVisible = false;
+			this.propsGeometry.ViewBackColor = System.Drawing.SystemColors.ControlDark;
+			this.propsGeometry.ViewBorderColor = System.Drawing.SystemColors.ControlLight;
+			this.propsGeometry.ViewForeColor = System.Drawing.SystemColors.Window;
 			this.propsGeometry.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropsGeometry_PropertyValueChanged);
+			// 
+			// lblHeader_Geometry
+			// 
+			this.lblHeader_Geometry.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.lblHeader_Geometry.Dock = System.Windows.Forms.DockStyle.Top;
+			this.lblHeader_Geometry.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblHeader_Geometry.Location = new System.Drawing.Point(0, 0);
+			this.lblHeader_Geometry.Name = "lblHeader_Geometry";
+			this.lblHeader_Geometry.Size = new System.Drawing.Size(249, 24);
+			this.lblHeader_Geometry.TabIndex = 0;
+			this.lblHeader_Geometry.Text = "Geometry";
 			// 
 			// lblName
 			// 
 			this.lblName.AutoSize = true;
 			this.lblName.BackColor = System.Drawing.Color.Transparent;
 			this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblName.ForeColor = System.Drawing.SystemColors.Window;
 			this.lblName.Location = new System.Drawing.Point(3, 6);
 			this.lblName.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
 			this.lblName.Name = "lblName";
@@ -193,7 +207,9 @@
 			// 
 			// lblVertexDesc
 			// 
+			this.lblVertexDesc.BackColor = System.Drawing.Color.Transparent;
 			this.lblVertexDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblVertexDesc.ForeColor = System.Drawing.SystemColors.Window;
 			this.lblVertexDesc.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblVertexDesc.Location = new System.Drawing.Point(239, 0);
 			this.lblVertexDesc.Name = "lblVertexDesc";
@@ -204,8 +220,11 @@
 			// 
 			// lstVertexDesc
 			// 
+			this.lstVertexDesc.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lstVertexDesc.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstVertexDesc.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lstVertexDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lstVertexDesc.ForeColor = System.Drawing.SystemColors.Window;
 			this.lstVertexDesc.FormattingEnabled = true;
 			this.lstVertexDesc.Location = new System.Drawing.Point(364, 3);
 			this.lstVertexDesc.Name = "lstVertexDesc";
@@ -215,7 +234,9 @@
 			// 
 			// lblPositionAttr
 			// 
+			this.lblPositionAttr.BackColor = System.Drawing.Color.Transparent;
 			this.lblPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblPositionAttr.ForeColor = System.Drawing.SystemColors.Window;
 			this.lblPositionAttr.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblPositionAttr.Location = new System.Drawing.Point(547, 0);
 			this.lblPositionAttr.Name = "lblPositionAttr";
@@ -226,8 +247,11 @@
 			// 
 			// lstPositionAttr
 			// 
+			this.lstPositionAttr.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lstPositionAttr.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstPositionAttr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.lstPositionAttr.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lstPositionAttr.ForeColor = System.Drawing.SystemColors.Window;
 			this.lstPositionAttr.FormattingEnabled = true;
 			this.lstPositionAttr.Location = new System.Drawing.Point(662, 3);
 			this.lstPositionAttr.Name = "lstPositionAttr";
@@ -252,7 +276,6 @@
 			this.panelMain.ResumeLayout(false);
 			this.panelCollapse.ResumeLayout(false);
 			this.panelRight.ResumeLayout(false);
-			this.groupGeometry.ResumeLayout(false);
 			this.panelGeometry.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -267,12 +290,12 @@
 		private System.Windows.Forms.Splitter splitterRight;
 		private System.Windows.Forms.Panel panelLeft;
 		private System.Windows.Forms.Panel panelRight;
-		private System.Windows.Forms.GroupBox groupGeometry;
 		private System.Windows.Forms.Panel panelGeometry;
 		private System.Windows.Forms.PropertyGrid propsGeometry;
 		private System.Windows.Forms.Label lblPositionAttr;
 		private System.Windows.Forms.ComboBox lstPositionAttr;
 		private System.Windows.Forms.Label lblVertexDesc;
 		private System.Windows.Forms.ComboBox lstVertexDesc;
+		private System.Windows.Forms.Label lblHeader_Geometry;
 	}
 }

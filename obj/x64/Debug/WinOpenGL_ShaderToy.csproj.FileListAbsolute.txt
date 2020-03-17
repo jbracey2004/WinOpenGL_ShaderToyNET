@@ -182,6 +182,7 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.csprojAssemblyReference.cache
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.exe.config
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.controlEventScript.resources
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.controlRender.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.controlUniformData.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.frmGeometry.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.frmRenderConfigure.resources
@@ -196,4 +197,3 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.cspro
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.csproj.CopyComplete
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.controlRender.resources

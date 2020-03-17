@@ -67,7 +67,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			if(Shader != null)
 			{
-				Shader.Source = txtSource.Text;
+				Shader.Source = txtSource.Text.Trim();
 				UpdateSourceHighlighting(sender, e);
 				if(chkAutoCompile.Checked)
 				{
@@ -138,22 +138,22 @@ namespace WinOpenGL_ShaderToy
 			{
 				if (Shader.CompileInfo.ErrorMessages.Length > 0)
 				{
-					lblCompileStatus.ForeColor = Color.DarkRed;
+					lblCompileStatus.ForeColor = Color.Red;
 					lblCompileStatus.Text = "Compile Status: Compile Failed.";
 				}
 				else if (Shader.CompileInfo.WarningMessages.Length > 0)
 				{
-					lblCompileStatus.ForeColor = Color.Blue;
+					lblCompileStatus.ForeColor = Color.RoyalBlue;
 					lblCompileStatus.Text = "Compile Status: Compiled* See Messages.";
 				}
 				else if (Shader.CompileInfo.AllMessages.Length > 0)
 				{
-					lblCompileStatus.ForeColor = Color.Blue;
+					lblCompileStatus.ForeColor = Color.RoyalBlue;
 					lblCompileStatus.Text = "Link Status: Linked* See Messages.";
 				}
 				else
 				{
-					lblCompileStatus.ForeColor = Color.Green;
+					lblCompileStatus.ForeColor = Color.Lime;
 					lblCompileStatus.Text = "Compile Status: Compiled. Good.";
 				}
 				chkCompileErrors.Text = $"Errors: {Shader.CompileInfo.ErrorMessages.Length}";

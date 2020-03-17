@@ -34,7 +34,7 @@ namespace WinOpenGL_ShaderToy
 			}
 			timerUpdate = new clsHPTimer(this);
 			timerUpdate.Interval = 1000.0;
-			timerUpdate.SleepInterval = 250;
+			timerUpdate.SleepInterval = 500;
 			timerUpdate.IntervalEnd += new HPIntervalEventHandler(timerUpdate_Tick);
 			timerUpdate.Start();
 		}
@@ -96,15 +96,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void UpdateAllNodes(TreeNode node)
 		{
-			clsProjectObject obj = node.Tag as clsProjectObject;
-			if(obj != null)
-			{
-				if(!node.IsEditing && node != nodeHover)
-				{
-					node.Name = obj.ToString();
-					node.Text = obj.ToString();
-				}
-			}
+			UpdateNodeLabel(node);
 			foreach (TreeNode nodeI in node.Nodes)
 			{
 				UpdateAllNodes(nodeI);
@@ -191,9 +183,13 @@ namespace WinOpenGL_ShaderToy
 					frmNew.Show(dockMainPanel, DockState.Document);
 				} else
 				{
-					objNode.ParentControl.ParentControl.Focus();
+					objNode.ParentControl.ParentForm.Focus();
 				}
 			}
+			TreeNode nodeTmp = nodeHover;
+			nodeHover = null;
+			UpdateNodeLabel(nodeTmp);
+			UpdateNodeLabel(nodeClicked);
 		}
 		private void TreeMain_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
 		{
@@ -208,6 +204,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void TreeMain_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
 		{
+			if (string.IsNullOrEmpty(e.Label)) return;
 			clsProjectObject obj = e.Node.Tag as clsProjectObject;
 			obj.Name = e.Label;
 			e.Node.Text = obj.ToString();
@@ -219,29 +216,34 @@ namespace WinOpenGL_ShaderToy
 			TreeNode node = treeMain.GetNodeAt(e.Location);
 			if (node != nodeHover)
 			{
-				if (nodeHover != null)
-				{
-					if (!nodeHover.IsEditing)
-					{
-						clsProjectObject obj = nodeHover.Tag as clsProjectObject;
-						if (obj != null)
-						{
-							nodeHover.Text = obj.ToString();
-						}
-					}
-				}
-				if (node != null)
-				{
-					if (!node.IsEditing)
-					{
-						clsProjectObject obj = node.Tag as clsProjectObject;
-						if (obj != null)
-						{
-							node.Text = obj.Name;
-						}
-					}
-				}
+				TreeNode nodeTmp = nodeHover;
 				nodeHover = node;
+				UpdateNodeLabel(nodeTmp);
+				UpdateNodeLabel(node);
+			}
+		}
+		private void treeMain_MouseLeave(object sender, EventArgs e)
+		{
+			TreeNode nodeTmp = nodeHover;
+			nodeHover = null;
+			UpdateNodeLabel(nodeTmp);
+		}
+		private void UpdateNodeLabel(TreeNode node)
+		{
+			if (node == null) return;
+			clsProjectObject obj = node.Tag as clsProjectObject;
+			if (obj == null) return;
+			node.Name = obj.ToString();
+			if (!node.IsEditing)
+			{
+				if (node == nodeHover)
+				{
+					node.Text = obj.Name;
+				}
+				else
+				{
+					node.Text = obj.ToString();
+				}
 			}
 		}
 	}

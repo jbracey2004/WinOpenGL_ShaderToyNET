@@ -119,22 +119,22 @@ namespace WinOpenGL_ShaderToy
 			{
 				if (Program.LinkInfo.ErrorMessages.Length > 0)
 				{
-					lblLinkStatus.ForeColor = Color.DarkRed;
+					lblLinkStatus.ForeColor = Color.Red;
 					lblLinkStatus.Text = "Link Status: Link Failed.";
 				}
 				else if (Program.LinkInfo.WarningMessages.Length > 0)
 				{
-					lblLinkStatus.ForeColor = Color.Blue;
+					lblLinkStatus.ForeColor = Color.RoyalBlue;
 					lblLinkStatus.Text = "Link Status: Linked* See Messages.";
 				}
 				else if (Program.LinkInfo.AllMessages.Length > 0)
 				{
-					lblLinkStatus.ForeColor = Color.Blue;
+					lblLinkStatus.ForeColor = Color.RoyalBlue;
 					lblLinkStatus.Text = "Link Status: Linked* See Messages.";
 				}
 				else
 				{
-					lblLinkStatus.ForeColor = Color.Green;
+					lblLinkStatus.ForeColor = Color.Lime;
 					lblLinkStatus.Text = "Link Status: Linked. Good.";
 				}
 				chkLinkErrors.Text = $"Errors: {Program.LinkInfo.ErrorMessages.Length}";

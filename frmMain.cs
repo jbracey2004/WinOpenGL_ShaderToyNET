@@ -21,7 +21,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			formMain = this;
 			glInit(Handle);
-			dockMainPanel = this.dockMain;
+			dockMainPanel = dockMain;
 			projectMain = new clsProject();
 			windowProject = new frmProject(projectMain);
 			if (menuProject.Checked)
@@ -81,6 +81,7 @@ namespace WinOpenGL_ShaderToy
 			file.Close();
 			file.Dispose();
 			projectMain.Dispose();
+			projectMain = new clsProject();
 			XmlProject.InitObject(ref projectMain);
 			windowProject.Project = projectMain;
 			windowProject.UpdateProjectTree();

@@ -21,11 +21,10 @@ namespace WinOpenGL_ShaderToy
 			// controlRender
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.ForeColor = System.Drawing.Color.White;
 			this.Name = "controlRender";
-			this.Size = new System.Drawing.Size(256, 256);
-			this.ResumeLayout(true);
+			this.Size = new System.Drawing.Size(260, 260);
+			this.ResumeLayout(false);
 
 		}
 		public controlRender() : base()
@@ -110,8 +109,12 @@ namespace WinOpenGL_ShaderToy
 		protected override void WndProc(ref Message m)
 		{
 			bool bolHandled = WinProc_HandleTouch(this, ref m, ref TouchInterface);
+			if (m.Result.ToInt64() != 0) return;
 			base.WndProc(ref m);
-			if (bolHandled) m.Result = new IntPtr(1);
+		}
+		public override bool PreProcessMessage(ref Message msg)
+		{
+			return base.PreProcessMessage(ref msg);
 		}
 	}
 }

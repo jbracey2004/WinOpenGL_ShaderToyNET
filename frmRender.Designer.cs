@@ -29,7 +29,7 @@ namespace WinOpenGL_ShaderToy
 		/// </summary>
 		private void InitializeComponent()
 		{
-			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner2 = new ShaderToy_Components.controlProjectObject.clsDesigner();
+			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.lblName = new System.Windows.Forms.Label();
 			this.btnConfigure = new System.Windows.Forms.Button();
@@ -51,9 +51,10 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelMain.Content
 			// 
+			this.panelMain.Content.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.panelMain.Content.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlDark;
+			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 420);
@@ -62,19 +63,19 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.ParentControl = this;
-			clsDesigner2.Name = "ProjectObject";
-			clsDesigner2.ParentControl = this.panelMain;
-			this.panelMain.ProjectObject = clsDesigner2;
+			clsDesigner1.Name = "ProjectObject";
+			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(800, 450);
 			// 
 			// panelMain.Status
 			// 
+			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.btnConfigure);
 			this.panelMain.Status.Controls.Add(this.toolStripFPS);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 420);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(800, 30);
@@ -96,13 +97,14 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnConfigure
 			// 
+			this.btnConfigure.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.btnConfigure.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.btnConfigure.Location = new System.Drawing.Point(237, 3);
 			this.btnConfigure.Name = "btnConfigure";
 			this.btnConfigure.Size = new System.Drawing.Size(69, 23);
 			this.btnConfigure.TabIndex = 4;
 			this.btnConfigure.Text = "Configure";
-			this.btnConfigure.UseVisualStyleBackColor = true;
+			this.btnConfigure.UseVisualStyleBackColor = false;
 			this.btnConfigure.Click += new System.EventHandler(this.btnConfigure_Click);
 			// 
 			// toolStripFPS
@@ -126,6 +128,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnInterval
 			// 
+			this.btnInterval.BackColor = System.Drawing.Color.Transparent;
 			this.btnInterval.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.btnInterval.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.txtInterval});
@@ -143,6 +146,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// btnFPS
 			// 
+			this.btnFPS.BackColor = System.Drawing.Color.Transparent;
 			this.btnFPS.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.btnFPS.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.txtFPS});
@@ -160,6 +164,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lblRenderDuration
 			// 
+			this.lblRenderDuration.BackColor = System.Drawing.Color.Transparent;
 			this.lblRenderDuration.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.lblRenderDuration.Name = "lblRenderDuration";
 			this.lblRenderDuration.Size = new System.Drawing.Size(23, 15);
@@ -167,6 +172,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lblRenderFreq
 			// 
+			this.lblRenderFreq.BackColor = System.Drawing.Color.Transparent;
 			this.lblRenderFreq.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.lblRenderFreq.Name = "lblRenderFreq";
 			this.lblRenderFreq.Size = new System.Drawing.Size(21, 15);

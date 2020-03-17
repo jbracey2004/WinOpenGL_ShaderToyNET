@@ -369,7 +369,8 @@ namespace WinOpenGL_ShaderToy
 		public void Close()
 		{
 			if (_context == null) return;
-			_context.ArgumentsUpdated -= ScriptContext_ArgumentsUpdated;_context.ClearArguments();
+			_context.ArgumentsUpdated -= ScriptContext_ArgumentsUpdated;
+			_context.ClearArguments();
 			_context.DetachUpdateArguments(eventType);
 		}
 		private void EventArgumentsContainer_Adjust(object sender, EventArgs e)
@@ -383,7 +384,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		public string Source
 		{
-			get => txtSource.Text;
+			get => txtSource.Text.Trim();
 			set { txtSource.Text = value; }
 		}
 		private List<Label> aryLabelArguments = new List<Label>();

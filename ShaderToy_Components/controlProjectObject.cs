@@ -86,7 +86,6 @@ namespace ShaderToy_Components
 			}
 		}
 		public static clsDesigner objPlaceHolder = new clsDesigner();
-		public Control ParentControl = null;
 		private clsProjectObject objProjectObject;
 		public clsProjectObject ProjectObject
 		{
@@ -106,13 +105,13 @@ namespace ShaderToy_Components
 				return objProjectObject;
 			}
 		}
-		public controlProjectObject()
+		public controlProjectObject() : base()
 		{
 			InitializeComponent();
 			ProjectObject = objPlaceHolder;
 			ProjectObject.ParentControl = this;
 		}
-		public controlProjectObject(clsProjectObject refObj)
+		public controlProjectObject(clsProjectObject refObj) : base()
 		{
 			InitializeComponent();
 			ProjectObject = refObj;
@@ -157,9 +156,9 @@ namespace ShaderToy_Components
 		public virtual void UpdateTitle()
 		{
 			Text = ProjectObject.ToString();
-			if(ParentControl != null)
+			if(ParentForm != null)
 			{
-				ParentControl.Text = ProjectObject.ToString();
+				ParentForm.Text = ProjectObject.ToString();
 			}
 		}
 		private void TxtName_TextChanged(object sender, EventArgs e)
@@ -168,9 +167,9 @@ namespace ShaderToy_Components
 			UpdateTitle();
 		}
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		public Panel Content { get { return panelContent; } }
+		public Panel Content { get => this.panelContent; }
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		public Panel Status { get { return panelStatus; } }
+		public Panel Status { get => this.panelStatus; }
 		public override string ToString()
 		{
 			return $"Control<{Text}>";

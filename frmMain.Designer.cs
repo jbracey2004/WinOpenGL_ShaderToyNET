@@ -37,28 +37,29 @@
 			this.menusWindows = new System.Windows.Forms.ToolStripMenuItem();
 			this.menusMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuFile_NewProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuFile_LoadProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuFile_SaveProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.dialogLoad = new System.Windows.Forms.OpenFileDialog();
 			this.dialogSave = new System.Windows.Forms.SaveFileDialog();
-			this.menuFile_NewProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuWindows.SuspendLayout();
 			this.menusMain.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dockMain
 			// 
-			this.dockMain.DefaultFloatWindowSize = new System.Drawing.Size(640, 480);
+			this.dockMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.dockMain.DefaultFloatWindowSize = new System.Drawing.Size(400, 400);
 			this.dockMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.dockMain.DockBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.dockMain.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
+			this.dockMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.dockMain.Location = new System.Drawing.Point(0, 24);
 			this.dockMain.Margin = new System.Windows.Forms.Padding(0);
 			this.dockMain.Name = "dockMain";
 			this.dockMain.Padding = new System.Windows.Forms.Padding(6);
-			this.dockMain.ShowAutoHideContentOnHover = false;
 			this.dockMain.ShowDocumentIcon = true;
 			this.dockMain.Size = new System.Drawing.Size(1264, 737);
-			this.dockMain.SupportDeeplyNestedContent = true;
 			this.dockMain.TabIndex = 10;
 			this.dockMain.Theme = this.themeDock_Main;
 			// 
@@ -117,17 +118,24 @@
 			this.menuFile.Size = new System.Drawing.Size(37, 20);
 			this.menuFile.Text = "File";
 			// 
+			// menuFile_NewProject
+			// 
+			this.menuFile_NewProject.Name = "menuFile_NewProject";
+			this.menuFile_NewProject.Size = new System.Drawing.Size(140, 22);
+			this.menuFile_NewProject.Text = "New Project";
+			this.menuFile_NewProject.Click += new System.EventHandler(this.menuFile_NewProject_Click);
+			// 
 			// menuFile_LoadProject
 			// 
 			this.menuFile_LoadProject.Name = "menuFile_LoadProject";
-			this.menuFile_LoadProject.Size = new System.Drawing.Size(180, 22);
+			this.menuFile_LoadProject.Size = new System.Drawing.Size(140, 22);
 			this.menuFile_LoadProject.Text = "Load Project";
 			this.menuFile_LoadProject.Click += new System.EventHandler(this.menuFile_LoadProject_Click);
 			// 
 			// menuFile_SaveProject
 			// 
 			this.menuFile_SaveProject.Name = "menuFile_SaveProject";
-			this.menuFile_SaveProject.Size = new System.Drawing.Size(180, 22);
+			this.menuFile_SaveProject.Size = new System.Drawing.Size(140, 22);
 			this.menuFile_SaveProject.Text = "Save Project";
 			this.menuFile_SaveProject.Click += new System.EventHandler(this.menuFile_SaveProject_Click);
 			// 
@@ -135,22 +143,16 @@
 			// 
 			this.dialogLoad.FileName = "openFileDialog1";
 			// 
-			// menuFile_NewProject
-			// 
-			this.menuFile_NewProject.Name = "menuFile_NewProject";
-			this.menuFile_NewProject.Size = new System.Drawing.Size(180, 22);
-			this.menuFile_NewProject.Text = "New Project";
-			this.menuFile_NewProject.Click += new System.EventHandler(this.menuFile_NewProject_Click);
-			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(1264, 761);
 			this.Controls.Add(this.dockMain);
 			this.Controls.Add(this.menusMain);
 			this.DoubleBuffered = true;
-			this.IsMdiContainer = true;
+			this.ForeColor = System.Drawing.SystemColors.Control;
 			this.MainMenuStrip = this.menusMain;
 			this.Name = "frmMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

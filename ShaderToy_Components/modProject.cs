@@ -43,7 +43,7 @@ namespace modProject
 		public static List<clsProjectObject> All = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
 		public string Name { set; get; }
-		public controlProjectObject ParentControl = null;
+		public controlProjectObject ParentControl { set; get; } = null;
 		public clsProjectObject(ProjectObjectTypes typ)
 		{
 			ProjectObjType = typ;

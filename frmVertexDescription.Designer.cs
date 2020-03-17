@@ -30,12 +30,12 @@
 		{
 			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
-			this.lblName = new System.Windows.Forms.Label();
 			this.datagridVertexDescriptions = new System.Windows.Forms.DataGridView();
 			this.columnIndex = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnComponentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.columnElementType = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.columnElementCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.lblName = new System.Windows.Forms.Label();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
@@ -59,41 +59,29 @@
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
-			this.panelMain.ParentControl = this;
 			clsDesigner1.Name = "ProjectObject";
-			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(519, 290);
 			// 
 			// panelMain.Status
 			// 
+			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 260);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(519, 30);
 			this.panelMain.Status.TabIndex = 3;
 			this.panelMain.TabIndex = 0;
 			// 
-			// lblName
-			// 
-			this.lblName.AutoSize = true;
-			this.lblName.BackColor = System.Drawing.Color.Transparent;
-			this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblName.Location = new System.Drawing.Point(3, 6);
-			this.lblName.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
-			this.lblName.Name = "lblName";
-			this.lblName.Size = new System.Drawing.Size(117, 16);
-			this.lblName.TabIndex = 4;
-			this.lblName.Text = "Vertex Description";
-			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
 			// datagridVertexDescriptions
 			// 
 			this.datagridVertexDescriptions.AllowUserToOrderColumns = true;
 			this.datagridVertexDescriptions.AllowUserToResizeRows = false;
 			this.datagridVertexDescriptions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+			this.datagridVertexDescriptions.BackgroundColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.datagridVertexDescriptions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnIndex,
             this.columnComponentName,
@@ -132,6 +120,19 @@
 			this.columnElementCount.HeaderText = "Element Count";
 			this.columnElementCount.Name = "columnElementCount";
 			this.columnElementCount.Width = 101;
+			// 
+			// lblName
+			// 
+			this.lblName.AutoSize = true;
+			this.lblName.BackColor = System.Drawing.Color.Transparent;
+			this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblName.Location = new System.Drawing.Point(3, 6);
+			this.lblName.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+			this.lblName.Name = "lblName";
+			this.lblName.Size = new System.Drawing.Size(117, 16);
+			this.lblName.TabIndex = 4;
+			this.lblName.Text = "Vertex Description";
+			this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// frmVertexDescription
 			// 

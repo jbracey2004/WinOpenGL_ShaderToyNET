@@ -209,7 +209,7 @@ namespace modProject
 				}
 				foreach(var itr in EventScripts)
 				{
-					clsEventScript script = clsEventScript.EventScript_FromString(itr);
+					clsEventScript script = EventScript_FromString(itr);
 					script.Subject = rend;
 					script.Compile();
 					rend.EventScripts.Add(script);
@@ -1676,7 +1676,6 @@ namespace modProject
 				}
 			}
 		}
-		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescriptionComponent : IDisposable
 		{
@@ -1795,7 +1794,6 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
-		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsVertexDescription : clsProjectObject, IList<clsVertexDescriptionComponent>
 		{
@@ -1935,7 +1933,6 @@ namespace modProject
 				get => new Xml_VertexDescription(this);
 			}
 		}
-		
 		[TypeConverter(typeof(VertexPropertyConverter))]
 		public class clsVertexProperty
 		{
@@ -2008,7 +2005,6 @@ namespace modProject
 				return $"{ComponentName}: ({strComponents})";
 			}
 		}
-		
 		[TypeConverter(typeof(VertexConverter))]
 		public class clsVertex
 		{
@@ -2080,7 +2076,6 @@ namespace modProject
 				return strRet;
 			}
 		}
-		
 		[TypeConverter(typeof(VertexCollectionConverter))]
 		public class clsVertexCollection : IDisposable, IList<clsVertex>
 		{
@@ -2312,7 +2307,6 @@ namespace modProject
 				GC.SuppressFinalize(this);
 			}
 		}
-		
 		[TypeConverter(typeof(TriagnelCollectionConverter))]
 		public class clsTriangleCollection : IDisposable, IList<clsTriangle>
 		{
@@ -2447,7 +2441,6 @@ namespace modProject
 				return $"Count={Count}";
 			}
 		}
-		
 		[TypeConverter(typeof(ExpandableObjectConverter))]
 		public class clsTriangle
 		{
@@ -2632,21 +2625,17 @@ namespace modProject
 		public class InfoLocation
 		{
 			public string FullString;
-			public int Line { get { return MatchParse().Y; } }
-			public int Column { get { return MatchParse().X; } }
-			private Point MatchParse()
+			public int Line { get { return MatchParse(); } }
+			private int MatchParse()
 			{
 				int retLine = -1;
-				int retColumn = -1;
-				MatchCollection matches = Regex.Matches(FullString, @"(?<column>\d+)\((?<line>\d+)\)");
+				MatchCollection matches = Regex.Matches(FullString, @"\((?<line>\d+)\)");
 				if(matches.Count > 0)
 				{
 					string strLine = matches[0].Groups["line"].Value;
-					string strColumn = matches[0].Groups["column"].Value;
-					if(strLine!="") retLine = int.Parse(strLine);
-					if(strColumn!="") retColumn = int.Parse(strColumn);
+					if(!string.IsNullOrEmpty(strLine)) retLine = int.Parse(strLine);
 				}
-				return new Point(retColumn, retLine);
+				return retLine;
 			}
 			public InfoLocation()
 			{
@@ -2658,7 +2647,7 @@ namespace modProject
 			}
 			public override string ToString()
 			{
-				return $"Line: {Line}, Column: {Column}";
+				return $"{((Line!=-1)?($"Line: {Line}"):("//"))}";
 			}
 		}
 		public class InfoMessage
@@ -2688,7 +2677,7 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\b(?<location>(?<column>\d+)\((?<line>\d+)\))\s+\:");
+					MatchCollection matches = Regex.Matches(FullString, @"\A(?<location>\(\d+\))\s+\:");
 					return (matches.Count > 0) ? (new InfoLocation(matches[0].Groups["location"].Value)) : (new InfoLocation());
 				}
 			}
