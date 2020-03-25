@@ -56,6 +56,7 @@
 			// 
 			// panelMain
 			// 
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			// 
 			// panelMain.Content
 			// 
@@ -70,10 +71,12 @@
 			this.panelMain.Content.Size = new System.Drawing.Size(423, 250);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
 			clsDesigner1.Name = "ProjectObject";
+			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(423, 280);
 			// 
@@ -151,6 +154,7 @@
 			this.dataLinkStatus.ReadOnly = true;
 			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.dataLinkStatus.RowsDefaultCellStyle = dataGridViewCellStyle1;
+			this.dataLinkStatus.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataLinkStatus.Size = new System.Drawing.Size(421, 1);
 			this.dataLinkStatus.TabIndex = 0;
 			// 

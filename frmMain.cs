@@ -61,11 +61,15 @@ namespace WinOpenGL_ShaderToy
 		private void menuFile_NewProject_Click(object sender, EventArgs e)
 		{
 			projectMain.Dispose();
+			projectMain = new clsProject();
+			windowProject.Project = projectMain;
 			windowProject.UpdateProjectTree();
 		}
 		private void menuFile_SaveProject_Click(object sender, EventArgs e)
 		{
-			dialogSave.ShowDialog();
+			dialogSave.FileName = "";
+			DialogResult resultDialog = dialogSave.ShowDialog(this);
+			if (resultDialog == DialogResult.Cancel || resultDialog == DialogResult.Abort) return;
 			Stream file = dialogSave.OpenFile();
 			XmlSerializer writeBin = new XmlSerializer(typeof(Xml_Project), ProjectXmlTypes);
 			writeBin.Serialize(file, projectMain.Xml);
@@ -74,7 +78,10 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void menuFile_LoadProject_Click(object sender, EventArgs e)
 		{
-			dialogLoad.ShowDialog();
+			dialogLoad.FileName = "";
+			DialogResult resultDialog = dialogLoad.ShowDialog(this);
+			if (resultDialog == DialogResult.Cancel || resultDialog == DialogResult.Abort) return;
+			if (!File.Exists(dialogLoad.FileName)) return;
 			Stream file = dialogLoad.OpenFile();
 			XmlSerializer readBin = new XmlSerializer(typeof(Xml_Project), ProjectXmlTypes);
 			Xml_Project XmlProject = (Xml_Project)readBin.Deserialize(file);

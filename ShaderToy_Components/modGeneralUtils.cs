@@ -94,6 +94,9 @@ public class generalUtils
 	{
 		return ((Typ[])aryObj)[idx];
 	}
+	public static string NumberAsBase(short num, int Base) => Convert.ToString(num, Base).ToString();
+	public static string NumberAsBase(int num, int Base) => Convert.ToString(num, Base).ToString();
+	public static string NumberAsBase(long num, int Base) => Convert.ToString(num, Base).ToString();
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
@@ -130,10 +133,6 @@ public class generalUtils
 			{
 				return $"({TimeStamp.ToString()}, {Duration.ToString()})";
 			}
-		}
-		public infoFramePerformance()
-		{
-			
 		}
 		public double HistoryDuration { get; set; } = 1.0;
 		private Stopwatch tsInterval = new Stopwatch();

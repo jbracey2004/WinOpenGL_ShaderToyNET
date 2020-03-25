@@ -93,7 +93,15 @@ namespace modProject
 				{
 					if (ParentControl != null)
 					{
-						ParentControl.ProjectObject = null;
+						if (ParentControl.ParentForm != null)
+						{
+							ParentControl.ParentForm.Close();
+						}
+						else
+						{
+							ParentControl?.Dispose();
+							ParentControl = null;
+						}
 					}
 					Name = null;
 					ProjectObjType = ProjectObjectTypes.Null;
@@ -105,7 +113,6 @@ namespace modProject
 		public void Dispose()
 		{
 			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		public virtual Xml_ProjectObject Xml
 		{

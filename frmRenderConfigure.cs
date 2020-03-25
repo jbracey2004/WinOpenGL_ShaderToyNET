@@ -19,6 +19,7 @@ namespace WinOpenGL_ShaderToy
 		public static frmRenderConfigure FormWithSubjectForm(frmRender subject) => AllForms.Find(itm => itm.RenderSubjectForm == subject);
 		public static frmRenderConfigure FormWithSubjectObject(clsRender subject) => AllForms.Find(itm => itm.RenderSubject == subject);
 		private clsHPTimer timerUpdateLists;
+		private clsHPTimer timerUpdateUniformDataGrid;
 		public frmRenderConfigure()
 		{
 			InitializeComponent();
@@ -41,10 +42,18 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateLists.SleepInterval = 500;
 			timerUpdateLists.IntervalEnd += new HPIntervalEventHandler(timerUpdateLists_EndInterval);
 			timerUpdateLists.Start();
+			timerUpdateUniformDataGrid = new clsHPTimer(this);
+			timerUpdateUniformDataGrid.Interval = 200.0;
+			timerUpdateUniformDataGrid.SleepInterval = 100;
+			timerUpdateUniformDataGrid.IntervalEnd += new HPIntervalEventHandler(timerUpdateUniformDataGrid_EndInterval);
+			timerUpdateUniformDataGrid.Start();
 		}
 		private void frmSRenderConfigure_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			DockPanel = null;
+			timerUpdateUniformDataGrid.Stop();
+			timerUpdateUniformDataGrid.Dispose();
+			timerUpdateUniformDataGrid = null;
 			timerUpdateLists.Stop();
 			timerUpdateLists.Dispose();
 			timerUpdateLists = null;
@@ -85,6 +94,8 @@ namespace WinOpenGL_ShaderToy
 		{
 			UpdateGeometryList();
 			UpdateProgramList();
+			UpdateAttributeList();
+			UpdateUniformsList();
 		}
 		private bool bolUpdateLock  = false;
 		private void UpdateGeometryList()
@@ -107,7 +118,7 @@ namespace WinOpenGL_ShaderToy
 			geomItm = lstGeometry.SelectedItem as clsGeometry;
 			if (geomItm != renderSubject.Geometry)
 			{
-				if (lstGeometry.Items.Contains(renderSubject.Geometry))
+				if (renderSubject.Geometry != null && lstGeometry.Items.Contains(renderSubject.Geometry))
 					lstGeometry.SelectedItem = renderSubject.Geometry;
 				else
 					lstGeometry.SelectedIndex = 0;
@@ -135,7 +146,7 @@ namespace WinOpenGL_ShaderToy
 			progItm = lstProgram.SelectedItem as clsProgram;
 			if (progItm != renderSubject.Program)
 			{
-				if (lstProgram.Items.Contains(renderSubject.Program))
+				if (renderSubject.Program != null && lstProgram.Items.Contains(renderSubject.Program))
 					lstProgram.SelectedItem = renderSubject.Program;
 				else
 					lstProgram.SelectedIndex = 0;
@@ -390,7 +401,7 @@ namespace WinOpenGL_ShaderToy
 			string strUniform = e.Row.Cells["columnProgramUniform"].Value as string;
 			string strVarName = e.Row.Cells["columnVarName"].Value as string;
 			RenderSubject.UniformShaderLinks.Add(new KeyValuePair<string, string>(strUniform, strVarName));
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridUniformsRouting_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
@@ -418,11 +429,10 @@ namespace WinOpenGL_ShaderToy
 				RenderSubject.UniformShaderLinks[row.Index] = new KeyValuePair<string, string>(oldValue.Key, obj);
 			}
 			cell.Tag = null;
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridUniformsRouting_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
-			DataGridViewCell cell = datagridGeometryRouting.Rows[e.RowIndex].Cells[e.ColumnIndex];
 			e.Cancel = true;
 		}
 		private void datagridEvents_UserAddedRow(object sender, DataGridViewRowEventArgs e)
@@ -465,28 +475,36 @@ namespace WinOpenGL_ShaderToy
 			cell.Tag = scriptNew;
 			control.ScriptContext = scriptNew.ScriptContext;
 		}
-		public void UpdateDataGrid()
+		private bool bolUpdateDataGridReady = false;
+		private void timerUpdateUniformDataGrid_EndInterval(object sender, HPIntervalEventArgs e)
 		{
 			if (!Visible) return;
-			Invoke(new Action(() => 
+			if (!bolUpdateDataGridReady) return;
+			Invoke(new Action(() =>
 			{
 				bolUpdateLock = true;
-				for (int idxRow = 0; idxRow < Math.Min(datagridUniformsValues.Rows.Count, RenderSubject.Uniforms.Count); idxRow++)
+				for (int idxRow = 0; idxRow < datagridUniformsValues.Rows.Count; idxRow++)
 				{
 					DataGridViewTextBoxCell cellName = datagridUniformsValues["columnVariableName", idxRow] as DataGridViewTextBoxCell;
 					if (cellName == null) continue;
 					string strName = cellName.Value as string;
 					if (strName == null) continue;
-					if (strName != RenderSubject.Uniforms[idxRow].Key) continue;
+					int idxUni = RenderSubject.Uniforms.FindIndex(itm => itm.Key == strName);
+					if (idxUni < 0) continue;
 					clsUniformDataCell cellValue = datagridUniformsValues["columnVariableValue", idxRow] as clsUniformDataCell;
 					if (cellValue == null) continue;
-					clsUniformSet objData = RenderSubject.Uniforms[idxRow].Value;
+					clsUniformSet objData = RenderSubject.Uniforms[idxUni].Value;
 					if (objData == null) continue;
 					cellValue.Value = objData;
 					datagridUniformsValues.InvalidateCell(cellValue);
 				}
 				bolUpdateLock = false;
 			}));
+			bolUpdateDataGridReady = false;
+		}
+		public void UpdateDataGrid()
+		{
+			bolUpdateDataGridReady = true;
 		}
 	}
 }

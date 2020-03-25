@@ -62,6 +62,7 @@ namespace WinOpenGL_ShaderToy
     "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
 			this.txtSource.AutoScrollMinSize = new System.Drawing.Size(25, 12);
 			this.txtSource.BackBrush = null;
+			this.txtSource.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.txtSource.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
 			this.txtSource.CharHeight = 12;
 			this.txtSource.CharWidth = 7;
@@ -86,10 +87,11 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelMain
 			// 
-			this.panelMain.BackColor = System.Drawing.SystemColors.Control;
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.panelMain.Controls.Add(this.txtSource);
 			this.panelMain.Controls.Add(this.panelEventDescription);
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Control;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Name = "panelMain";
 			this.panelMain.Size = new System.Drawing.Size(575, 160);
@@ -138,8 +140,11 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// lstEventType
 			// 
+			this.lstEventType.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lstEventType.Dock = System.Windows.Forms.DockStyle.Left;
 			this.lstEventType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstEventType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.lstEventType.ForeColor = System.Drawing.SystemColors.Window;
 			this.lstEventType.FormattingEnabled = true;
 			this.lstEventType.Location = new System.Drawing.Point(0, 0);
 			this.lstEventType.Name = "lstEventType";
@@ -152,6 +157,7 @@ namespace WinOpenGL_ShaderToy
 			this.BackColor = System.Drawing.Color.Transparent;
 			this.Controls.Add(this.panelMain);
 			this.DoubleBuffered = true;
+			this.ForeColor = System.Drawing.SystemColors.Control;
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "controlEventScript";
 			this.Padding = new System.Windows.Forms.Padding(0, 0, 4, 4);

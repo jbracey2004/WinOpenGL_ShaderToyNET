@@ -16,15 +16,15 @@ public class clsHPTimer : IDisposable
 			TimeDelta = dt;
 		}
 	}
+	public static double HPTickFrequency = 1000.0/Stopwatch.Frequency;
+	public static double HPTickInterval = Stopwatch.Frequency;
 	public delegate void HPIntervalEventHandler(object sender, HPIntervalEventArgs e);
 	public event HPIntervalEventHandler IntervalEnd;
 	private Stopwatch ts;
 	public int SleepInterval { set; get; } = 0;
 	private double fInterval = 1000.0;
-	public double Interval { get => fInterval; set { fElapsed = 0.0; fInterval = value; } }
-	private double fElapsed = 0.0;
-	private double fRunTimestamp = 0.0;
-	private double fLastRunTimestamp = 0.0;
+	private double tickInterval = HPTickFrequency;
+	public double Interval { get => fInterval; set { fInterval = value; tickInterval = (value*0.00099) * HPTickInterval; } }
 	private bool bolRunning = false;
 	public Control Parent { get; set;}
 	private Thread threadLoop;
@@ -32,35 +32,36 @@ public class clsHPTimer : IDisposable
 	{
 		Parent = controlParent;
 		ts = new Stopwatch();
-		ts.Start();
 	}
 	public void Start()
 	{
 		if (bolRunning) return;
-		fRunTimestamp = ts.Elapsed.TotalMilliseconds;
 		bolRunning = true;
 		threadLoop = new Thread(Loop);
 		threadLoop.Priority = ThreadPriority.BelowNormal;
 		threadLoop.Start();
+		ts.Start();
 	}
 	public void Stop()
 	{
 		bolRunning = false;
+		ts.Stop();
 	}
 	public void Reset()
 	{
-		fElapsed = 0.0;
+		ts.Reset();
 	}
 	private void Loop()
 	{
-		while(bolRunning)
+		long ElapsedTicks;
+		double fElapsedDelta;
+		while (bolRunning)
 		{
-			fLastRunTimestamp = fRunTimestamp;
-			fRunTimestamp = ts.Elapsed.TotalMilliseconds;
-			double fRunDelta = fRunTimestamp - fLastRunTimestamp;
-			fElapsed += fRunDelta;
-			if (fElapsed >= Interval)
+			if (ts.ElapsedTicks >= tickInterval)
 			{
+				ElapsedTicks = ts.ElapsedTicks;
+				fElapsedDelta = ElapsedTicks * HPTickFrequency;
+				ts.Restart();
 				try
 				{
 					if (Parent != null)
@@ -70,7 +71,7 @@ public class clsHPTimer : IDisposable
 							HPIntervalEventHandler evnt = IntervalEnd;
 							if(evnt != null)
 							{
-								Parent?.Invoke(evnt, this, new HPIntervalEventArgs(DateTime.Now, fElapsed));
+								Parent?.Invoke(evnt, this, new HPIntervalEventArgs(DateTime.Now, fElapsedDelta));
 							}
 						}
 					}
@@ -88,12 +89,13 @@ public class clsHPTimer : IDisposable
 						Console.WriteLine("No Timer Event: Parent Context Disposition Out of Sync");
 					}
 				}
-				fElapsed = (fElapsed % Interval);
+				if (SleepInterval > 0)
+				{
+					Thread.Sleep(SleepInterval);
+				}
+				//Application.DoEvents();
 			}
-			if (SleepInterval > 0)
-			{
-				Thread.Sleep(SleepInterval);
-			}
+			Application.DoEvents();
 		}
 		Application.DoEvents();
 		threadLoop = null;

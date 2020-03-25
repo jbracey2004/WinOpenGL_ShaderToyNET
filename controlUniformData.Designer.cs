@@ -37,19 +37,20 @@
 			// datagridData
 			// 
 			this.datagridData.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.datagridData.BackgroundColor = System.Drawing.SystemColors.Control;
+			this.datagridData.BackgroundColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.datagridData.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.datagridData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.datagridData.ColumnHeadersVisible = false;
 			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlDark;
 			dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.Control;
 			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
 			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
 			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
 			this.datagridData.DefaultCellStyle = dataGridViewCellStyle1;
 			this.datagridData.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.datagridData.GridColor = System.Drawing.SystemColors.WindowText;
 			this.datagridData.Location = new System.Drawing.Point(99, 0);
 			this.datagridData.Name = "datagridData";
 			this.datagridData.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
@@ -66,8 +67,11 @@
 			// 
 			// lstType
 			// 
+			this.lstType.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lstType.Dock = System.Windows.Forms.DockStyle.Left;
 			this.lstType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.lstType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.lstType.ForeColor = System.Drawing.SystemColors.Window;
 			this.lstType.FormattingEnabled = true;
 			this.lstType.Location = new System.Drawing.Point(0, 0);
 			this.lstType.Name = "lstType";
@@ -80,6 +84,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
+			this.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.Controls.Add(this.datagridData);
 			this.Controls.Add(this.lstType);

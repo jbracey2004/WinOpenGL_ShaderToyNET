@@ -65,6 +65,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelMain
 			// 
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			// 
 			// panelMain.Content
 			// 
@@ -79,10 +80,12 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 419);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
 			clsDesigner1.Name = "ProjectObject";
+			clsDesigner1.ParentControl = this.panelMain;
 			this.panelMain.ProjectObject = clsDesigner1;
 			this.panelMain.Size = new System.Drawing.Size(800, 449);
 			// 
@@ -206,8 +209,10 @@ namespace WinOpenGL_ShaderToy
 			this.dataCompileStatus.ReadOnly = true;
 			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.dataCompileStatus.RowsDefaultCellStyle = dataGridViewCellStyle1;
+			this.dataCompileStatus.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataCompileStatus.Size = new System.Drawing.Size(798, 3);
 			this.dataCompileStatus.TabIndex = 0;
+			this.dataCompileStatus.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataCompileStatus_CellDoubleClick);
 			// 
 			// panelCompileStatusHead
 			// 

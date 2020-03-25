@@ -197,3 +197,4 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.cspro
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.csproj.CopyComplete
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.exe
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.pdb
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\obj\x64\Debug\WinOpenGL_ShaderToy.csproj.CoreCompileInputs.cache

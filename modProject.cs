@@ -105,6 +105,7 @@ namespace modProject
 		};
 		public static string GetXmlString(object obj)
 		{
+			if (obj == null) return "";
 			StringBuilder TextStream = new StringBuilder();
 			XmlSerializer parse = new XmlSerializer(obj.GetType(), ProjectXmlTypes);
 			XmlWriter writer = XmlWriter.Create(TextStream);
@@ -390,30 +391,31 @@ namespace modProject
 			}
 		}
 	}
-	public class clsProject
+	public class clsProject : IDisposable
 	{
 		public string Name { set; get; }
 		public string Path { set; get; }
 		public List<clsProjectObject> ProjectObjects { set; get; } = new List<clsProjectObject>() { };
+		private bool bolDisposed = false;
+		protected virtual void Dispose(bool bolDisposing)
+		{
+			if(!bolDisposed)
+			{
+				if(bolDisposing)
+				{
+					foreach (var obj in ProjectObjects)
+					{
+						obj.Dispose();
+					}
+					ProjectObjects.Clear();
+					ProjectObjects = null;
+				}
+			}
+			bolDisposed = true;
+		}
 		public void Dispose()
 		{
-			Array ary = ProjectObjects.ToArray();
-			foreach (clsProjectObject obj in ary)
-			{
-				if (obj.ParentControl != null)
-				{
-					if (obj.ParentControl.ParentForm != null)
-					{
-						obj.ParentControl.ParentForm.Close();
-					}
-					else
-					{
-						obj.ParentControl.Dispose();
-					}
-				}
-				obj.Dispose();
-			}
-			ProjectObjects.Clear();
+			Dispose(true);
 		}
 		public Xml_Project Xml
 		{
@@ -482,15 +484,15 @@ namespace modProject
 			{UniformType.Int, (glUniform,  intCount,intDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
 			{UniformType.Float,  (glUniform, intCount, floatDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
 			{UniformType.Double, (glUniform, intCount, doubleDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
-			{UniformType.Int2, (glUniform, intCount, intDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<int>(intDat)); } },
-			{UniformType.Float2,  (glUniform, intCount, floatDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<float>(floatDat)); } },
-			{UniformType.Double2, (glUniform, intCount, doubleDat) => {GL.Uniform2(glUniform, intCount*2, ObjectArrayAsType<double>(doubleDat)); } },
-			{UniformType.Int3, (glUniform, intCount, intDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<int>(intDat)); } },
-			{UniformType.Float3,  (glUniform, intCount, floatDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<float>(floatDat)); } },
-			{UniformType.Double3, (glUniform, intCount, doubleDat) => {GL.Uniform3(glUniform, intCount*3, ObjectArrayAsType<double>(doubleDat)); } },
-			{UniformType.Int4, (glUniform, intCount, intDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<int>(intDat)); } },
-			{UniformType.Float4,  (glUniform, intCount, floatDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<float>(floatDat)); } },
-			{UniformType.Double4, (glUniform, intCount, doubleDat) => {GL.Uniform4(glUniform, intCount*4, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int2, (glUniform, intCount, intDat) => {GL.Uniform2(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float2,  (glUniform, intCount, floatDat) => {GL.Uniform2(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double2, (glUniform, intCount, doubleDat) => {GL.Uniform2(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int3, (glUniform, intCount, intDat) => {GL.Uniform3(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float3,  (glUniform, intCount, floatDat) => {GL.Uniform3(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double3, (glUniform, intCount, doubleDat) => {GL.Uniform3(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
+			{UniformType.Int4, (glUniform, intCount, intDat) => {GL.Uniform4(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
+			{UniformType.Float4,  (glUniform, intCount, floatDat) => {GL.Uniform4(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
+			{UniformType.Double4, (glUniform, intCount, doubleDat) => {GL.Uniform4(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
 			{UniformType.Float2x2, (glUniform, intCount, matxDat) => {GL.UniformMatrix2(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); } },
 			{UniformType.Float2x3, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x3(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
 			{UniformType.Float2x4, (glUniform, intCount, matxDat) => {GL.UniformMatrix2x4(glUniform, intCount, false, ObjectArrayAsType<float>(matxDat) ); }},
@@ -1168,12 +1170,17 @@ namespace modProject
 				}
 				Console.WriteLine(strErr);
 			}
-			if(ConfigureForm != null) ConfigureForm.UpdateDataGrid();
+			if (ConfigureForm != null)
+			{
+				ConfigureForm.UpdateDataGrid();
+			}
 			ScriptContext.ClearArguments();
 		}
 		public void Dispose()
 		{
 			DetachSubject();
+			Source = null;
+			script = null;
 		}
 	}
 	
@@ -1185,21 +1192,33 @@ namespace modProject
 			get => typeShader;
 			set
 			{
-				if (glID >= 0 && GL.IsShader(glID)) GL.DeleteShader(glID);
+				if (IsValid) GL.DeleteShader(glID);
 				glID = GL.CreateShader(value);
 				typeShader = value;
 				Compile();
 			} 
 		}
-		public string Path { set; get; }
 		public string Source { set; get; }
-		public string[] Lines { get { return Regex.Split(Source+" ","\r\n"); } }
+		public string[] Lines { get { return Regex.Split(string.IsNullOrEmpty(Source)?"":Source,"\n"); } }
 		public int glID { private set; get; } = -1;
-		public clsInfoString CompileInfo { private set; get; } = new clsInfoString();
+		public bool IsValid { get => (glID >= 0 && GL.IsShader(glID)); }
+		public clsInfoString CompileInfo { get => (IsValid) ? (new clsInfoString(GL.GetShaderInfoLog(glID))) : (new clsInfoString()); }
 		public clsShader(ShaderType typ) : base(ProjectObjectTypes.Shader)
 		{
 			Type = typ;
+			UpdateGLID();
 			AddToCollection();
+		}
+		public void UpdateGLID(bool bolForceNewID = false)
+		{
+			glContext_Main.MakeCurrent(infoWindow);
+			if (IsValid)
+			{
+				if (!bolForceNewID) return;
+				GL.DeleteShader(glID);
+				glID = -1;
+			}
+			glID = GL.CreateShader(typeShader);
 		}
 		public string[] Inputs { get => parseRefLinks(Source, "in|attribute"); }
 		public string[] Outputs { get => parseRefLinks(Source, "out|varying"); }
@@ -1225,9 +1244,9 @@ namespace modProject
 		}
 		public void Compile()
 		{
+			UpdateGLID();
 			GL.ShaderSource(glID, Source+"\n");
 			GL.CompileShader(glID);
-			CompileInfo = new clsInfoString(GL.GetShaderInfoLog(glID));
 			foreach(clsProjectObject projObj in projectMain.ProjectObjects.FindAll(itm => itm.ProjectObjType == ProjectObjectTypes.Program))
 			{
 				clsProgram progObj = projObj as clsProgram;
@@ -1239,13 +1258,19 @@ namespace modProject
 		}
 		public void Delete()
 		{
-			GL.DeleteShader(glID);
+			if(IsValid) GL.DeleteShader(glID);
 			glID = -1;
+		}
+		protected override void Dispose(bool bolDisposing)
+		{
+			Delete();
+			Source = null;
+			typeShader = 0;
+			base.Dispose(bolDisposing);
 		}
 		public new void Dispose()
 		{
-			Delete();
-			base.Dispose();
+			Dispose(true);
 		}
 		public override string ToFullString(string name)
 		{
@@ -1262,20 +1287,32 @@ namespace modProject
 	{
 		public List<clsShader> Shaders { private set; get; } = new List<clsShader>() { };
 		public int glID { private set; get; } = -1;
-		public clsInfoString LinkInfo { private set; get; }
+		public bool IsValid { get => (glID >= 0 && GL.IsProgram(glID)); }
+		public clsInfoString LinkInfo { get => (IsValid) ? (new clsInfoString(GL.GetProgramInfoLog(glID))) : (new clsInfoString()); }
 		public clsProgram() : base(ProjectObjectTypes.Program)
 		{
-			glID = GL.CreateProgram();
+			UpdateGLID();
 			AddToCollection();
+		}
+		public void UpdateGLID(bool bolForceNewID = false)
+		{
+			glContext_Main.MakeCurrent(infoWindow);
+			if (IsValid)
+			{
+				if (!bolForceNewID) return;
+				GL.DeleteProgram(glID);
+				glID = -1;
+			}
+			glID = GL.CreateProgram();
 		}
 		public void Link()
 		{
+			UpdateGLID();
 			foreach (clsShader objShader in Shaders)
 			{
 				GL.AttachShader(glID, objShader.glID);
 			}
 			GL.LinkProgram(glID);
-			LinkInfo = new clsInfoString(GL.GetProgramInfoLog(glID));
 			foreach (clsShader objShader in Shaders)
 			{
 				GL.DetachShader(glID, objShader.glID);
@@ -1283,7 +1320,7 @@ namespace modProject
 		}
 		public void Delete()
 		{
-			GL.DeleteProgram(glID);
+			if(IsValid) GL.DeleteProgram(glID);
 			glID = -1;
 		}
 		public string[] Inputs 
@@ -1313,10 +1350,16 @@ namespace modProject
 				return aryRet.Distinct().ToArray();
 			}
 		}
-		public new void Dispose()
+		protected override void Dispose(bool disposing)
 		{
 			Delete();
-			base.Dispose();
+			Shaders.Clear();
+			Shaders = null;
+			base.Dispose(disposing);
+		}
+		public new void Dispose()
+		{
+			Dispose(true);
 		}
 		
 		public override Xml_ProjectObject Xml
@@ -2501,9 +2544,48 @@ namespace modProject
 		public clsTriangleCollection Triangles { set; get; } = null;
 		public int glIndexBuffer = -1;
 		public List<int> glBuffers = new List<int>();
+		public bool IsIndexBufferValid { get => glIndexBuffer >= 0 && GL.IsBuffer(glIndexBuffer); }
+		public bool IsAllVertexBuffersValid 
+		{
+			get
+			{
+				foreach (int glID in glBuffers)
+				{
+					if (glID < 0) return false;
+					if (!GL.IsBuffer(glID)) return false;
+				}
+				return true;
+			}
+		}
+		public bool IsValid { get => IsIndexBufferValid && IsAllVertexBuffersValid; }
+		public int InvalidVertexBufferFlags
+		{
+			get
+			{
+				int intRet = 0;
+				for (int idx = 0, rnkFlag = 1; idx < glBuffers.Count; idx++, rnkFlag *= 2) {
+					int glID = glBuffers[idx];
+					if (glID < 0 || !GL.IsBuffer(glID)) intRet += rnkFlag;
+				}
+				return intRet;
+			}
+		}
+		public int ValidVertexBufferFlags
+		{
+			get
+			{
+				int intRet = 0;
+				for (int idx = 0, rnkFlag = 1; idx < glBuffers.Count; idx++, rnkFlag *= 2)
+				{
+					int glID = glBuffers[idx];
+					if (glID >= 0 && GL.IsBuffer(glID)) intRet += rnkFlag;
+				}
+				return intRet;
+			}
+		}
+		public int VertexBuffersCountMask { get => (int)Math.Pow(2, glBuffers.Count); }
 		public clsGeometry() : base(ProjectObjectTypes.Geometry)
 		{
-			glIndexBuffer = GL.GenBuffer();
 			glUpdateBuffers();
 			AddToCollection();
 		}
@@ -2513,11 +2595,12 @@ namespace modProject
 			if (Triangles == null) return;
 			if (Vertices == null) return;
 			glContext_Main.MakeCurrent(infoWindow);
+			if (!IsIndexBufferValid) glIndexBuffer = GL.GenBuffer();
 			if (VertexDescription.Count > glBuffers.Count)
 			{
 				int intDiff = VertexDescription.Count - glBuffers.Count;
 				int[] intBuffersNew = new int[intDiff];
-				GL.CreateBuffers(intDiff, intBuffersNew);
+				GL.GenBuffers(intDiff, intBuffersNew);
 				glBuffers.AddRange(intBuffersNew);
 			}
 			if(VertexDescription.Count < glBuffers.Count)
@@ -2542,7 +2625,7 @@ namespace modProject
 				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 			}
 		}
-		public new void Dispose()
+		protected override void Dispose(bool disposing)
 		{
 			if (Triangles != null)
 			{
@@ -2559,9 +2642,15 @@ namespace modProject
 				VertexDescription.Dispose();
 				VertexDescription = null;
 			}
+			GL.DeleteBuffer(glIndexBuffer);
+			glIndexBuffer = -1;
 			GL.DeleteBuffers(glBuffers.Count, glBuffers.ToArray());
 			glBuffers.Clear();
-			base.Dispose();
+			base.Dispose(disposing);
+		}
+		public new void Dispose()
+		{
+			Dispose(true);
 		}
 
 		public override Xml_ProjectObject Xml
@@ -2611,9 +2700,24 @@ namespace modProject
 				}
 			}
 		}
+		protected override void Dispose(bool disposing)
+		{
+			Geometry = null;
+			Program = null;
+			foreach(var script in EventScripts)
+			{
+				script.Dispose();
+			}
+			EventScripts.Clear();
+			Uniforms.Clear();
+			GeometryShaderLinks.Clear();
+			UniformShaderLinks.Clear();
+			RenderInterval = 0;
+			base.Dispose(disposing);
+		}
 		public new void Dispose()
 		{
-			base.Dispose();
+			Dispose(true);
 		}
 		public override Xml_ProjectObject Xml
 		{
@@ -2625,17 +2729,21 @@ namespace modProject
 		public class InfoLocation
 		{
 			public string FullString;
-			public int Line { get { return MatchParse(); } }
-			private int MatchParse()
+			public int Line { get { return MatchParse().Y; } }
+			public int Column { get { return MatchParse().X; } }
+			private Point MatchParse()
 			{
 				int retLine = -1;
-				MatchCollection matches = Regex.Matches(FullString, @"\((?<line>\d+)\)");
+				int retColumn = -1;
+				MatchCollection matches = Regex.Matches(FullString, @"(?<column>[\w\d]{0,})\((?<line>\d+)\)");
 				if(matches.Count > 0)
 				{
 					string strLine = matches[0].Groups["line"].Value;
-					if(!string.IsNullOrEmpty(strLine)) retLine = int.Parse(strLine);
+					if(!string.IsNullOrEmpty(strLine)) int.TryParse(strLine, out retLine);
+					string strColumn = matches[0].Groups["column"].Value;
+					if (!string.IsNullOrEmpty(strColumn)) int.TryParse(strColumn, out retColumn);
 				}
-				return retLine;
+				return new Point(retColumn, retLine);
 			}
 			public InfoLocation()
 			{
@@ -2647,7 +2755,7 @@ namespace modProject
 			}
 			public override string ToString()
 			{
-				return $"{((Line!=-1)?($"Line: {Line}"):("//"))}";
+				return $"{((Line >= 0)?($"Line: {Line};"):("//"))} {((Column > 0) ? ($"Column: {Column};") : (""))} ";
 			}
 		}
 		public class InfoMessage
@@ -2677,7 +2785,7 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\A(?<location>\(\d+\))\s+\:");
+					MatchCollection matches = Regex.Matches(FullString, @"\A(?<location>[\w\d]{0,}\(\d+\))\s+\:");
 					return (matches.Count > 0) ? (new InfoLocation(matches[0].Groups["location"].Value)) : (new InfoLocation());
 				}
 			}

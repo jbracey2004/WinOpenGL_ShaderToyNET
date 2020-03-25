@@ -36,14 +36,16 @@
 			this.menuStats = new System.Windows.Forms.ToolStripMenuItem();
 			this.menusWindows = new System.Windows.Forms.ToolStripMenuItem();
 			this.menusMain = new System.Windows.Forms.MenuStrip();
-			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.dialogLoad = new System.Windows.Forms.OpenFileDialog();
+			this.dialogSave = new System.Windows.Forms.SaveFileDialog();
+			this.menuFile = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.menuFile_NewProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuFile_LoadProject = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuFile_SaveProject = new System.Windows.Forms.ToolStripMenuItem();
-			this.dialogLoad = new System.Windows.Forms.OpenFileDialog();
-			this.dialogSave = new System.Windows.Forms.SaveFileDialog();
+			this.menusFile = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuWindows.SuspendLayout();
 			this.menusMain.SuspendLayout();
+			this.menuFile.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// dockMain
@@ -65,11 +67,11 @@
 			// 
 			// menuWindows
 			// 
+			this.menuWindows.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.menuWindows.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuProject,
             this.menuStats});
 			this.menuWindows.Name = "menuWindows";
-			this.menuWindows.OwnerItem = this.menusWindows;
 			this.menuWindows.Size = new System.Drawing.Size(121, 48);
 			this.menuWindows.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.MenuWindows_Closing);
 			// 
@@ -78,6 +80,7 @@
 			this.menuProject.Checked = true;
 			this.menuProject.CheckOnClick = true;
 			this.menuProject.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.menuProject.ForeColor = System.Drawing.SystemColors.Control;
 			this.menuProject.Name = "menuProject";
 			this.menuProject.Size = new System.Drawing.Size(120, 22);
 			this.menuProject.Text = "Project";
@@ -86,40 +89,52 @@
 			// menuStats
 			// 
 			this.menuStats.CheckOnClick = true;
+			this.menuStats.ForeColor = System.Drawing.SystemColors.Control;
 			this.menuStats.Name = "menuStats";
 			this.menuStats.Size = new System.Drawing.Size(120, 22);
 			this.menuStats.Text = "Statistics";
 			// 
 			// menusWindows
 			// 
+			this.menusWindows.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.menusWindows.DropDown = this.menuWindows;
+			this.menusWindows.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.menusWindows.Name = "menusWindows";
 			this.menusWindows.Size = new System.Drawing.Size(68, 20);
 			this.menusWindows.Text = "Windows";
 			// 
 			// menusMain
 			// 
+			this.menusMain.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.menusMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile,
+            this.menusFile,
             this.menusWindows});
 			this.menusMain.Location = new System.Drawing.Point(0, 0);
 			this.menusMain.Name = "menusMain";
 			this.menusMain.Size = new System.Drawing.Size(1264, 24);
+			this.menusMain.Stretch = false;
 			this.menusMain.TabIndex = 13;
 			this.menusMain.Text = "Main Menu";
 			// 
+			// dialogLoad
+			// 
+			this.dialogLoad.FileName = "openFileDialog1";
+			// 
 			// menuFile
 			// 
-			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.menuFile.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.menuFile.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuFile_NewProject,
             this.menuFile_LoadProject,
             this.menuFile_SaveProject});
-			this.menuFile.Name = "menuFile";
-			this.menuFile.Size = new System.Drawing.Size(37, 20);
-			this.menuFile.Text = "File";
+			this.menuFile.Name = "contextMenuStrip1";
+			this.menuFile.Size = new System.Drawing.Size(141, 70);
+			this.menuFile.Text = "Menu File";
 			// 
 			// menuFile_NewProject
 			// 
+			this.menuFile_NewProject.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.menuFile_NewProject.ForeColor = System.Drawing.SystemColors.Control;
 			this.menuFile_NewProject.Name = "menuFile_NewProject";
 			this.menuFile_NewProject.Size = new System.Drawing.Size(140, 22);
 			this.menuFile_NewProject.Text = "New Project";
@@ -127,6 +142,8 @@
 			// 
 			// menuFile_LoadProject
 			// 
+			this.menuFile_LoadProject.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.menuFile_LoadProject.ForeColor = System.Drawing.SystemColors.Control;
 			this.menuFile_LoadProject.Name = "menuFile_LoadProject";
 			this.menuFile_LoadProject.Size = new System.Drawing.Size(140, 22);
 			this.menuFile_LoadProject.Text = "Load Project";
@@ -134,14 +151,21 @@
 			// 
 			// menuFile_SaveProject
 			// 
+			this.menuFile_SaveProject.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.menuFile_SaveProject.ForeColor = System.Drawing.SystemColors.Control;
 			this.menuFile_SaveProject.Name = "menuFile_SaveProject";
 			this.menuFile_SaveProject.Size = new System.Drawing.Size(140, 22);
 			this.menuFile_SaveProject.Text = "Save Project";
 			this.menuFile_SaveProject.Click += new System.EventHandler(this.menuFile_SaveProject_Click);
 			// 
-			// dialogLoad
+			// menusFile
 			// 
-			this.dialogLoad.FileName = "openFileDialog1";
+			this.menusFile.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.menusFile.DropDown = this.menuFile;
+			this.menusFile.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.menusFile.Name = "menusFile";
+			this.menusFile.Size = new System.Drawing.Size(37, 20);
+			this.menusFile.Text = "File";
 			// 
 			// frmMain
 			// 
@@ -162,6 +186,7 @@
 			this.menuWindows.ResumeLayout(false);
 			this.menusMain.ResumeLayout(false);
 			this.menusMain.PerformLayout();
+			this.menuFile.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -176,12 +201,13 @@
 		private System.Windows.Forms.ToolStripMenuItem menuStats;
 		private System.Windows.Forms.ToolStripMenuItem menusWindows;
 		private System.Windows.Forms.MenuStrip menusMain;
-		private System.Windows.Forms.ToolStripMenuItem menuFile;
-		private System.Windows.Forms.ToolStripMenuItem menuFile_LoadProject;
-		private System.Windows.Forms.ToolStripMenuItem menuFile_SaveProject;
 		private System.Windows.Forms.OpenFileDialog dialogLoad;
 		private System.Windows.Forms.SaveFileDialog dialogSave;
+		private System.Windows.Forms.ToolStripMenuItem menusFile;
+		private System.Windows.Forms.ContextMenuStrip menuFile;
 		private System.Windows.Forms.ToolStripMenuItem menuFile_NewProject;
+		private System.Windows.Forms.ToolStripMenuItem menuFile_LoadProject;
+		private System.Windows.Forms.ToolStripMenuItem menuFile_SaveProject;
 	}
 }
 

@@ -25,11 +25,15 @@ namespace WinOpenGL_ShaderToy
 			this.Name = "controlRender";
 			this.Size = new System.Drawing.Size(260, 260);
 			this.ResumeLayout(false);
-
 		}
 		public controlRender() : base()
 		{
 			InitializeComponent();
+		}
+		protected override void Dispose(bool disposing)
+		{
+			Context.Dispose();
+			base.Dispose(disposing);
 		}
 		protected override void OnHandleCreated(EventArgs e)
 		{
@@ -111,10 +115,6 @@ namespace WinOpenGL_ShaderToy
 			bool bolHandled = WinProc_HandleTouch(this, ref m, ref TouchInterface);
 			if (m.Result.ToInt64() != 0) return;
 			base.WndProc(ref m);
-		}
-		public override bool PreProcessMessage(ref Message msg)
-		{
-			return base.PreProcessMessage(ref msg);
 		}
 	}
 }

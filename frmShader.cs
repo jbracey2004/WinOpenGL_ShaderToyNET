@@ -175,5 +175,20 @@ namespace WinOpenGL_ShaderToy
 		{
 			UpdateStatus();
 		}
+
+		private void dataCompileStatus_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+		{
+			clsInfoString.InfoMessage[] aryMsg = dataCompileStatus.DataSource as clsInfoString.InfoMessage[];
+			if (aryMsg == null) return;
+			if (e.RowIndex < 0) return;
+			if (e.RowIndex >= aryMsg.Length) return;
+			clsInfoString.InfoMessage msg = aryMsg[e.RowIndex];
+			if (msg.Location.Line > 0) 
+			{
+				Range rangeSelect = new Range(txtSource, msg.Location.Line-1);
+				txtSource.Selection = rangeSelect;
+				txtSource.DoRangeVisible(rangeSelect);
+			}
+		}
 	}
 }
