@@ -24,7 +24,7 @@ public class clsHPTimer : IDisposable
 	public int SleepInterval { set; get; } = 0;
 	private double fInterval = 1000.0;
 	private double tickInterval = HPTickFrequency;
-	public double Interval { get => fInterval; set { fInterval = value; tickInterval = (value*0.00099) * HPTickInterval; } }
+	public double Interval { get => fInterval; set { fInterval = value; tickInterval = (value*0.000999) * HPTickInterval; } }
 	private bool bolRunning = false;
 	public Control Parent { get; set;}
 	private Thread threadLoop;
@@ -95,7 +95,7 @@ public class clsHPTimer : IDisposable
 				}
 				//Application.DoEvents();
 			}
-			Application.DoEvents();
+			//Application.DoEvents();
 		}
 		Application.DoEvents();
 		threadLoop = null;

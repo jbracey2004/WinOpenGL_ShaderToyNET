@@ -20,9 +20,11 @@ namespace WinOpenGL_ShaderToy
 		public controlRender glRender;
 		private frmRenderConfigure ConfigureDialog;
 		private clsHPTimer timerRender;
+		private clsHPTimer timerUpdateStats;
 		private infoFramePerformance tsRender;
 		private infoFramePerformance tsRenderTimer;
 		private Stopwatch tsTimeElapsed;
+		public int FrameCount { get; private set; }
 		public double CurrentTimeStamp { get; private set; }
 		public double PreviousTimeStamp { get; private set; }
 		public double DeltaTimeStamp { get => CurrentTimeStamp - PreviousTimeStamp; }
@@ -37,10 +39,16 @@ namespace WinOpenGL_ShaderToy
 			btnFPS.DropDownOpening += BtnFPS_DropDownClosed;
 			btnInterval.DropDownOpening += BtnInterval_DropDownClosed;
 			timerRender = new clsHPTimer(this);
-			timerRender.IntervalEnd += new HPIntervalEventHandler(TimerRender_Tick);
-			txtInterval.Text = ((Render!=null)?(Render.RenderInterval):(1000.0/60.0)).ToString("#.########");
+			timerRender.IntervalEnd += TimerRender_Tick;
+			txtInterval.Text = ((Render!=null)?(Render.RenderInterval):(1000.0/60.0)).ToString("0.########");
 			timerRender.Start();
+			timerUpdateStats = new clsHPTimer(this);
+			timerUpdateStats.Interval = 50;
+			timerUpdateStats.SleepInterval = 50;
+			timerUpdateStats.IntervalEnd += TimerUpdateStats_Tick;
+			timerUpdateStats.Start();
 			Render?.RaiseLoadEvent();
+			ProjectDef.AllForms.Add(this);
 		}
 		private void FrmGLMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -51,6 +59,7 @@ namespace WinOpenGL_ShaderToy
 			timerRender.Dispose();
 			timerRender = null;
 			panelMain.ProjectObject = null;
+			ProjectDef.AllForms.Remove(this);
 		}
 		private void InitDialog()
 		{
@@ -94,20 +103,24 @@ namespace WinOpenGL_ShaderToy
 		{
 			Render?.RaisePointerEndEvent(e);
 		}
-		private int intFrame = 0;
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
 			double tsDelta = e.TimeDelta * 0.001;
 			PreviousTimeStamp = CurrentTimeStamp;
 			CurrentTimeStamp = tsTimeElapsed.Elapsed.TotalSeconds;
 			tsRenderTimer.SampleFrame(tsDelta, CurrentTimeStamp);
-			Render?.RaiseRenderEvent(DeltaTimeStamp, CurrentTimeStamp);
+			Render?.RaiseRenderEvent(FrameCount, DeltaTimeStamp, CurrentTimeStamp);
 			glMain_Render();
+			FrameCount++;
+		}
+		private void TimerUpdateStats_Tick(object sender, HPIntervalEventArgs e)
+		{
 			btnFPS.Text = string.Format("{0,15:#,##0.00000 FPS}", tsRenderTimer.Median_Rate);
 			btnInterval.Text = string.Format("{0,15:#,##0.00000 ms}", tsRenderTimer.Median * 1000.0);
 			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median * 1000.0);
 			lblRenderFreq.Text = string.Format("{0,15:##,##0.00000 Hz}", tsRender.Median_Rate);
-			intFrame++;
+			lblFrameNumber.Text = FrameCount.ToString();
+			lblFrameTimeStamp.Text = CurrentTimeStamp.ToString("0.00000");
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
@@ -205,7 +218,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void BtnFPS_DropDownClosed(object sender, EventArgs e)
 		{
-			txtFPS.Text = (1000.0 / Render.RenderInterval).ToString("#.########");
+			txtFPS.Text = (1000.0 / Render.RenderInterval).ToString("0.########");
 		}
 		private void txtInterval_Change(object sender, EventArgs e)
 		{
@@ -221,11 +234,24 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void BtnInterval_DropDownClosed(object sender, EventArgs e)
 		{
-			txtInterval.Text = (Render.RenderInterval).ToString("#.########");
+			txtInterval.Text = (Render.RenderInterval).ToString("0.########");
 		}
 		private void btnConfigure_Click(object sender, EventArgs e)
 		{
 			ConfigureDialog.Show(dockMainPanel, this.DockState);
+		}
+		private void lblFrameCount_DoubleClick(object sender, EventArgs e)
+		{
+			FrameCount = 0;
+			tsTimeElapsed.Restart();
+		}
+		private void lblFrameTimeStamp_DoubleClick(object sender, EventArgs e)
+		{
+			tsTimeElapsed.Restart();
+		}
+		private void lblFrameNumber_DoubleClick(object sender, EventArgs e)
+		{
+			FrameCount = 0;
 		}
 	}
 }

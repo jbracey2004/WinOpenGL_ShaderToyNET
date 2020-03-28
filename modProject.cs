@@ -37,6 +37,7 @@ namespace WinOpenGL_ShaderToy
 {
 	public static class ProjectDef
 	{
+		public static List<DockContent> AllForms = new List<DockContent>();
 		public static DockContent NewFormFromObject(clsProjectObject obj)
 		{
 			switch(obj.ProjectObjType)
@@ -962,7 +963,7 @@ namespace modProject
 						args = Array.Empty<object>();
 						break;
 					case EventType.OnRender:
-						args = new object[] {RenderSubjectForm.DeltaTimeStamp, RenderSubjectForm.CurrentTimeStamp};
+						args = new object[] {RenderSubjectForm.FrameCount, RenderSubjectForm.DeltaTimeStamp, RenderSubjectForm.CurrentTimeStamp};
 						break;
 					case EventType.OnResize:
 						args = new object[] {RenderSubjectForm.glRender.Width, RenderSubjectForm.glRender.Height};
@@ -2675,7 +2676,7 @@ namespace modProject
 		public event ScriptHandler PointerMove;
 		public event ScriptHandler PointerEnd;
 		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
-		public void RaiseRenderEvent(double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, DeltaTime, ElapsedTime); }
+		public void RaiseRenderEvent(int Frame, double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, Frame, DeltaTime, ElapsedTime); }
 		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
 		public void RaisePointerStartEvent(InputEventArgs InputInfo) { PointerStart?.Invoke(EventType.OnPointerStart, InputInfo); }
 		public void RaisePointerMoveEvent(InputEventArgs InputInfo) { PointerMove?.Invoke(EventType.OnPointerMove, InputInfo); }

@@ -31,12 +31,14 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			CloseAllForms();
 			projectMain.Dispose();
 			projectMain = null;
 			if(windowProject != null)
 			{
 				windowProject.HideOnClose = false;
 				windowProject.Close();
+				windowProject.Dispose();
 				windowProject = null;
 			}
 		}
@@ -60,6 +62,7 @@ namespace WinOpenGL_ShaderToy
 
 		private void menuFile_NewProject_Click(object sender, EventArgs e)
 		{
+			CloseAllForms();
 			projectMain.Dispose();
 			projectMain = new clsProject();
 			windowProject.Project = projectMain;
@@ -87,11 +90,21 @@ namespace WinOpenGL_ShaderToy
 			Xml_Project XmlProject = (Xml_Project)readBin.Deserialize(file);
 			file.Close();
 			file.Dispose();
+			CloseAllForms();
 			projectMain.Dispose();
 			projectMain = new clsProject();
 			XmlProject.InitObject(ref projectMain);
 			windowProject.Project = projectMain;
 			windowProject.UpdateProjectTree();
+		}
+		private void CloseAllForms()
+		{
+			DockContent[] ary = ProjectDef.AllForms.ToArray();
+			foreach(var frm in ary)
+			{
+				frm.Close();
+				frm.Dispose();
+			}
 		}
 	}
 }

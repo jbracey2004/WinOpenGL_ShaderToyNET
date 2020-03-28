@@ -62,7 +62,7 @@ namespace WinOpenGL_ShaderToy
     "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
 			this.txtSource.AutoScrollMinSize = new System.Drawing.Size(25, 12);
 			this.txtSource.BackBrush = null;
-			this.txtSource.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.txtSource.BackColor = System.Drawing.Color.Black;
 			this.txtSource.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
 			this.txtSource.CharHeight = 12;
 			this.txtSource.CharWidth = 7;
@@ -70,10 +70,12 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtSource.Font = new System.Drawing.Font("Courier New", 8.25F);
+			this.txtSource.IndentBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
 			this.txtSource.IsReplaceMode = false;
 			this.txtSource.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.txtSource.LeftBracket = '(';
 			this.txtSource.LeftBracket2 = '{';
+			this.txtSource.LineNumberColor = System.Drawing.Color.Cyan;
 			this.txtSource.Location = new System.Drawing.Point(0, 24);
 			this.txtSource.Name = "txtSource";
 			this.txtSource.Paddings = new System.Windows.Forms.Padding(0);

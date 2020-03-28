@@ -28,11 +28,12 @@ namespace WinOpenGL_ShaderToy
 			lstShaderType.Text = Regex.Replace(Shader.Type.ToString(), @"Arb\z", "");
 			timerAutoCompile = new clsHPTimer(this);
 			timerAutoCompile.Interval = 1000.0;
-			timerAutoCompile.SleepInterval = 500;
+			timerAutoCompile.SleepInterval = 1000;
 			timerAutoCompile.IntervalEnd += timerAutoCompile_EndInterval;
 			timerAutoCompile.Start();
 			txtSource.Text = Shader.Source;
 			Compile();
+			ProjectDef.AllForms.Add(this);
 		}
 		private void FrmShader_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -40,6 +41,7 @@ namespace WinOpenGL_ShaderToy
 			timerAutoCompile.Dispose();
 			timerAutoCompile = null;
 			panelMain.ProjectObject = null;
+			ProjectDef.AllForms.Remove(this);
 		}
 		private void BtnLoad_Click(object sender, EventArgs e)
 		{

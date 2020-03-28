@@ -27,6 +27,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void frmRenderConfigure_Load(object sender, EventArgs e)
 		{
+			InitDocking();
 			DataGridViewColumn column = new clsUniformDataColumn();
 			column.Name = "columnVariableValue";
 			column.HeaderText = "Variable Value";
@@ -39,17 +40,19 @@ namespace WinOpenGL_ShaderToy
 			UpdateTables();
 			timerUpdateLists = new clsHPTimer(this);
 			timerUpdateLists.Interval = 1000.0;
-			timerUpdateLists.SleepInterval = 500;
+			timerUpdateLists.SleepInterval = 1000;
 			timerUpdateLists.IntervalEnd += new HPIntervalEventHandler(timerUpdateLists_EndInterval);
 			timerUpdateLists.Start();
 			timerUpdateUniformDataGrid = new clsHPTimer(this);
-			timerUpdateUniformDataGrid.Interval = 200.0;
-			timerUpdateUniformDataGrid.SleepInterval = 100;
+			timerUpdateUniformDataGrid.Interval = 50;
+			timerUpdateUniformDataGrid.SleepInterval = 50;
 			timerUpdateUniformDataGrid.IntervalEnd += new HPIntervalEventHandler(timerUpdateUniformDataGrid_EndInterval);
 			timerUpdateUniformDataGrid.Start();
+			ProjectDef.AllForms.Add(this);
 		}
 		private void frmSRenderConfigure_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			UnloadDocking();
 			DockPanel = null;
 			timerUpdateUniformDataGrid.Stop();
 			timerUpdateUniformDataGrid.Dispose();
@@ -58,6 +61,78 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateLists.Dispose();
 			timerUpdateLists = null;
 			AllForms.Remove(this);
+			ProjectDef.AllForms.Remove(this);
+		}
+		private DockPanel panelDockMain;
+		private List<DockContent> aryDockContent = new List<DockContent>();
+		private void InitDocking()
+		{
+			DockAreas dockingAllowed = DockAreas.Document |
+									   DockAreas.DockLeft |
+									   DockAreas.DockRight |
+									   DockAreas.DockTop |
+									   DockAreas.DockBottom |
+									   DockAreas.Float;
+			panelDockMain = new DockPanel();
+			panelDockMain.Theme = dockMainPanel.Theme;
+			panelDockMain.Theme.Measures.DockPadding = 0;
+			panelDockMain.BorderStyle = BorderStyle.None;
+			panelDockMain.Padding = new Padding(0);
+			panelDockMain.Margin = new Padding(0);
+			panelDockMain.ShowDocumentIcon = false;
+			panelDockMain.Parent = this;
+			panelDockMain.Dock = DockStyle.Fill;
+			panelDockMain.DocumentStyle = DocumentStyle.DockingWindow;
+			panelDockMain.BringToFront();
+			aryDockContent.AddRange(new DockContent[] {
+				AddDockContent(panelDockMain, datagridGeometryRouting, dockingAllowed, "Geometry Routing"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.8, datagridUniformsValues, dockingAllowed, "Uniform Data"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.6, datagridUniformsRouting, dockingAllowed, "Uniform Routing"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, datagridEvents, dockingAllowed, "Events")
+			});
+		}
+		private static DockContent AddDockContent(DockPanel panel, Control control, DockAreas areas, string caption)
+		{
+			DockContent contentNew = NewDockContent(caption, areas);
+			DockControlToContentPanel(control, contentNew);
+			contentNew.Show(panel);
+			return contentNew;
+		}
+		private static DockContent AddDockContent(DockPane panelPrevious, DockAlignment aliggnment, double ratio, Control control, DockAreas areas, string caption)
+		{
+			DockContent contentNew = NewDockContent(caption, areas);
+			DockControlToContentPanel(control, contentNew);
+			contentNew.Show(panelPrevious, aliggnment, ratio);
+			return contentNew;
+		}
+		private static void DockControlToContentPanel(Control control, DockContent content)
+		{
+			control.Padding = new Padding(0);
+			control.Margin = new Padding(0);
+			control.Parent = content;
+			control.Dock = DockStyle.Fill;
+		}
+		private static DockContent NewDockContent(string caption, DockAreas areas)
+		{
+			DockContent contentRet = new DockContent();
+			contentRet.Text = caption;
+			contentRet.FormBorderStyle = FormBorderStyle.None;
+			contentRet.ControlBox = false;
+			contentRet.CloseButton = false;
+			contentRet.CloseButtonVisible = false;
+			contentRet.ShowInTaskbar = false;
+			contentRet.DockAreas = areas;
+			return contentRet;
+		}
+		private void UnloadDocking()
+		{
+			foreach(var content in aryDockContent)
+			{
+				content.Close();
+				content.Dispose();
+			}
+			aryDockContent.Clear();
+			panelDockMain.Dispose();
 		}
 		private clsRender renderSubject = null;
 		public clsRender RenderSubject
@@ -167,9 +242,11 @@ namespace WinOpenGL_ShaderToy
 			if (RenderSubject == null) return;
 			if (RenderSubject.Uniforms == null) return;
 			datagridUniformsValues.Rows.Clear();
-			foreach(KeyValuePair<string, clsUniformSet> itm in RenderSubject.Uniforms)
+			for(int itr = 0; itr < RenderSubject.Uniforms.Count; itr++)
 			{
-				datagridUniformsValues.Rows.Add(new object[] { itm.Key as string, itm.Value });
+				KeyValuePair<string, clsUniformSet> itm = RenderSubject.Uniforms[itr];
+				int idxRow = datagridUniformsValues.Rows.Add(new object[] { itm.Key as string, itm.Value });
+				datagridUniformsValues.Rows[idxRow].Tag = itr;
 			}
 			UpdateUniformVariableList();
 		}
@@ -209,7 +286,7 @@ namespace WinOpenGL_ShaderToy
 			clsGeometry itm = lstGeometry.SelectedItem as clsGeometry;
 			RenderSubject.Geometry = itm;
 			UpdateVertexDescriptionList();
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void lstProgram_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -219,7 +296,7 @@ namespace WinOpenGL_ShaderToy
 			if(RenderSubject.Program != null) RenderSubject.Program.Link();
 			UpdateAttributeList();
 			UpdateUniformsList();
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void UpdateVertexDescriptionList()
 		{
@@ -267,12 +344,12 @@ namespace WinOpenGL_ShaderToy
 			clsVertexDescriptionComponent descComp = e.Row.Cells["columnVertDesc"].Value as clsVertexDescriptionComponent;
 			string strShaderVar = e.Row.Cells["columnProgramAttr"].Value as string;
 			RenderSubject.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(strShaderVar, descComp));
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridGeometryRouting_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
 			RenderSubject.GeometryShaderLinks.RemoveAt(e.Row.Index);
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridGeometryRouting_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
@@ -294,7 +371,7 @@ namespace WinOpenGL_ShaderToy
 				RenderSubject.GeometryShaderLinks[row.Index] = new KeyValuePair<string, clsVertexDescriptionComponent>(oldValue.Key, obj);
 			}
 			cell.Tag = null;
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridGeometryRouting_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
@@ -307,26 +384,31 @@ namespace WinOpenGL_ShaderToy
 			clsUniformSet objValue = new clsUniformSet("<Float> 0");
 			datagridUniformsValues.CurrentRow.Cells["columnVariableValue"].Value = objValue.ToString();
 			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet> (null, objValue));
+			datagridUniformsValues.CurrentRow.Tag = RenderSubject.Uniforms.Count - 1;
 			UpdateUniformVariableList();
 		}
 		private void datagridUniformsValues_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
 			if (e.Row.Index < 0) return;
-			RenderSubject.Uniforms.RemoveAt(e.Row.Index);
+			if(!int.TryParse(e.Row.Tag?.ToString(), out int intUni)) return;
+			if (intUni < 0 || intUni >= RenderSubject.Uniforms.Count) return;
+			RenderSubject.Uniforms.RemoveAt(intUni);
 			UpdateUniformVariableList();
 		}
-		private void datagridUniformsValues_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		private void datagridUniformsValues_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			if (bolUpdateLock) return;
 			if (e.RowIndex < 0) return;
 			if (e.ColumnIndex < 0) return;
-			if (e.RowIndex >= RenderSubject.Uniforms.Count) return;
+			DataGridViewRow row = datagridUniformsValues.Rows[e.RowIndex];
 			DataGridViewColumn column = datagridUniformsValues.Columns[e.ColumnIndex];
 			DataGridViewCell cell = datagridUniformsValues[e.ColumnIndex, e.RowIndex];
-			KeyValuePair<string, clsUniformSet> oldValue = RenderSubject.Uniforms[e.RowIndex];
+			if(!int.TryParse(row.Tag?.ToString(), out int intUni)) return;
+			if (intUni < 0 || intUni >= RenderSubject.Uniforms.Count) return;
+			KeyValuePair<string, clsUniformSet> oldValue = RenderSubject.Uniforms[intUni];
 			if(column.Name == "columnVariableName")
 			{
-				RenderSubject.Uniforms[e.RowIndex] = new KeyValuePair<string, clsUniformSet>(cell.Value as string, oldValue.Value);
+				RenderSubject.Uniforms[intUni] = new KeyValuePair<string, clsUniformSet>(cell.Value as string, oldValue.Value);
 				UpdateUniformVariableList();
 			}
 			if(column.Name == "columnVariableValue")
@@ -337,10 +419,9 @@ namespace WinOpenGL_ShaderToy
 					clsUniformSet valueNew = new clsUniformSet(cellUniformData.Value.ToString());
 					valueNew.Type = cellUniformData.DataUniformType;
 					valueNew.Data = cellUniformData.DataObject;
-					RenderSubject.Uniforms[e.RowIndex] = new KeyValuePair<string, clsUniformSet>(oldValue.Key, valueNew);
+					RenderSubject.Uniforms[intUni] = new KeyValuePair<string, clsUniformSet>(oldValue.Key, valueNew);
 				}
 			}
-			cell.Tag = null;
 		}
 		private void datagridUniformsValues_KeyUp(object sender, KeyEventArgs e)
 		{
@@ -352,7 +433,9 @@ namespace WinOpenGL_ShaderToy
 					if (cell == null) continue;
 					if (cell.OwningColumn.Name == "columnVariableValue")
 					{
-						clsUniformSet data = RenderSubject.Uniforms[cell.RowIndex].Value;
+						if(!int.TryParse(cell.OwningRow.Tag?.ToString(), out int intUni)) continue;
+						if (intUni < 0 || intUni >= RenderSubject.Uniforms.Count) continue;
+						clsUniformSet data = RenderSubject.Uniforms[intUni].Value;
 						object[] dataReset = UniformType_InitialValues[data.Type];
 						for (int itr = 0; itr < data.Data.Count; itr++)
 						{

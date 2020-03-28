@@ -37,6 +37,12 @@ namespace WinOpenGL_ShaderToy
 				row.Tag = VertexDescription[itr];
 			}
 			bolDataGridReady = true;
+			ProjectDef.AllForms.Add(this);
+		}
+		private void FrmProgram_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+		{
+			panelMain.ProjectObject = null;
+			ProjectDef.AllForms.Remove(this);
 		}
 		private void DatagridVertexDescriptions_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
 		{
@@ -88,10 +94,6 @@ namespace WinOpenGL_ShaderToy
 		private void DatagridVertexDescriptions_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
 			Console.WriteLine($"Vertex Description: DataError {{{e.Exception}}} - Row{e.RowIndex} Column{e.ColumnIndex}");
-		}
-		private void FrmProgram_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-		{
-			panelMain.ProjectObject = null;
 		}
 	}
 }

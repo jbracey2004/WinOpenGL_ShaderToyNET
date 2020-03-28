@@ -16,22 +16,18 @@ namespace WinOpenGL_ShaderToy
 	{
 		public frmProgram(clsProjectObject refObj) { InitializeComponent(); panelMain.ProjectObject = refObj; }
 		public clsProgram Program { set { panelMain.ProjectObject = value; } get { return panelMain.ProjectObject as clsProgram; } }
-		private clsHPTimer timerUpdateLists;
 		private clsHPTimer timerAutoLink;
 		private void FrmProgram_Load(object sender, EventArgs e)
 		{
 			UpdateLists();
 			LinkShaders();
-			timerUpdateLists = new clsHPTimer(this);
-			timerUpdateLists.Interval = 1000.0;
-			timerUpdateLists.SleepInterval = 500;
-			timerUpdateLists.IntervalEnd += new HPIntervalEventHandler(timerUpdateLists_EndInterval);
-			timerUpdateLists.Start();
+			panelMain.Timer_IntervalUpdate += timerUpdateLists_EndInterval;
 			timerAutoLink = new clsHPTimer(this);
 			timerAutoLink.Interval = 4000.0;
-			timerAutoLink.SleepInterval = 500;
-			timerAutoLink.IntervalEnd += new HPIntervalEventHandler(timerAutoLink_EndInterval);
-			timerAutoLink.Start();			
+			timerAutoLink.SleepInterval = 4000;
+			timerAutoLink.IntervalEnd += timerAutoLink_EndInterval;
+			timerAutoLink.Start();
+			ProjectDef.AllForms.Add(this);
 		}
 		private void FrmProgram_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -39,10 +35,8 @@ namespace WinOpenGL_ShaderToy
 			timerAutoLink.Stop();
 			timerAutoLink.Dispose();
 			timerAutoLink = null;
-			timerUpdateLists.Stop();
-			timerUpdateLists.Dispose();
-			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
+			ProjectDef.AllForms.Remove(this);
 		}
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{

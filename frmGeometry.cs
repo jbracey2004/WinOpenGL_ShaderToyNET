@@ -24,7 +24,6 @@ namespace WinOpenGL_ShaderToy
 		private clsCollapsePanel containerMain;
 		private Stopwatch timeRun;
 		private infoFramePerformance tsRender;
-		private clsHPTimer timerUpdateLists;
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{
 			glRender = new controlRender();
@@ -85,15 +84,12 @@ namespace WinOpenGL_ShaderToy
 			UpdateLists();
 			lstPositionAttr.SelectedIndex = Math.Min(lstPositionAttr.Items.Count - 1, 1);
 			matxView.Row3 = new Vector4(0, 0, -2, 1);
-			timerUpdateLists = new clsHPTimer(this);
-			timerUpdateLists.Interval = 1000.0;
-			timerUpdateLists.SleepInterval = 500;
-			timerUpdateLists.IntervalEnd += timerUpdateLists_EndInterval;
-			timerUpdateLists.Start();
+			panelMain.Timer_IntervalUpdate += timerUpdateLists_EndInterval;
 			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
 			timeRun.Start();
 			glRender_Init();
+			ProjectDef.AllForms.Add(this);
 		}
 		private void FrmGeometry_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -101,10 +97,8 @@ namespace WinOpenGL_ShaderToy
 			if (Geometry.VertexDescription != null) Geometry.VertexDescription.Updated -= Geometry_VertexDescription_Updated;
 			tsRender.Dispose();
 			tsRender = null;
-			timerUpdateLists.Stop();
-			timerUpdateLists.Dispose();
-			timerUpdateLists = null;
 			panelMain.ProjectObject = null;
+			ProjectDef.AllForms.Remove(this);
 		}
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{

@@ -22,6 +22,7 @@ namespace WinOpenGL_ShaderToy
 		clsHPTimer timerUpdate;
 		private void FrmProjects_Load(object sender, EventArgs e)
 		{
+			treeMain.Nodes["nodeProject"].Expand();
 			ToolStripMenuItem itm = menuNew_Shader;
 			foreach(string str in Enum.GetNames(typeof(ShaderType)))
 			{
@@ -34,8 +35,8 @@ namespace WinOpenGL_ShaderToy
 			}
 			timerUpdate = new clsHPTimer(this);
 			timerUpdate.Interval = 1000.0;
-			timerUpdate.SleepInterval = 500;
-			timerUpdate.IntervalEnd += new HPIntervalEventHandler(timerUpdate_Tick);
+			timerUpdate.SleepInterval = 1000;
+			timerUpdate.IntervalEnd += timerUpdate_Tick;
 			timerUpdate.Start();
 		}
 		private void FrmProject_FormClosing(object sender, FormClosingEventArgs e)
@@ -168,6 +169,7 @@ namespace WinOpenGL_ShaderToy
 			newNode.Text = obj.ToString();
 			newNode.Tag = obj;
 			treeMain.Nodes["nodeProject"].Nodes.Add(newNode);
+			treeMain.Nodes["nodeProject"].Expand();
 			DockContent newForm = NewFormFromObject(obj);
 			newForm.Show(dockMainPanel, DockState.Document);
 		}

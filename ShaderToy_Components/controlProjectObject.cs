@@ -118,6 +118,7 @@ namespace ShaderToy_Components
 			ProjectObject.ParentControl = this;
 		}
 		private clsHPTimer timerUpdate;
+		public HPIntervalEventHandler Timer_IntervalUpdate { get; set; }
 		private void FrmProjectObject_HandleCreated(object sender, EventArgs e)
 		{
 			panelStatus.Controls.SetChildIndex(txtName, 1);
@@ -128,12 +129,13 @@ namespace ShaderToy_Components
 			UpdateTitle();
 			timerUpdate = new clsHPTimer(this);
 			timerUpdate.Interval = 1000.0;
-			timerUpdate.SleepInterval = 250;
-			timerUpdate.IntervalEnd += new HPIntervalEventHandler(timerUpdate_Tick);
+			timerUpdate.SleepInterval = 1000;
+			timerUpdate.IntervalEnd += timerUpdate_Tick;
 			timerUpdate.Start();
 		}
 		private void FrmProjectObject_HandleDestroyed(object sender, EventArgs e)
 		{
+			Timer_IntervalUpdate = null;
 			if(timerUpdate != null)
 			{
 				timerUpdate.Stop();
@@ -149,6 +151,7 @@ namespace ShaderToy_Components
 		{
 			if (ProjectObject != null)
 			{
+				Timer_IntervalUpdate?.Invoke(sender, e);
 				txtName.Text = ProjectObject.Name;
 				UpdateTitle();
 			}
