@@ -10,6 +10,7 @@ using static generalUtils;
 using System.Collections.Generic;
 using static modProject.clsGeometry;
 using static modCommon.modWndProcInterop.InputInterface;
+using System.Drawing;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -24,7 +25,7 @@ namespace WinOpenGL_ShaderToy
 		private infoFramePerformance tsRender;
 		private infoFramePerformance tsRenderTimer;
 		private Stopwatch tsTimeElapsed;
-		public int FrameCount { get; private set; }
+		public double FrameCount { get; private set; }
 		public double CurrentTimeStamp { get; private set; }
 		public double PreviousTimeStamp { get; private set; }
 		public double DeltaTimeStamp { get => CurrentTimeStamp - PreviousTimeStamp; }
@@ -111,16 +112,17 @@ namespace WinOpenGL_ShaderToy
 			tsRenderTimer.SampleFrame(tsDelta, CurrentTimeStamp);
 			Render?.RaiseRenderEvent(FrameCount, DeltaTimeStamp, CurrentTimeStamp);
 			glMain_Render();
-			FrameCount++;
+			FrameCount += tsDelta * tsRenderTimer.Median_Rate;
+			Application.DoEvents();
 		}
 		private void TimerUpdateStats_Tick(object sender, HPIntervalEventArgs e)
 		{
-			btnFPS.Text = string.Format("{0,15:#,##0.00000 FPS}", tsRenderTimer.Median_Rate);
-			btnInterval.Text = string.Format("{0,15:#,##0.00000 ms}", tsRenderTimer.Median * 1000.0);
-			lblRenderDuration.Text = string.Format("{0,15:##,##0.00000 ms}", tsRender.Median * 1000.0);
-			lblRenderFreq.Text = string.Format("{0,15:##,##0.00000 Hz}", tsRender.Median_Rate);
-			lblFrameNumber.Text = FrameCount.ToString();
-			lblFrameTimeStamp.Text = CurrentTimeStamp.ToString("0.00000");
+			btnFPS.Text = $"{tsRenderTimer.Median_Rate:0.00000} FPS";
+			btnInterval.Text = $"{floatToSIUnits(tsRenderTimer.Median, SIUnits)}s";
+			lblRenderDuration.Text = $"{floatToSIUnits(tsRender.Median, SIUnits)}s";
+			lblRenderFreq.Text = $"{floatToSIUnits(tsRender.Median_Rate, SIUnits)}Hz";
+			lblFrameNumber.Text = $"# {FrameCount:0.00000}";
+			lblFrameTimeStamp.Text = $"{CurrentTimeStamp:0.00000} s";
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
@@ -206,11 +208,10 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void txtFPS_Change(object sender, EventArgs e)
 		{
-			double val = 0.0;
-			if(double.TryParse(txtFPS.Text, out val))
+			if(double.TryParse(txtFPS.Text, out double val))
 			{
 				if (Render == null) return;
-				Render.RenderInterval = (1000.0 / val);
+				Render.RenderInterval = 1000.0 / val;
 				timerRender.Interval = Render.RenderInterval;
 				int sleepTmp = (int)Math.Floor(timerRender.Interval * 0.125);
 				timerRender.SleepInterval = (sleepTmp > 1) ? (sleepTmp) : (0);
@@ -222,8 +223,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void txtInterval_Change(object sender, EventArgs e)
 		{
-			double val = 0.0;
-			if (double.TryParse(txtInterval.Text, out val))
+			if (double.TryParse(txtInterval.Text, out double val))
 			{
 				if (Render == null) return;
 				Render.RenderInterval = val;
@@ -252,6 +252,16 @@ namespace WinOpenGL_ShaderToy
 		private void lblFrameNumber_DoubleClick(object sender, EventArgs e)
 		{
 			FrameCount = 0;
+		}
+		private void FrameCount_MouseEnter(object sender, EventArgs e)
+		{
+			Control control = sender as Control;
+			if(control != null) control.BackColor = SystemColors.ControlDarkDark;
+		}
+		private void FrameCount_MouseLeave(object sender, EventArgs e)
+		{
+			Control control = sender as Control;
+			if (control != null) control.BackColor = Color.Transparent;
 		}
 	}
 }

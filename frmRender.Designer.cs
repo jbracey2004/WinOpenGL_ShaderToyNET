@@ -30,14 +30,13 @@ namespace WinOpenGL_ShaderToy
 		private void InitializeComponent()
 		{
 			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
-			this.lblRenderName = new System.Windows.Forms.ToolStripStatusLabel();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.lblName = new System.Windows.Forms.Label();
 			this.btnConfigure = new System.Windows.Forms.Button();
 			this.panelFrameCount = new System.Windows.Forms.FlowLayoutPanel();
 			this.lblFrameCount = new System.Windows.Forms.Label();
-			this.lblFrameTimeStamp = new System.Windows.Forms.Label();
 			this.lblFrameNumber = new System.Windows.Forms.Label();
+			this.lblFrameTimeStamp = new System.Windows.Forms.Label();
 			this.toolStripFPS = new System.Windows.Forms.ToolStrip();
 			this.btnInterval = new System.Windows.Forms.ToolStripDropDownButton();
 			this.txtInterval = new System.Windows.Forms.ToolStripTextBox();
@@ -45,17 +44,12 @@ namespace WinOpenGL_ShaderToy
 			this.txtFPS = new System.Windows.Forms.ToolStripTextBox();
 			this.lblRenderDuration = new System.Windows.Forms.ToolStripStatusLabel();
 			this.lblRenderFreq = new System.Windows.Forms.ToolStripStatusLabel();
+			this.lblRenderName = new System.Windows.Forms.ToolStripStatusLabel();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
 			this.panelFrameCount.SuspendLayout();
 			this.toolStripFPS.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// lblRenderName
-			// 
-			this.lblRenderName.Name = "lblRenderName";
-			this.lblRenderName.Size = new System.Drawing.Size(44, 20);
-			this.lblRenderName.Text = "Render";
 			// 
 			// panelMain
 			// 
@@ -130,57 +124,63 @@ namespace WinOpenGL_ShaderToy
 			this.panelFrameCount.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panelFrameCount.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.panelFrameCount.Controls.Add(this.lblFrameCount);
-			this.panelFrameCount.Controls.Add(this.lblFrameTimeStamp);
 			this.panelFrameCount.Controls.Add(this.lblFrameNumber);
+			this.panelFrameCount.Controls.Add(this.lblFrameTimeStamp);
 			this.panelFrameCount.Location = new System.Drawing.Point(312, 3);
 			this.panelFrameCount.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
 			this.panelFrameCount.Name = "panelFrameCount";
-			this.panelFrameCount.Size = new System.Drawing.Size(136, 20);
+			this.panelFrameCount.Size = new System.Drawing.Size(132, 20);
 			this.panelFrameCount.TabIndex = 9;
 			// 
 			// lblFrameCount
 			// 
 			this.lblFrameCount.AutoSize = true;
-			this.lblFrameCount.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.lblFrameCount.BackColor = System.Drawing.Color.Transparent;
 			this.lblFrameCount.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lblFrameCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblFrameCount.Location = new System.Drawing.Point(0, 0);
 			this.lblFrameCount.Margin = new System.Windows.Forms.Padding(0);
 			this.lblFrameCount.Name = "lblFrameCount";
-			this.lblFrameCount.Size = new System.Drawing.Size(84, 16);
+			this.lblFrameCount.Size = new System.Drawing.Size(47, 16);
 			this.lblFrameCount.TabIndex = 6;
-			this.lblFrameCount.Text = "Frame Count";
+			this.lblFrameCount.Text = "Frame";
 			this.lblFrameCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblFrameCount.DoubleClick += new System.EventHandler(this.lblFrameCount_DoubleClick);
-			// 
-			// lblFrameTimeStamp
-			// 
-			this.lblFrameTimeStamp.AutoSize = true;
-			this.lblFrameTimeStamp.BackColor = System.Drawing.Color.Gray;
-			this.lblFrameTimeStamp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.lblFrameTimeStamp.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblFrameTimeStamp.Location = new System.Drawing.Point(87, 0);
-			this.lblFrameTimeStamp.Name = "lblFrameTimeStamp";
-			this.lblFrameTimeStamp.Size = new System.Drawing.Size(24, 15);
-			this.lblFrameTimeStamp.TabIndex = 7;
-			this.lblFrameTimeStamp.Text = "0.0";
-			this.lblFrameTimeStamp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.lblFrameTimeStamp.DoubleClick += new System.EventHandler(this.lblFrameTimeStamp_DoubleClick);
+			this.lblFrameCount.MouseEnter += new System.EventHandler(this.FrameCount_MouseEnter);
+			this.lblFrameCount.MouseLeave += new System.EventHandler(this.FrameCount_MouseLeave);
 			// 
 			// lblFrameNumber
 			// 
 			this.lblFrameNumber.AutoSize = true;
-			this.lblFrameNumber.BackColor = System.Drawing.Color.Gray;
+			this.lblFrameNumber.BackColor = System.Drawing.Color.Transparent;
 			this.lblFrameNumber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.lblFrameNumber.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblFrameNumber.Location = new System.Drawing.Point(117, 0);
+			this.lblFrameNumber.Location = new System.Drawing.Point(50, 0);
 			this.lblFrameNumber.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.lblFrameNumber.Name = "lblFrameNumber";
-			this.lblFrameNumber.Size = new System.Drawing.Size(15, 15);
+			this.lblFrameNumber.Size = new System.Drawing.Size(24, 15);
 			this.lblFrameNumber.TabIndex = 8;
-			this.lblFrameNumber.Text = "0";
+			this.lblFrameNumber.Text = "0.0";
 			this.lblFrameNumber.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.lblFrameNumber.DoubleClick += new System.EventHandler(this.lblFrameNumber_DoubleClick);
+			this.lblFrameNumber.MouseEnter += new System.EventHandler(this.FrameCount_MouseEnter);
+			this.lblFrameNumber.MouseLeave += new System.EventHandler(this.FrameCount_MouseLeave);
+			// 
+			// lblFrameTimeStamp
+			// 
+			this.lblFrameTimeStamp.AutoSize = true;
+			this.lblFrameTimeStamp.BackColor = System.Drawing.Color.Transparent;
+			this.lblFrameTimeStamp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.lblFrameTimeStamp.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lblFrameTimeStamp.Location = new System.Drawing.Point(77, 0);
+			this.lblFrameTimeStamp.Name = "lblFrameTimeStamp";
+			this.lblFrameTimeStamp.Size = new System.Drawing.Size(48, 15);
+			this.lblFrameTimeStamp.TabIndex = 7;
+			this.lblFrameTimeStamp.Text = "0.00000";
+			this.lblFrameTimeStamp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblFrameTimeStamp.DoubleClick += new System.EventHandler(this.lblFrameTimeStamp_DoubleClick);
+			this.lblFrameTimeStamp.MouseEnter += new System.EventHandler(this.FrameCount_MouseEnter);
+			this.lblFrameTimeStamp.MouseLeave += new System.EventHandler(this.FrameCount_MouseLeave);
 			// 
 			// toolStripFPS
 			// 
@@ -192,7 +192,7 @@ namespace WinOpenGL_ShaderToy
             this.lblRenderDuration,
             this.lblRenderFreq});
 			this.toolStripFPS.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-			this.toolStripFPS.Location = new System.Drawing.Point(451, 0);
+			this.toolStripFPS.Location = new System.Drawing.Point(447, 0);
 			this.toolStripFPS.Name = "toolStripFPS";
 			this.toolStripFPS.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
 			this.toolStripFPS.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -214,6 +214,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtInterval
 			// 
+			this.txtInterval.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.txtInterval.Name = "txtInterval";
 			this.txtInterval.Size = new System.Drawing.Size(100, 23);
 			this.txtInterval.TextChanged += new System.EventHandler(this.txtInterval_Change);
@@ -231,6 +232,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtFPS
 			// 
+			this.txtFPS.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.txtFPS.Name = "txtFPS";
 			this.txtFPS.Size = new System.Drawing.Size(100, 23);
 			this.txtFPS.TextChanged += new System.EventHandler(this.txtFPS_Change);
@@ -250,6 +252,12 @@ namespace WinOpenGL_ShaderToy
 			this.lblRenderFreq.Name = "lblRenderFreq";
 			this.lblRenderFreq.Size = new System.Drawing.Size(21, 15);
 			this.lblRenderFreq.Text = "Hz";
+			// 
+			// lblRenderName
+			// 
+			this.lblRenderName.Name = "lblRenderName";
+			this.lblRenderName.Size = new System.Drawing.Size(44, 20);
+			this.lblRenderName.Text = "Render";
 			// 
 			// frmRender
 			// 

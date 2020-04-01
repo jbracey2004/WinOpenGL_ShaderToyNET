@@ -2676,7 +2676,7 @@ namespace modProject
 		public event ScriptHandler PointerMove;
 		public event ScriptHandler PointerEnd;
 		public void RaiseLoadEvent() { Load?.Invoke(EventType.OnLoad); }
-		public void RaiseRenderEvent(int Frame, double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, Frame, DeltaTime, ElapsedTime); }
+		public void RaiseRenderEvent(double Frame, double DeltaTime, double ElapsedTime) { Render?.Invoke(EventType.OnRender, Frame, DeltaTime, ElapsedTime); }
 		public void RaiseResizeEvent(int Width, int Height) { Resize?.Invoke(EventType.OnResize, Width, Height); }
 		public void RaisePointerStartEvent(InputEventArgs InputInfo) { PointerStart?.Invoke(EventType.OnPointerStart, InputInfo); }
 		public void RaisePointerMoveEvent(InputEventArgs InputInfo) { PointerMove?.Invoke(EventType.OnPointerMove, InputInfo); }

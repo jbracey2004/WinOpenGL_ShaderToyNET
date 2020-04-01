@@ -1,0 +1,1020 @@
+﻿'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: DefaultDomain): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_64\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: DefaultDomain): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WinOpenGL_ShaderToy.exe'. Symbols loaded.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Drawing\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Drawing.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll'. Symbols loaded.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll'. Symbols loaded.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml.Linq\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.Linq.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\ShaderToy_Components.dll'. Symbols loaded.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\Accessibility\v4.0_4.0.0.0__b03f5f7f11d50a3a\Accessibility.dll'. 
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'Microsoft.GeneratedCode'. 
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+The thread 0x2290 has exited with code 0 (0x0).
+Exception thrown: 'System.ObjectDisposedException' in System.Windows.Forms.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+The thread 0xc58 has exited with code 0 (0x0).
+The thread 0xbd0 has exited with code 0 (0x0).
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\Microsoft.CodeAnalysis.Scripting.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\netstandard\v4.0_2.0.0.0__cc7b13ffcd2ddd51\netstandard.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Collections.Immutable.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\Microsoft.CodeAnalysis.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\Microsoft.CodeAnalysis.CSharp.Scripting.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\Microsoft.CodeAnalysis.CSharp.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.ValueTuple.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Reflection.Metadata.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Memory.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll'. Module was built without symbols.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Runtime.dll'. 
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Numerics.Vectors.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Globalization.dll'. 
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Security.Cryptography.Algorithms.dll'. Skipped loading symbols. Module is optimized and the debugger option 'Just My Code' is enabled.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'ℛ*25261747-3b83-4980-a3e1-dda92669bdda#1-0'. Module was built without symbols.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'ℛ*25261747-3b83-4980-a3e1-dda92669bdda#2-0'. Module was built without symbols.
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'ℛ*25261747-3b83-4980-a3e1-dda92669bdda#3-0'. Module was built without symbols.
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\FastColoredTextBox.dll'. Symbols loaded.
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+The thread 0x33c8 has exited with code 0 (0x0).
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+The thread 0x2978 has exited with code 0 (0x0).
+The thread 0x2048 has exited with code 0 (0x0).
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'Microsoft.CodeAnalysis.Scripting.CompilationErrorException' in Microsoft.CodeAnalysis.Scripting.dll
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+Exception thrown: 'System.AggregateException' in mscorlib.dll
+One or more errors occurred.; Specified cast is not valid.; 
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'ℛ*25261747-3b83-4980-a3e1-dda92669bdda#5-0'. Module was built without symbols.
+The thread 0x3758 has exited with code 0 (0x0).
+The thread 0x38b0 has exited with code 0 (0x0).
+The thread 0x3fd0 has exited with code 0 (0x0).
+The thread 0x31c4 has exited with code 0 (0x0).
+The thread 0x4a80 has exited with code 0 (0x0).
+The thread 0x3d6c has exited with code 0 (0x0).
+The thread 0x2504 has exited with code 0 (0x0).
+The thread 0x4aec has exited with code 0 (0x0).
+The thread 0x1018 has exited with code 0 (0x0).
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+The thread 0x4988 has exited with code 0 (0x0).
+Exception thrown: 'System.ObjectDisposedException' in System.Windows.Forms.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+The thread 0x2078 has exited with code 0 (0x0).
+The thread 0x3e6c has exited with code 0 (0x0).
+'WinOpenGL_ShaderToy.exe' (CLR v4.0.30319: WinOpenGL_ShaderToy.exe): Loaded 'Microsoft.GeneratedCode'. 
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+The thread 0x5ba0 has exited with code 0 (0x0).
+The thread 0x5fb0 has exited with code 0 (0x0).
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+The thread 0x35b8 has exited with code 0 (0x0).
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+No Timer Event: Parent Context Disposition Out of Sync
+Exception thrown: 'System.ObjectDisposedException' in System.Windows.Forms.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+Exception thrown: 'System.Threading.ThreadAbortException' in ShaderToy_Components.dll
+The thread 0x5eac has exited with code 0 (0x0).
+The thread 0x4cc4 has exited with code 0 (0x0).
+The thread 0x24c0 has exited with code 0 (0x0).
+Exception thrown: 'System.Threading.ThreadAbortException' in mscorlib.dll
+The thread 0x54d4 has exited with code 0 (0x0).
+The program '[23340] WinOpenGL_ShaderToy.exe' has exited with code 0 (0x0).

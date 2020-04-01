@@ -4,10 +4,22 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 public class generalUtils
 {
+	public static KeyValuePair<string, int>[] SIUnits = new KeyValuePair<string, int>[]
+	{
+		new KeyValuePair<string, int>( "p", -9 ),
+		new KeyValuePair<string, int>( "µ", -6 ),
+		new KeyValuePair<string, int>( "m", -3 ),
+		new KeyValuePair<string, int>( "", 0 ),
+		new KeyValuePair<string, int>( "k", 3 ),
+		new KeyValuePair<string, int>( "M", 6 ),
+		new KeyValuePair<string, int>( "G", 9 ),
+		new KeyValuePair<string, int>( "T", 12 )
+	};
 	public static void ResizeList<Typ>(ref List<Typ> ary, int newsize, Func<int, Typ> funcLamda)
 	{
 		int oldsize = ary.Count;
@@ -97,6 +109,23 @@ public class generalUtils
 	public static string NumberAsBase(short num, int Base) => Convert.ToString(num, Base).ToString();
 	public static string NumberAsBase(int num, int Base) => Convert.ToString(num, Base).ToString();
 	public static string NumberAsBase(long num, int Base) => Convert.ToString(num, Base).ToString();
+	public static string floatToSIUnits(double num, KeyValuePair<string, int>[] arySIunits)
+	{
+		string strRet = $"{num:0.00000e0}";
+		Match matchExp = Regex.Match(strRet, @"e(?<exp>[\+\-]?\d+)");
+		if (!matchExp.Success) return strRet;
+		if (matchExp.Groups["exp"] == null) return strRet;
+		if (!int.TryParse(matchExp.Groups["exp"].Value, out int intExp)) return strRet;
+		for (int itr = 0; itr < arySIunits.Length - 1; itr++)
+		{
+			if (intExp >= arySIunits[itr].Value && intExp < arySIunits[itr + 1].Value)
+			{
+				strRet = $"{(num * Math.Pow(10, -arySIunits[itr].Value)):0.00000} {arySIunits[itr].Key}";
+				break;
+			}
+		}
+		return strRet;
+	}
 	public class NumberConverter : DoubleConverter
 	{
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
