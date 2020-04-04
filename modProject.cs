@@ -780,6 +780,10 @@ namespace modProject
 			{
 				return Array.ConvertAll(args, itm => (object)itm);
 			}
+			public object[] Vec(int Len, object Val)
+			{
+				return ArrayList.Repeat(Val, Len).ToArray();
+			}
 			public object Vec_Elem(object[] args, int index)
 			{
 				object objRet = 0;
@@ -846,6 +850,130 @@ namespace modProject
 						args[idxCol + indexRow * numCols] = value[idxCol];
 					}
 				}
+			}
+			public object[] Vec_Sum(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for(int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA + dB;
+				}
+				return VecRet;
+			}
+			public object[] Vec_Diff(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA - dB;
+				}
+				return VecRet;
+			}
+			public object[] Vec_Div(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA / dB;
+				}
+				return VecRet;
+			}
+			public object[] Vec_Recipical(object[] Vec)
+			{
+				object[] VecRet = new object[Vec.Length];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
+					VecRet[itr] = 1.0 / dVec;
+				}
+				return VecRet;
+			}
+			public object Vec_Dot(object[] VecA, object[] VecB)
+			{
+				double fRet = 0;
+				for (int itr = 0; itr < Math.Max(VecA.Length, VecB.Length); itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					fRet += dA * dB;
+				}
+				return fRet;
+			}
+			public object[] Vec_Mul(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA * dB;
+				}
+				return VecRet;
+			}
+			public object[] Vec_Mul(object Val, object[] Vec)
+			{
+				object[] VecRet = new object[Vec.Length];
+				double.TryParse(Val.ToString(), out double dVal);
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
+					VecRet[itr] = dVal * dVec;
+				}
+				return VecRet;
+			}
+			public object Vec_Len(object[] Vec)
+			{
+				double.TryParse(Vec_Dot(Vec, Vec).ToString(), out double dDot);
+				return Math.Sqrt(dDot);
+			}
+			public object[] Vec_Norm(object[] Vec)
+			{
+				double.TryParse(Vec_Len(Vec).ToString(), out double dLen);
+				return Vec_Mul(1.0/dLen, Vec);
+			}
+			public object Vec_Angle(object[] VecA, object[] VecB)
+			{
+				double.TryParse(Vec_Dot(VecA, VecB).ToString(), out double dDot);
+				double.TryParse(Vec_Len(VecA).ToString(), out double dLenA);
+				double.TryParse(Vec_Len(VecB).ToString(), out double dLenB);
+				return Math.Acos(dDot/(dLenA*dLenB));
+			}
+			public object[] Vec_Cross(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, (itr + 1) % (VecRet.Length)).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, (itr + 2) % (VecRet.Length)).ToString(), out double dB);
+					double.TryParse(Vec_Elem(VecB, (itr + 1) % (VecRet.Length)).ToString(), out double dnA);
+					double.TryParse(Vec_Elem(VecA, (itr + 2) % (VecRet.Length)).ToString(), out double dnB);
+					VecRet[itr] = (dA * dB) - (dnA * dnB);
+				}
+				return VecRet;
+			}
+			public object Matrix_Det(int numCols, int numRows, object[] args)
+			{
+				double dRet = 0;
+				for (int itrCol = 0; itrCol < numCols; itrCol++)
+				{
+					double dProdPos = 1;
+					double dProdNeg = 1;
+					for(int itrRow = 0; itrRow < numRows; itrRow++)
+					{
+						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, itrRow, args).ToString(), out double dPos);
+						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, numRows - itrRow + 1, args).ToString(), out double dNeg);
+						dProdPos *= dPos;
+						dProdNeg *= dNeg;
+					}
+					dRet += (dProdPos - dProdNeg);
+				}
+				return dRet;
 			}
 			public object[][] Uniform_Get(string name)
 			{
@@ -1044,9 +1172,7 @@ namespace modProject
 				}
 			}
 		}
-		
 		private Script script;
-		
 		public clsEventScriptContext ScriptContext = new clsEventScriptContext();
 		private EventType typEvent;
 		public EventType Type 
@@ -1151,6 +1277,7 @@ namespace modProject
 		{
 			if (Source == null) return;
 			ScriptOptions opts = ScriptOptions.Default;
+			script = null;
 			script = CSharpScript.Create(Source, opts, ScriptContext.GetType());
 			script.Compile();
 		}
@@ -1182,6 +1309,7 @@ namespace modProject
 			DetachSubject();
 			Source = null;
 			script = null;
+			ScriptContext = null;
 		}
 	}
 	

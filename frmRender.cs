@@ -75,6 +75,7 @@ namespace WinOpenGL_ShaderToy
 		private void InitConfig()
 		{
 			tsRender = new infoFramePerformance();
+			tsRender.HistoryDuration = 10.0;
 			tsRenderTimer = new infoFramePerformance();
 			tsRenderTimer.HistoryDuration = 5.0;
 			glRender = new controlRender();
@@ -117,34 +118,35 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void TimerUpdateStats_Tick(object sender, HPIntervalEventArgs e)
 		{
-			btnFPS.Text = $"{tsRenderTimer.Median_Rate:0.00000} FPS";
+			btnFPS.Text = $"{tsRenderTimer.Median_Rate:0.000000} FPS";
 			btnInterval.Text = $"{floatToSIUnits(tsRenderTimer.Median, SIUnits)}s";
 			lblRenderDuration.Text = $"{floatToSIUnits(tsRender.Median, SIUnits)}s";
 			lblRenderFreq.Text = $"{floatToSIUnits(tsRender.Median_Rate, SIUnits)}Hz";
-			lblFrameNumber.Text = $"# {FrameCount:0.00000}";
-			lblFrameTimeStamp.Text = $"{CurrentTimeStamp:0.00000} s";
+			lblFrameNumber.Text = $"# {FrameCount:0.000000}";
+			lblFrameTimeStamp.Text = $"{CurrentTimeStamp:0.000000} s";
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
 			glRender.Context.Update(glRender.WindowInfo);
 			glRender.Context.MakeCurrent(glRender.WindowInfo);
-			GL.Viewport(glRender.ClientRectangle);
+			UpdateGeometryRouting();
 			Render?.RaiseResizeEvent(glRender.Width, glRender.Height);
 		}
 		private void glMain_HandleCreated(object sender, EventArgs e)
 		{
 			glRender.Context.Update(glRender.WindowInfo);
 			glRender.Context.MakeCurrent(glRender.WindowInfo);
-			GL.Viewport(glRender.ClientRectangle);
 			UpdateGeometryRouting();
 		}
 		private void glMain_Render()
 		{
-			tsRender.ResetInterval();
+			if (!glRender.Context.IsCurrent)
+			{
+				glRender.MakeCurrent();
+				GL.Viewport(glRender.ClientRectangle);
+				GL.ClearColor(glRender.BackColor);
+			}
 			tsRender.StartInterval();
-			glRender.MakeCurrent();
-			GL.Viewport(glRender.ClientRectangle);
-			GL.ClearColor(glRender.BackColor);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 			UpdateUniformRouting();
 			/*Console.WriteLine($"Progrm:{Render.Program.IsValid}; Geometry:{{Index:{Render.Geometry.IsIndexBufferValid}; 
@@ -165,6 +167,7 @@ namespace WinOpenGL_ShaderToy
 			glRender.Context.SwapBuffers();
 			tsRender.StopInterval();
 			tsRender.SampleInterval(CurrentTimeStamp);
+			tsRender.ResetInterval();
 		}
 		public void UpdateGeometryRouting()
 		{

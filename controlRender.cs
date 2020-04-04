@@ -21,10 +21,12 @@ namespace WinOpenGL_ShaderToy
 			// controlRender
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.BackColor = System.Drawing.Color.Black;
 			this.ForeColor = System.Drawing.Color.White;
 			this.Name = "controlRender";
 			this.Size = new System.Drawing.Size(260, 260);
 			this.ResumeLayout(false);
+
 		}
 		public controlRender() : base()
 		{
