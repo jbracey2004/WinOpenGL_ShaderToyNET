@@ -54,6 +54,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		public void UpdateProjectTree()
 		{
+			if (Project.ProjectObjects == null) return;
 			List<clsProjectObject> aryObjsCurrent = new List<clsProjectObject>();
 			List<clsProjectObject> aryObjsToAdd = new List<clsProjectObject>();
 			List<TreeNode> aryNodesToRemove = new List<TreeNode>();

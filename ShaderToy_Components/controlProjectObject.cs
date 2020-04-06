@@ -135,7 +135,6 @@ namespace ShaderToy_Components
 		}
 		private void FrmProjectObject_HandleDestroyed(object sender, EventArgs e)
 		{
-			Timer_IntervalUpdate = null;
 			if(timerUpdate != null)
 			{
 				timerUpdate.Stop();

@@ -53,12 +53,12 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FrmGLMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			tsTimeElapsed?.Stop();
-			tsTimeElapsed = null;
 			DockPanel = null;
-			timerRender?.Stop();
+			tsTimeElapsed.Stop();
+			timerRender.Stop();
 			timerRender.Dispose();
 			timerRender = null;
+			tsTimeElapsed = null;
 			panelMain.ProjectObject = null;
 			ProjectDef.AllForms.Remove(this);
 		}

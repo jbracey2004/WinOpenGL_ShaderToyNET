@@ -776,6 +776,10 @@ namespace modProject
 			public clsRender RenderSubject { get; set; }
 			public clsUniformSetCollection Uniforms { get; set; }
 			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
+			public object[] Vec(int numElems)
+			{
+				return ArrayList.Repeat(0, numElems).ToArray();
+			}
 			public object[] Vec<T>(params T[] args)
 			{
 				return Array.ConvertAll(args, itm => (object)itm);
@@ -797,6 +801,20 @@ namespace modProject
 					args[index] = value;
 				}
 			}
+			public object[] Matrix(int numCols, int numRows)
+			{
+				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				for (int itr = 0; itr < objRet.Length; itr++)
+				{
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numCols);
+					if (tmpCol == tmpRow)
+					{
+						objRet[itr] = 1.0;
+					}
+				}
+				return objRet;
+			}
 			public object[] Matrix<T>(int numCols, int numRows, params T[][] args)
 			{
 				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
@@ -809,6 +827,22 @@ namespace modProject
 						{
 							objRet[idx] = args[idxRow][idxCol];
 						}
+					}
+				}
+				return objRet;
+			}
+			public object[] Matrix<T>(int numCols, int numRows, params T[] args)
+			{
+				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				int argCols = (int)Math.Floor((double)args.Length / numRows);
+				for(int itr = 0; itr < objRet.Length; itr++)
+				{
+					int tmpCol = itr % argCols;
+					int tmpRow = (int)Math.Floor((double)itr / argCols);
+					int idx = tmpCol + tmpRow * numCols;
+					if (idx < objRet.Length)
+					{
+						objRet[idx] = args[itr];
 					}
 				}
 				return objRet;
@@ -848,6 +882,28 @@ namespace modProject
 					for (int idxCol = 0; idxCol < Math.Min(numCols, value.Length); idxCol++)
 					{
 						args[idxCol + indexRow * numCols] = value[idxCol];
+					}
+				}
+			}
+			public object[] Matrix_Column(int numCols, int numRows, int indexColumn, object[] args)
+			{
+				object[] objRet = ArrayList.Repeat(0, numRows).ToArray();
+				if (indexColumn < numRows)
+				{
+					for (int idxRow = 0; idxRow < numRows; idxRow++)
+					{
+						objRet[idxRow] = args[indexColumn + idxRow * numCols];
+					}
+				}
+				return objRet;
+			}
+			public void Matrix_Column<T>(int numCols, int numRows, int indexColumn, ref object[] args, T[] value)
+			{
+				if (indexColumn < numRows)
+				{
+					for (int idxRow = 0; idxRow < Math.Min(numRows, value.Length); idxRow++)
+					{
+						args[indexColumn + idxRow * numCols] = value[idxRow];
 					}
 				}
 			}
@@ -957,23 +1013,115 @@ namespace modProject
 				}
 				return VecRet;
 			}
+			public object[] Matrix_MinorAt(int numCols, int numRows, int AtCol, int AtRow, object[] args)
+			{
+				object[] aryRet = ArrayList.Repeat(0, (numCols-1) * (numRows-1)).ToArray();
+				for (int itr = 0; itr < args.Length; itr++)
+				{
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numCols); 
+					if (tmpCol == AtCol) continue;
+					if (tmpRow == AtRow) continue;
+					if (tmpCol >= AtCol) tmpCol--;
+					if (tmpRow >= AtRow) tmpRow--;
+					int idx = tmpCol + tmpRow * (numCols-1);
+					aryRet[idx] = args[itr];
+				}
+				return aryRet;
+			}
+			public object[] Matrix_OfMinors(int numCols, int numRows, object[] args)
+			{
+				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				for (int itr = 0; itr < aryRet.Length; itr++)
+				{
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numCols);
+					int idx = tmpCol + tmpRow * numCols;
+					aryRet[idx] = Matrix_Det(numCols-1, numRows-1, Matrix_MinorAt(numCols, numRows, tmpCol, tmpRow, args));
+				}
+				return aryRet;
+			}
+			public object[] Matrix_OfCoFactors(int numCols, int numRows, object[] args)
+			{
+				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				for (int itr = 0; itr < aryRet.Length; itr++)
+				{
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numCols);
+					int idx = tmpCol + tmpRow * numCols;
+					double.TryParse(Matrix_Det(numCols - 1, numRows - 1, Matrix_MinorAt(numCols, numRows, tmpCol, tmpRow, args)).ToString(), out double dMnVal);
+					double sngCoF = Math.Pow(-1, tmpCol + tmpRow);
+					aryRet[idx] = sngCoF * dMnVal;
+				}
+				return aryRet;
+			}
+			public object[] Matrix_Transpose(int numCols, int numRows,  object[] args)
+			{
+				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				int tmp = numCols;
+				numCols = numRows; 
+				numRows = tmp;
+				for (int itr = 0; itr < aryRet.Length; itr++)
+				{
+					int tmpCol = (int)Math.Floor((double)itr / numCols);
+					int tmpRow = itr % numCols;
+					int idx = tmpCol + tmpRow * numRows;
+					if(idx < args.Length) aryRet[itr] = args[idx];
+				}
+				return aryRet;
+			}
+			public object[] Matrix_Adjugate(int numCols, int numRows, object[] args)
+			{
+				return Matrix_Transpose(numCols, numRows, Matrix_OfCoFactors(numCols, numRows, args));
+			}
 			public object Matrix_Det(int numCols, int numRows, object[] args)
 			{
 				double dRet = 0;
-				for (int itrCol = 0; itrCol < numCols; itrCol++)
+				for (int itrCol = 0; itrCol < ((numCols==2)?1:numCols); itrCol++)
 				{
 					double dProdPos = 1;
 					double dProdNeg = 1;
 					for(int itrRow = 0; itrRow < numRows; itrRow++)
 					{
 						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, itrRow, args).ToString(), out double dPos);
-						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, numRows - itrRow + 1, args).ToString(), out double dNeg);
+						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, (numRows-1) - itrRow, args).ToString(), out double dNeg);
 						dProdPos *= dPos;
 						dProdNeg *= dNeg;
 					}
 					dRet += (dProdPos - dProdNeg);
 				}
 				return dRet;
+			}
+			public object[] Matrix_Inverse(int numCols, int numRows, object[] args)
+			{
+				double.TryParse(Matrix_Det(numCols, numRows, args).ToString(), out double dDet);
+				return Matrix_Mul(1/dDet, Matrix_Adjugate(numCols, numRows, args));
+			}
+			public object[] Matrix_Mul(double scl, object[] args)
+			{
+				object[] aryRet = ArrayList.Repeat(0, args.Length).ToArray();
+				for (int itr = 0; itr < aryRet.Length; itr++)
+				{
+					double.TryParse(args[itr].ToString(), out double itm);
+					aryRet[itr] = scl * itm;
+				}
+				return aryRet;
+			}
+			public object[] Matrix_Mul(int numColsA, int numRowsA, object[] argsA, int numColsB, int numRowsB, object[] argsB)
+			{
+				int tmpCols = numColsA;
+				int tmpRows = numRowsB;
+				object[] aryRet = ArrayList.Repeat(0, tmpCols * tmpRows).ToArray();
+				for (int itr = 0; itr < aryRet.Length; itr++)
+				{
+					int tmpCol = itr % tmpCols;
+					int tmpRow = (int)Math.Floor((double)itr / tmpCols);
+					object[] vecCol = Matrix_Column(numColsA, numRowsA, tmpCol, argsA);
+					object[] vecRow = Matrix_Row(numColsB, numRowsB, tmpRow, argsB);
+					double.TryParse(Vec_Dot(vecCol, vecRow).ToString(), out double dDot);
+					aryRet[itr] = dDot;
+				}
+				return aryRet;
 			}
 			public object[][] Uniform_Get(string name)
 			{

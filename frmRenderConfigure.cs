@@ -10,6 +10,11 @@ using static clsHPTimer;
 using static modProject.clsGeometry;
 using modUniformDataView;
 using modEventScriptView;
+using static WinOpenGL_ShaderToy.controlEventScript;
+using static modProject.clsEventScript;
+using static WinOpenGL_ShaderToy.controlConsole;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using System.Threading.Tasks;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -28,6 +33,7 @@ namespace WinOpenGL_ShaderToy
 		private void frmRenderConfigure_Load(object sender, EventArgs e)
 		{
 			InitDocking();
+			InitConsole();
 			DataGridViewColumn column = new clsUniformDataColumn();
 			column.Name = "columnVariableValue";
 			column.HeaderText = "Variable Value";
@@ -50,9 +56,10 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateUniformDataGrid.Start();
 			ProjectDef.AllForms.Add(this);
 		}
-		private void frmSRenderConfigure_FormClosing(object sender, FormClosingEventArgs e)
+		private void frmRenderConfigure_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			UnloadDocking();
+			UnloadConsole();
 			DockPanel = null;
 			timerUpdateUniformDataGrid.Stop();
 			timerUpdateUniformDataGrid.Dispose();
@@ -62,6 +69,76 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateLists = null;
 			AllForms.Remove(this);
 			ProjectDef.AllForms.Remove(this);
+		}
+		private clsEventScriptContext consoleScriptContext;
+		private controlConsole consoleScript;
+		private clsAutoComplete consoleAutoComplete;
+		private AutoCompleteCollection consoleItemsCollection;
+		private void InitConsole()
+		{
+			consoleScriptContext = new clsEventScriptContext();
+			consoleScriptContext.RenderSubject = RenderSubject;
+			consoleScript = new controlConsole();
+			consoleAutoComplete = new clsAutoComplete(consoleScript);
+			consoleAutoComplete.SearchPattern = @"[\w\d\.\[\(\]\)\""]";
+			consoleAutoComplete.AutoSize = true;
+			consoleAutoComplete.MinFragmentLength = 1;
+			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, consoleScript, consoleAutoComplete);
+			consoleAutoComplete.Items.SetAutocompleteItems(consoleItemsCollection);
+			consoleScript.Parent = panelEventsConsole;
+			consoleScript.Dock = DockStyle.Fill;
+			consoleScript.StartPromptLoop(ConsolePromptReady, ConsolePromptReplied);
+		}
+		private void UnloadConsole()
+		{
+			consoleScript.StopPromptLoop();
+			consoleScript.Dispose();
+			consoleScript = null;
+			consoleScriptContext.RenderSubject = null;
+			consoleScriptContext = null;
+		}
+		private void ConsolePromptReady(ref ConsoleActionArgs e)
+		{
+			e.Message = "> ";
+		}
+		private void ConsolePromptReplied(ref ConsoleActionArgs e)
+		{
+			try
+			{
+				CSharpScript.EvaluateAsync(e.Message, globals: consoleScriptContext).ContinueWith(args =>
+				{
+					string strDisp = "\n";
+					if (args.Result != null)
+					{
+						IEnumerable<object> ary = args.Result as IEnumerable<object>;
+						if(ary != null)
+						{
+							strDisp = "[ ";
+							foreach (var itm in ary) { strDisp += itm.ToString() + "; "; }
+							strDisp += "]\n";
+						} else
+						{
+							strDisp = args.Result.ToString() + '\n';
+						}
+					}
+					else
+					{
+						strDisp = args.Status.ToString() + '\n';
+					}
+					Invoke(new Action(() => { consoleScript.Write(strDisp); }));
+				});
+			}
+			catch(Exception err)
+			{
+				string strErr = ""; Exception errInner = err;
+				while (errInner != null)
+				{
+					strErr += errInner.Message + "; ";
+					errInner = errInner.InnerException;
+				}
+				Invoke(new Action(() => { consoleScript.Write(strErr + '\n'); }));
+				Console.WriteLine(strErr);
+			}
 		}
 		private DockPanel panelDockMain;
 		private List<DockContent> aryDockContent = new List<DockContent>();
@@ -85,10 +162,10 @@ namespace WinOpenGL_ShaderToy
 			panelDockMain.DocumentStyle = DocumentStyle.DockingWindow;
 			panelDockMain.BringToFront();
 			aryDockContent.AddRange(new DockContent[] {
-				AddDockContent(panelDockMain, datagridGeometryRouting, dockingAllowed, "Geometry Routing"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.8, datagridUniformsValues, dockingAllowed, "Uniform Data"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.6, datagridUniformsRouting, dockingAllowed, "Uniform Routing"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, datagridEvents, dockingAllowed, "Events")
+				AddDockContent(panelDockMain, panelGeometryRouting, dockingAllowed, "Geometry Routing"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.8, panelUniformsValues, dockingAllowed, "Uniform Data"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.6, panelUniformsRouting, dockingAllowed, "Uniform Routing"),
+				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, panelEvents, dockingAllowed, "Events")
 			});
 		}
 		private static DockContent AddDockContent(DockPanel panel, Control control, DockAreas areas, string caption)

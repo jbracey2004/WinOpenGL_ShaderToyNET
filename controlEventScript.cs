@@ -15,13 +15,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 using System.Collections;
-using Microsoft.CodeAnalysis.Scripting;
 
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlEventScript : UserControl
 	{
-		private class AutoCompleteCollection : IEnumerable<AutocompleteItem>
+		public class AutoCompleteCollection : IEnumerable<AutocompleteItem>
 		{
 			public clsAutoComplete menu;
 			public FastColoredTextBox sourceControl;
@@ -284,7 +283,7 @@ namespace WinOpenGL_ShaderToy
 				return GetEnumerator();
 			}
 		}
-		private class clsAutoComplete : AutocompleteMenu
+		public class clsAutoComplete : AutocompleteMenu
 		{
 			private Graphics gfx;
 			private Size InitialSize = new Size();

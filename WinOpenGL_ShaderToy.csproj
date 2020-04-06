@@ -103,6 +103,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsCollapsePanel.cs" />
+    <Compile Include="controlConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controlConsole.Designer.cs">
+      <DependentUpon>controlConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="controlEventScript.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -172,6 +178,9 @@
     <Compile Include="modWndProcInterop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="controlConsole.resx">
+      <DependentUpon>controlConsole.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="controlEventScript.resx">
       <DependentUpon>controlEventScript.cs</DependentUpon>
     </EmbeddedResource>
