@@ -1123,6 +1123,51 @@ namespace modProject
 				}
 				return aryRet;
 			}
+			public object[] Matrix_Rot2x2(double ang)
+			{
+				double cos = Math.Cos(ang);
+				double sin = Math.Sin(ang);
+				return new object[] {cos, sin, -sin, cos};
+			}
+			public void Matrix_Rot2x2(double ang, int argCols, int argRows, ref object[] args)
+			{
+				double cos = Math.Cos(ang);
+				double sin = Math.Sin(ang);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, cos);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, sin);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, -sin);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, cos);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1);
+			}
+			public object[] Matrix_Rot3x3(double ang, object[] vecAxis)
+			{
+				double cos = Math.Cos(ang);
+				double sin = Math.Sin(ang);
+				double.TryParse(Vec_Elem(vecAxis, 0).ToString(), out double x);
+				double.TryParse(Vec_Elem(vecAxis, 1).ToString(), out double y);
+				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
+				return new object[] {   x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) - y*sin,
+									    y*x*(1-cos) + z*sin, y*y*(1-cos) + cos,   y*z*(1-cos) - x*sin,
+									    z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, z*z*(1-cos) + cos   };
+			}
+			public void Matrix_Rot3x3(double ang, object[] vecAxis, int argCols, int argRows, ref object[] args)
+			{
+				double cos = Math.Cos(ang);
+				double sin = Math.Sin(ang);
+				double.TryParse(Vec_Elem(vecAxis, 0).ToString(), out double x);
+				double.TryParse(Vec_Elem(vecAxis, 1).ToString(), out double y);
+				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, x * x * (1 - cos) + cos);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, x * y * (1 - cos) - z * sin);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, x * z * (1 - cos) - y * sin);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, y * x * (1 - cos) + z * sin);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, y * y * (1 - cos) + cos);
+				Matrix_Elem(argCols, argRows, 2, 1, ref args, y * z * (1 - cos) - x * sin);
+				Matrix_Elem(argCols, argRows, 0, 2, ref args, z * x * (1 - cos) - y * sin);
+				Matrix_Elem(argCols, argRows, 1, 2, ref args, z * y * (1 - cos) + x * sin);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, z * z * (1 - cos) + cos);
+				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
+			}
 			public object[][] Uniform_Get(string name)
 			{
 				object[][] objRet = new object[][] { new object[] { } };
