@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FastColoredTextBoxNS;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -28,44 +29,46 @@ namespace WinOpenGL_ShaderToy
 		}
 		public bool IsInputWaiting { get; private set; }
 		public bool IsOutputPosting { get; private set; }
-		public Place PromtPosition { get; private set; } = new Place();
+		public int PromptRecallIndex { get; private set; }
+		public Place PromptPosition { get; private set; } = new Place();
+		public void Write(object obj)
+		{
+			Write(generalUtils.ExpandedArrayString(obj));
+		}
 		public void Write(string message)
 		{
-			IsInputWaiting = false;
 			IsOutputPosting = true;
-			try
+			if (IsInputWaiting)
+			{
+				message = $"Log>\0{DateTime.Now} {DateTime.Now.Ticks}\0\n{message}\0\n";
+				int intInsert = PlaceToPosition(new Place(0,PromptPosition.iLine));
+				Text = Text.Insert(intInsert, message);
+				PromptPosition = PositionToPlace(Text.LastIndexOf('\0') + 1);
+			} else
 			{
 				AppendText(message);
-				GoEnd();
 			}
-			finally
-			{
-				IsOutputPosting = false;
-				ClearUndo();
-			}
+			GoEnd();
+			IsOutputPosting = false;
 		}
 		public string Prompt(string message)
 		{
 			Invoke(new Action(() => {
 				GoEnd();
-				Write(message);
-				PromtPosition = Range.End;
+				Write($"{message}\0");
+				PromptPosition = Range.End;
 			}));
 			IsInputWaiting = true;
-			try
+			PromptRecallIndex = 0;
+			while (IsInputWaiting)
 			{
-				while (IsInputWaiting)
-				{
-					Application.DoEvents();
-					Thread.Sleep(100);
-				}
+				Application.DoEvents();
+				Thread.Sleep(100);
 			}
-			finally
-			{
-				IsInputWaiting = false;
-				ClearUndo();
-			}
-			return new Range(this, PromtPosition, Range.End).Text.TrimEnd('\r', '\n');
+			
+			IsInputWaiting = false;
+			ClearUndo();
+			return new Range(this, PromptPosition, Range.End).Text.TrimEnd('\r', '\n');
 		}
 		private Thread threadPromptLoop;
 		public bool IsPromptLoop { get; private set; }
@@ -101,11 +104,13 @@ namespace WinOpenGL_ShaderToy
 					IsPromptLoop = false;
 					break;
 				}
-				string str  = Prompt(ActionArgs.Message);
+				string str = Prompt(ActionArgs.Message);
+				Invoke(new Action(() => {AppendText("\b\0\n");}));
 				ActionArgs.Message = str;
 				ActionArgs.BreakLoop = false;
 				Application.DoEvents();
 				Invoke(OnPromptReplied, ActionArgs);
+				Invoke(new Action(() => { AppendText("\b\0\n"); }));
 				if (ActionArgs.BreakLoop)
 				{
 					IsPromptLoop = false;
@@ -114,18 +119,22 @@ namespace WinOpenGL_ShaderToy
 			}
 			Application.DoEvents();
 		}
+		protected static string strParsePattern = $@"(?<PromptText>((.*?)(\s{{0,}}))+)\0" +
+												  $@"(?<RecallText>((.*?)(\s{{0,}}))+)\0\s+" +
+												  $@"(?<OutputText>((.*?)(\s{{0,}}))+)\0";
 		public override void OnTextChanging(ref string text)
 		{
-			if (!IsInputWaiting && !IsOutputPosting)
-			{
-				text = "";
-				return;
-			}
-
 			if (IsInputWaiting)
 			{
-				if (Selection.Start < PromtPosition || Selection.End < PromtPosition) GoEnd();
-				if (Selection.Start == PromtPosition || Selection.End == PromtPosition)
+				if (Selection.Start < PromptPosition || Selection.End < PromptPosition) 
+				{
+					if(!IsOutputPosting)
+					{
+						text = ""; 
+						return;
+					}
+				}
+				if (Selection.Start == PromptPosition || Selection.End == PromptPosition)
 				{
 					if (text == "\b")
 					{
@@ -133,13 +142,46 @@ namespace WinOpenGL_ShaderToy
 						return;
 					}
 				}
-				if (text != null && text.EndsWith("\n"))
-				{
-					text = text.Substring(0, text.IndexOf('\n') + 1);
-					IsInputWaiting = false;
-				}
 			}
 			base.OnTextChanging(ref text);
+		}
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (IsInputWaiting)
+			{
+				if (Selection.Start >= PromptPosition)
+				{
+					if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+					{
+						if(IsInputWaiting) 
+						{
+							if(Selection.Start == Range.End || Selection.End == Range.End)
+							{
+								IsInputWaiting = false;
+							}
+						}
+					}
+					if(e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+					{
+						string strRecallText = new Range(this, new Place(0, 0), new Place(0, PromptPosition.iLine)).Text;
+						MatchCollection aryRecallLines = Regex.Matches(strRecallText, strParsePattern);
+						if (aryRecallLines.Count > 0)
+						{
+							IsOutputPosting = true;
+							if (e.KeyCode == Keys.Up) PromptRecallIndex = Math.Min(PromptRecallIndex + 1, aryRecallLines.Count);
+							if (e.KeyCode == Keys.Down) PromptRecallIndex = Math.Max(PromptRecallIndex - 1, 1);
+							string strSetRecall = aryRecallLines[aryRecallLines.Count - PromptRecallIndex].Groups["RecallText"].Value;
+							string strOldText = new Range(this, new Place(0, 0), PromptPosition).Text;
+							GoEnd();
+							Text = strOldText + strSetRecall;
+							GoEnd();
+							IsOutputPosting = false;
+							return;
+						}
+					}
+				}
+			}
+			base.OnKeyDown(e);
 		}
 		public override void Clear()
 		{
@@ -149,7 +191,7 @@ namespace WinOpenGL_ShaderToy
 			base.Clear();
 			IsOutputPosting = false;
 			IsInputWaiting = oldIsReadMode;
-			PromtPosition = Place.Empty;
+			PromptPosition = Place.Empty;
 		}
 	}
 }

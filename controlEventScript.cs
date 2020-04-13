@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 using System.Collections;
+using static generalUtils;
 
 namespace WinOpenGL_ShaderToy
 {

@@ -32,6 +32,7 @@ using static modProject.modXml;
 using System.Xml;
 using System.Text;
 using static modCommon.modWndProcInterop;
+using System.Threading.Tasks;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -452,7 +453,6 @@ namespace modProject
 			}
 		}
 	}
-	
 	public class clsUniformSet
 	{
 		public enum UniformType
@@ -481,7 +481,7 @@ namespace modProject
 		}
 		public delegate void delegateUniform(int glUniformLocation, int Count, object[] dat);
 		public static Dictionary<UniformType, delegateUniform> UniformBindDelegate = new Dictionary<UniformType, delegateUniform>()
-		{ 
+		{
 			{UniformType.Int, (glUniform,  intCount,intDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<int>(intDat)); } },
 			{UniformType.Float,  (glUniform, intCount, floatDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<float>(floatDat)); } },
 			{UniformType.Double, (glUniform, intCount, doubleDat) => {GL.Uniform1(glUniform, intCount, ObjectArrayAsType<double>(doubleDat)); } },
@@ -651,7 +651,6 @@ namespace modProject
 			}
 			return strRet;
 		}
-		
 		public class clsUniformSetCollection
 		{
 			public List<KeyValuePair<string, clsUniformSet>> Collection;
@@ -659,50 +658,110 @@ namespace modProject
 			{
 				Collection = collection;
 			}
-			public object[][] this[int index]
+			public clsUniformSet this[int index]
 			{
-				get => Collection[index].Value.Data.ToArray();
+				get => Collection[index].Value;
 				set
 				{
-					Collection[index].Value.Data = value.ToList();
+					Collection[index].Value.SetData(value.GetData());
 				}
 			}
-			public object[][] this[string key]
+			public clsUniformSet this[string key]
 			{
-				get => Collection.First(itm => itm.Key.Equals(key)).Value.Data.ToArray();
+				get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
 				set
 				{
 					int index = Collection.FindIndex(itm => itm.Key.Equals(key));
-					if(index >=0) Collection[index].Value.Data = value.ToList();
+					if (index >= 0) Collection[index].Value.SetData(value.GetData());
 				}
 			}
+			public override string ToString()
+			{
+				return ExpandedArrayString(Collection.ToArray());
+			}
 		}
-		public UniformType Type = UniformType.Int;
-		public List<object[]> Data = new List<object[]>();
+		private UniformType typType = UniformType.Int;
+		public UniformType Type 
+		{ 
+			get => typType; 
+			set 
+			{ 
+				typType = value;
+				ComponentType = UniformType_ComponentType[typType];
+				ComponentPerElement = UniformType_ComponentCount(typType);
+				ElementCount = DataInlined.Length / ComponentPerElement;
+			} 
+		}
+		public Type ComponentType { get; private set; }
+		public int ComponentPerElement { get; private set; }
+		public int ElementCount { get; private set; }
+		public KeyValuePair<string, int> ShaderUniformLink { get; set; }
 		public clsUniformSet() { }
 		public clsUniformSet(string str)
 		{
-			Data = StringToArray(str, out int intNewCompLen, out int intNewCompType);
+			object[][] dat = StringToArray(str, out int intNewCompLen, out int intNewCompType).ToArray();
 			if (intNewCompType != -1) { Type = (UniformType)intNewCompType; }
+			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
+			SetData(dat);
 		}
-		public object[] DataInlined 
-		{ 
-			get 
+		public object[] DataInlined { private set; get; } = new object[] { };
+		public object[] this[int Element]
+		{
+			get => GetData(Element);
+			set { SetData(Element, value); }
+		}
+		public object this[int Element, int Component]
+		{
+			get => GetData(Element, Component);
+			set { SetData(Element, Component, value); }
+		}
+		public object[][] GetData()
+		{
+			object[][] lstRet = new object[ElementCount][];
+			for (int itr = 0; itr < lstRet.Length; itr++)
 			{
-				List<object> aryRet = new List<object>();
-				for(int itr = 0; itr < Data.Count; itr++)
-				{
-					for(int elemItr = 0; elemItr < Data[itr].Length; elemItr++)
-					{
-						aryRet.Add(Data[itr][elemItr]);
-					}
-				}
-				return aryRet.ToArray();
-			} 
+				lstRet[itr] = new object[ComponentPerElement];
+				DataInlined.CopyTo(lstRet[itr], itr * ComponentPerElement);
+			}
+			return lstRet;
+		}
+		public void SetData(object[][] ary)
+		{
+			ElementCount = ary.Length;
+			DataInlined = new object[ElementCount * ComponentPerElement];
+			for (int itr = 0; itr < ElementCount; itr++)
+			{
+				ary[itr].CopyTo(DataInlined, itr * ComponentPerElement);
+			}
+		}
+		public object[] GetData(int Element)
+		{
+			object[] aryRet = new object[ComponentPerElement];
+			Array.Copy(DataInlined, Element * ComponentPerElement, aryRet, 0, ComponentPerElement);
+			return aryRet;
+		}
+		public void SetData(int Element, object[] ary)
+		{
+			ary.CopyTo(DataInlined, Element * ComponentPerElement);
+		}
+		public void SetData(int Element, int Component, object value)
+		{
+			DataInlined[Component + Element * ComponentPerElement] = value;
+		}
+		public object GetData(int Element, int Component)
+		{
+			return DataInlined[Component + Element * ComponentPerElement];
+		}
+		public void BindData()
+		{
+			if (string.IsNullOrEmpty(ShaderUniformLink.Key)) return;
+			if(ShaderUniformLink.Value < 0) return;
+			object[] ary = Array.ConvertAll(DataInlined, itm => Convert.ChangeType(itm, ComponentType));
+			UniformBindDelegate[Type](ShaderUniformLink.Value, ElementCount, ary);
 		}
 		public override string ToString()
 		{
-			return $"<{Type}> " + ArrayToString(Data, Type);
+			return $"<{Type}> " + ArrayToString(GetData().ToList(), Type);
 		}
 	}
 
@@ -774,8 +833,39 @@ namespace modProject
 			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
 			public event delegateArgumentsUpdated ArgumentsUpdated;
 			public clsRender RenderSubject { get; set; }
-			public clsUniformSetCollection Uniforms { get; set; }
+			public clsUniformSetCollection Uniforms => new clsUniformSetCollection(RenderSubject.Uniforms);
 			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
+			public controlConsole Console
+			{
+				get
+				{
+					if (RenderSubject == null) return null;
+					frmRenderConfigure frm = frmRenderConfigure.FormWithSubjectObject(RenderSubject);
+					if (frm == null) return null;
+					return frm.Console;
+				}
+			}
+			public double pi => Math.PI;
+			public double tau => pi * 2;
+			public double sin(double x) => Math.Sin(x);
+			public double cos(double x) => Math.Cos(x);
+			public double tan(double x) => Math.Tan(x);
+			public double sinh(double x) => Math.Sinh(x);
+			public double cosh(double x) => Math.Cosh(x);
+			public double tanh(double x) => Math.Tanh(x);
+			public double arcsin(double x) => Math.Asin(x);
+			public double arccos(double x) => Math.Acos(x);
+			public double arctan(double x) => Math.Atan(x);
+			public double arctan(double y, double x) => Math.Atan2(y, x);
+			public double sqrt(double x) => Math.Sqrt(x);
+			public double pow(double b, double exp) => Math.Pow(b, exp);
+			public double e => Math.E;
+			public double exp(double x) => Math.Exp(x);
+			public double ln(double x) => Math.Log(x);
+			public double log(double x, double b) => Math.Log(x, b);
+			public double log(double x) => Math.Log10(x);
+			public double abs(double x) => Math.Abs(x);
+			public double sgn(double x) => Math.Sign(x);
 			public object[] Vec(int numElems)
 			{
 				return ArrayList.Repeat(0, numElems).ToArray();
@@ -1146,9 +1236,9 @@ namespace modProject
 				double.TryParse(Vec_Elem(vecAxis, 0).ToString(), out double x);
 				double.TryParse(Vec_Elem(vecAxis, 1).ToString(), out double y);
 				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
-				return new object[] {   x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) - y*sin,
-									    y*x*(1-cos) + z*sin, y*y*(1-cos) + cos,   y*z*(1-cos) - x*sin,
-									    z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, z*z*(1-cos) + cos   };
+			return new object[] { x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) - y*sin,
+								  y*x*(1-cos) + z*sin, y*y*(1-cos) + cos,   y*z*(1-cos) - x*sin,
+								  z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, z*z*(1-cos) + cos   };
 			}
 			public void Matrix_Rot3x3(double ang, object[] vecAxis, int argCols, int argRows, ref object[] args)
 			{
@@ -1168,6 +1258,45 @@ namespace modProject
 				Matrix_Elem(argCols, argRows, 2, 2, ref args, z * z * (1 - cos) + cos);
 				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
 			}
+			public void Matrix_Reflect2x2(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
+			{
+				double.TryParse(Vec_Elem(vecCeoficients, 0).ToString(), out double a);
+				double.TryParse(Vec_Elem(vecCeoficients, 1).ToString(), out double b);
+				double.TryParse(Vec_Elem(vecCeoficients, 2).ToString(), out double c);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2*a*a);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2*a*b);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2*a*c);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2*a*b);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2*b*b);
+				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2*b*c);
+				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2*a*c);
+				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2*b*c);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2*c*c);
+			}
+			public void Matrix_Reflect3x3(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
+			{
+				double.TryParse(Vec_Elem(vecCeoficients, 0).ToString(), out double a);
+				double.TryParse(Vec_Elem(vecCeoficients, 1).ToString(), out double b);
+				double.TryParse(Vec_Elem(vecCeoficients, 2).ToString(), out double c);
+				double.TryParse(Vec_Elem(vecCeoficients, 3).ToString(), out double d);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2*a*a);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2*a*b);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2*a*c);
+				Matrix_Elem(argCols, argRows, 3, 0, ref args, -2*a*d);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2*a*b);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2*b*b);
+				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2*b*c);
+				Matrix_Elem(argCols, argRows, 3, 1, ref args, -2 *b*d);
+				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2*a*c);
+				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2*b*c);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2*c*c);
+				Matrix_Elem(argCols, argRows, 3, 2, ref args, -2*c*d);
+				Matrix_Elem(argCols, argRows, 0, 3, ref args, 0);
+				Matrix_Elem(argCols, argRows, 1, 3, ref args, 0);
+				Matrix_Elem(argCols, argRows, 2, 3, ref args, 0);
+				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
+			}
+
 			public object[][] Uniform_Get(string name)
 			{
 				object[][] objRet = new object[][] { new object[] { } };
@@ -1176,7 +1305,7 @@ namespace modProject
 				{
 					if (RenderSubject.Uniforms[idx].Value != null) 
 					{ 
-						objRet = RenderSubject.Uniforms[idx].Value.Data.ToArray();
+						objRet = RenderSubject.Uniforms[idx].Value.GetData();
 					}
 				}
 				return objRet;
@@ -1189,9 +1318,9 @@ namespace modProject
 				{
 					if (RenderSubject.Uniforms[idx].Value != null) 
 					{ 
-						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.ElementCount)
 						{
-							objRet = RenderSubject.Uniforms[idx].Value.Data[index];
+							objRet = RenderSubject.Uniforms[idx].Value.GetData(index);
 						}
 					}
 				}
@@ -1205,11 +1334,11 @@ namespace modProject
 				{
 					if(RenderSubject.Uniforms[idx].Value != null) 
 					{ 
-						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.ElementCount)
 						{
-							if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+							if(comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.ComponentPerElement)
 							{
-								objRet = RenderSubject.Uniforms[idx].Value.Data[index][comp];
+								objRet = RenderSubject.Uniforms[idx].Value.GetData(index,comp);
 							}
 						}
 					}
@@ -1223,7 +1352,7 @@ namespace modProject
 				{
 					if(RenderSubject.Uniforms[idx].Value != null) 
 					{ 
-						RenderSubject.Uniforms[idx].Value.Data = args.ToList();
+						RenderSubject.Uniforms[idx].Value.SetData(args);
 					}
 				}
 			}
@@ -1234,9 +1363,9 @@ namespace modProject
 				{
 					if(RenderSubject.Uniforms[idx].Value != null)
 					{
-						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.ElementCount)
 						{
-							RenderSubject.Uniforms[idx].Value.Data[index] = args;
+							RenderSubject.Uniforms[idx].Value.SetData(index, args);
 						}
 					}
 				}
@@ -1248,11 +1377,11 @@ namespace modProject
 				{
 					if (RenderSubject.Uniforms[idx].Value != null)
 					{
-						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.Data.Count)
+						if (index >= 0 && index < RenderSubject.Uniforms[idx].Value.ElementCount)
 						{
-							if (comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.Data[index].Length)
+							if (comp >= 0 && comp < RenderSubject.Uniforms[idx].Value.ComponentPerElement)
 							{
-								RenderSubject.Uniforms[idx].Value.Data[index][comp] = arg;
+								RenderSubject.Uniforms[idx].Value.SetData(index,comp,arg);
 							}
 						}
 					}
@@ -1290,13 +1419,13 @@ namespace modProject
 						args = new object[] {RenderSubjectForm.glRender.Width, RenderSubjectForm.glRender.Height};
 						break;
 					case EventType.OnPointerStart:
-						
+						args = new object[] { new InputEventArgs() { InputInterface = RenderSubjectForm.glRender.InterfaceTouch, InputTouch = RenderSubjectForm.glRender.MouseTouch, InputPoint = RenderSubjectForm.glRender.MouseTouch.CurrentTouchPoint } };
 						break;
 					case EventType.OnPointerMove:
-
+						args = new object[] { new InputEventArgs() { InputInterface = RenderSubjectForm.glRender.InterfaceTouch, InputTouch = RenderSubjectForm.glRender.MouseTouch, InputPoint = RenderSubjectForm.glRender.MouseTouch.CurrentTouchPoint } };
 						break;
 					case EventType.OnPointerEnd:
-
+						args = new object[] { new InputEventArgs() { InputInterface = RenderSubjectForm.glRender.InterfaceTouch, InputTouch = RenderSubjectForm.glRender.MouseTouch, InputPoint = RenderSubjectForm.glRender.MouseTouch.CurrentTouchPoint } };
 						break;
 				}
 				Arguments.Clear();
@@ -1389,13 +1518,6 @@ namespace modProject
 				DetachSubject(); 
 				renderSubject = value;
 				ScriptContext.RenderSubject = value;
-				if (value != null)
-				{
-					ScriptContext.Uniforms = new clsUniformSetCollection(value.Uniforms);
-				} else
-				{
-					ScriptContext.Uniforms = null;
-				}
 				AttachSubject(renderSubject); 
 			} 
 		}
@@ -1480,11 +1602,12 @@ namespace modProject
 			ScriptContext.SetArguments(eventType, args);
 			try
 			{
-				script.RunAsync(ScriptContext).Wait();
-			} catch(Exception err)
+				script.RunAsync(ScriptContext);
+			}
+			catch(Exception err)
 			{
 				string strErr = ""; Exception errInner = err;
-				while(errInner != null)
+				while (errInner != null)
 				{
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
@@ -3006,6 +3129,24 @@ namespace modProject
 		{
 			AddToCollection();
 		}
+		public void LinkShaderUniforms()
+		{
+			int intProgramID = (Program != null && Program.IsValid) ? Program.glID : -1;
+			if (intProgramID < 0) return;
+			GL.UseProgram(intProgramID);
+			foreach (KeyValuePair<string, clsUniformSet> itm in Uniforms)
+			{
+				if (itm.Key == null) continue;
+				foreach (KeyValuePair<string, string> uni in UniformShaderLinks.FindAll(x => x.Value == itm.Key))
+				{
+					string uniName = "";
+					int uniLoc = -1;
+					uniName = (uni.Key != null) ? uni.Key : "";
+					uniLoc = (!string.IsNullOrEmpty(uniName) && intProgramID >= 0) ? GL.GetUniformLocation(intProgramID, uniName) : -1;
+					itm.Value.ShaderUniformLink = new KeyValuePair<string, int>(uniName, uniLoc);
+				}
+			}
+		}
 		public void FormatUniforms()
 		{
 			foreach (KeyValuePair<string, clsUniformSet> itm in Uniforms)
@@ -3013,11 +3154,11 @@ namespace modProject
 				clsUniformSet uni = itm.Value;
 				UniformType typUni = itm.Value.Type;
 				Type typ = UniformType_ComponentType[typUni];
-				for (int elemI = 0; elemI < uni.Data.Count; elemI++)
+				for (int elemI = 0; elemI < uni.ElementCount; elemI++)
 				{
-					for (int compI = 0; compI < uni.Data[elemI].Length; compI++)
+					for (int compI = 0; compI < uni.ComponentPerElement; compI++)
 					{
-						uni.Data[elemI][compI] = Convert.ChangeType(uni.Data[elemI][compI], typ);
+						uni.SetData(elemI, compI, Convert.ChangeType(uni.GetData(elemI, compI), typ));
 					}
 				}
 			}

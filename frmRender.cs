@@ -48,6 +48,7 @@ namespace WinOpenGL_ShaderToy
 			timerUpdateStats.SleepInterval = 50;
 			timerUpdateStats.IntervalEnd += TimerUpdateStats_Tick;
 			timerUpdateStats.Start();
+			Render?.LinkShaderUniforms();
 			Render?.RaiseLoadEvent();
 			ProjectDef.AllForms.Add(this);
 		}
@@ -107,14 +108,14 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
+			glMain_Render();
+			if (!bolIsRenderFrameValid) return;
 			double tsDelta = e.TimeDelta * 0.001;
 			PreviousTimeStamp = CurrentTimeStamp;
 			CurrentTimeStamp = tsTimeElapsed.Elapsed.TotalSeconds;
 			tsRenderTimer.SampleFrame(tsDelta, CurrentTimeStamp);
 			Render?.RaiseRenderEvent(FrameCount, DeltaTimeStamp, CurrentTimeStamp);
-			glMain_Render();
 			FrameCount += tsDelta * tsRenderTimer.Median_Rate;
-			Application.DoEvents();
 		}
 		private void TimerUpdateStats_Tick(object sender, HPIntervalEventArgs e)
 		{
@@ -138,36 +139,46 @@ namespace WinOpenGL_ShaderToy
 			glRender.Context.MakeCurrent(glRender.WindowInfo);
 			UpdateGeometryRouting();
 		}
+		private bool bolIsRenderFrameValid = false;
 		private void glMain_Render()
 		{
+			bolIsRenderFrameValid = true;
 			if (!glRender.Context.IsCurrent)
 			{
 				glRender.MakeCurrent();
 				GL.Viewport(glRender.ClientRectangle);
 				GL.ClearColor(glRender.BackColor);
 			}
-			tsRender.StartInterval();
-			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-			UpdateUniformRouting();
-			/*Console.WriteLine($"Progrm:{Render.Program.IsValid}; Geometry:{{Index:{Render.Geometry.IsIndexBufferValid}; 
-								  Buffers:[{NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2)}]}};");*/
-			if (Render.Program != null /*&& Render.Program.IsValid*/)
+			if (Render.Geometry == null || !Render.Geometry.IsValid) bolIsRenderFrameValid = false;
+			if(Render.Program != null)
 			{
-				if(Render.Program.LinkInfo.ErrorMessages.Length == 0)
-				{
-					GL.UseProgram(Render.Program.glID);
-					if (Render.Geometry != null /*&& Render.Geometry.IsValid*/)
-					{
-						GL.EnableClientState(ArrayCap.IndexArray);
-						GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
-						GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-					}
-				}
+				if (!Render.Program.IsValid) bolIsRenderFrameValid = false;
+				if (Render.Program.LinkInfo.ErrorMessages.Length > 0) bolIsRenderFrameValid = false;
+			} else
+			{
+				bolIsRenderFrameValid = false;
+			}
+			if (bolIsRenderFrameValid) tsRender.StartInterval();
+			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+			if(bolIsRenderFrameValid)
+			{
+				UpdateUniformRouting();
+				GL.EnableClientState(ArrayCap.IndexArray);
+				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
+				GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+			} else
+			{
+				Console.WriteLine($"Progrm:{((Render.Program!=null)?Render.Program.IsValid.ToString(): "Ø")}; " +
+								  $"Geometry:{{Index:{((Render.Geometry!=null)?Render.Geometry.IsIndexBufferValid.ToString(): "Ø")}; " +
+								  $"Buffers:[{((Render.Geometry!=null)?NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2): "Ø")}]}};");
 			}
 			glRender.Context.SwapBuffers();
-			tsRender.StopInterval();
-			tsRender.SampleInterval(CurrentTimeStamp);
-			tsRender.ResetInterval();
+			if (bolIsRenderFrameValid)
+			{
+				tsRender.StopInterval();
+				tsRender.SampleInterval(CurrentTimeStamp);
+				tsRender.ResetInterval();
+			}
 		}
 		public void UpdateGeometryRouting()
 		{
@@ -195,18 +206,7 @@ namespace WinOpenGL_ShaderToy
 			GL.UseProgram(Render.Program.glID);
 			foreach (KeyValuePair<string, clsUniformSet> itm in Render.Uniforms)
 			{
-				if (itm.Key != null)
-				{
-					foreach (KeyValuePair<string, string> uni in Render.UniformShaderLinks.FindAll(x => x.Value == itm.Key))
-					{
-						if (uni.Key == null) continue;
-						int glLoc = GL.GetUniformLocation(Render.Program.glID, uni.Key);
-						if(glLoc >= 0)
-						{
-							clsUniformSet.UniformBindDelegate[itm.Value.Type](glLoc, itm.Value.Data.Count, itm.Value.DataInlined);
-						}
-					}
-				}
+				itm.Value.BindData();
 			}
 		}
 		private void txtFPS_Change(object sender, EventArgs e)

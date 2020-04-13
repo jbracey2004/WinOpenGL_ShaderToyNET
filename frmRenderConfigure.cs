@@ -15,6 +15,9 @@ using static modProject.clsEventScript;
 using static WinOpenGL_ShaderToy.controlConsole;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Scripting;
+using static generalUtils;
+using System.Linq;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -70,78 +73,79 @@ namespace WinOpenGL_ShaderToy
 			AllForms.Remove(this);
 			ProjectDef.AllForms.Remove(this);
 		}
+		public controlConsole Console { get; private set; }
 		private clsEventScriptContext consoleScriptContext;
-		private controlConsole consoleScript;
 		private clsAutoComplete consoleAutoComplete;
 		private AutoCompleteCollection consoleItemsCollection;
 		private void InitConsole()
 		{
 			consoleScriptContext = new clsEventScriptContext();
 			consoleScriptContext.RenderSubject = RenderSubject;
-			consoleScript = new controlConsole();
-			consoleAutoComplete = new clsAutoComplete(consoleScript);
+			Console = new controlConsole();
+			consoleAutoComplete = new clsAutoComplete(Console);
 			consoleAutoComplete.SearchPattern = @"[\w\d\.\[\(\]\)\""]";
 			consoleAutoComplete.AutoSize = true;
 			consoleAutoComplete.MinFragmentLength = 1;
-			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, consoleScript, consoleAutoComplete);
+			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, Console, consoleAutoComplete);
 			consoleAutoComplete.Items.SetAutocompleteItems(consoleItemsCollection);
-			consoleScript.Parent = panelEventsConsole;
-			consoleScript.Dock = DockStyle.Fill;
-			consoleScript.StartPromptLoop(ConsolePromptReady, ConsolePromptReplied);
+			Console.Parent = panelEventsConsole;
+			Console.Dock = DockStyle.Fill;
+			Console.StartPromptLoop(ConsolePromptReady, ConsolePromptReplied);
 		}
 		private void UnloadConsole()
 		{
-			consoleScript.StopPromptLoop();
-			consoleScript.Dispose();
-			consoleScript = null;
+			Console.StopPromptLoop();
+			Console.Dispose();
+			Console = null;
 			consoleScriptContext.RenderSubject = null;
 			consoleScriptContext = null;
 		}
 		private void ConsolePromptReady(ref ConsoleActionArgs e)
 		{
-			e.Message = "> ";
+			e.Message = ">";
 		}
 		private void ConsolePromptReplied(ref ConsoleActionArgs e)
 		{
-			try
+			string strCode = e.Message;
+			Task<object> Eval = new Task<object>(() => 
 			{
-				CSharpScript.EvaluateAsync(e.Message, globals: consoleScriptContext).ContinueWith(args =>
+				try
 				{
-					string strDisp = "\n";
-					if (args.Result != null)
-					{
-						IEnumerable<object> ary = args.Result as IEnumerable<object>;
-						if(ary != null)
-						{
-							strDisp = "[ ";
-							foreach (var itm in ary) { strDisp += itm.ToString() + "; "; }
-							strDisp += "]\n";
-						} else
-						{
-							strDisp = args.Result.ToString() + '\n';
-						}
-					}
-					else
-					{
-						strDisp = args.Status.ToString() + '\n';
-					}
-					Invoke(new Action(() => { consoleScript.Write(strDisp); }));
-				});
-			}
-			catch(Exception err)
+					return CSharpScript.EvaluateAsync(strCode, globals: consoleScriptContext).Result;
+				}
+				catch(Exception err)
+				{
+					return err;
+				}
+			});
+			Eval.Start();
+			while(!Eval.IsCompleted && !Eval.IsCanceled && !Eval.IsFaulted) { Application.DoEvents(); }
+			string strDisp = "\n";
+			if (Eval.Result as Exception == null)
 			{
-				string strErr = ""; Exception errInner = err;
+				if (Eval.Result != null)
+				{
+					strDisp = ExpandedArrayString(Eval.Result) + '\n';
+				}
+				else
+				{
+					strDisp = Eval.Status.ToString() + '\n';
+				}
+			} else
+			{
+				string strErr = ""; Exception errInner = Eval.Result as Exception;
 				while (errInner != null)
 				{
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				Invoke(new Action(() => { consoleScript.Write(strErr + '\n'); }));
-				Console.WriteLine(strErr);
+				System.Console.WriteLine(strErr);
+				strDisp = strErr + '\n';
 			}
+			Invoke(new Action(() => { Console.Write(strDisp); }));
 		}
 		private DockPanel panelDockMain;
-		private List<DockContent> aryDockContent = new List<DockContent>();
+		private Dictionary<string, DockContent> aryDockContent = new Dictionary<string, DockContent>();
 		private void InitDocking()
 		{
 			DockAreas dockingAllowed = DockAreas.Document |
@@ -161,12 +165,12 @@ namespace WinOpenGL_ShaderToy
 			panelDockMain.Dock = DockStyle.Fill;
 			panelDockMain.DocumentStyle = DocumentStyle.DockingWindow;
 			panelDockMain.BringToFront();
-			aryDockContent.AddRange(new DockContent[] {
-				AddDockContent(panelDockMain, panelGeometryRouting, dockingAllowed, "Geometry Routing"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.8, panelUniformsValues, dockingAllowed, "Uniform Data"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.6, panelUniformsRouting, dockingAllowed, "Uniform Routing"),
-				AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, panelEvents, dockingAllowed, "Events")
-			});
+			aryDockContent.Add("GeomRoute", AddDockContent(panelDockMain, panelGeometryRouting, dockingAllowed, "Geometry Routing"));
+			aryDockContent.Add("UniDat", AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.8, panelUniformsValues, dockingAllowed, "Uniform Data"));
+			aryDockContent.Add("UniRoute", AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.6, panelUniformsRouting, dockingAllowed, "Uniform Routing"));
+			aryDockContent.Add("Events", AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, panelEvents, dockingAllowed, "Events"));
+			aryDockContent.Add("Console", AddDockContent(panelDockMain.ActivePane, DockAlignment.Bottom, 0.5, panelEventsConsole, dockingAllowed, "Console"));
+			aryDockContent["Console"].DockState = DockState.DockBottomAutoHide;
 		}
 		private static DockContent AddDockContent(DockPanel panel, Control control, DockAreas areas, string caption)
 		{
@@ -205,8 +209,11 @@ namespace WinOpenGL_ShaderToy
 		{
 			foreach(var content in aryDockContent)
 			{
-				content.Close();
-				content.Dispose();
+				if(content.Value != null)
+				{
+					content.Value.Close();
+					content.Value.Dispose();
+				}
 			}
 			aryDockContent.Clear();
 			panelDockMain.Dispose();
@@ -430,22 +437,19 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridGeometryRouting_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
-			if(e.RowIndex < 0) return;
-			DataGridViewRow row = datagridGeometryRouting.Rows[e.RowIndex];
-			DataGridViewColumn column = datagridGeometryRouting.Columns[e.ColumnIndex];
-			DataGridViewCell cell = row.Cells[column.Index];
-			DataGridViewComboBoxEditingControl lst = cell.Tag as DataGridViewComboBoxEditingControl;
-			if (lst == null) return;
-			KeyValuePair<string, clsVertexDescriptionComponent> oldValue = RenderSubject.GeometryShaderLinks[row.Index];
-			if(column.Name == "columnProgramAttr")
-			{
-				string obj = lst.SelectedItem as string;
-				RenderSubject.GeometryShaderLinks[row.Index] = new KeyValuePair<string, clsVertexDescriptionComponent>(obj, oldValue.Value);
-			}
+			if (e.RowIndex < 0) return;
+			if (e.RowIndex >= RenderSubject.GeometryShaderLinks.Count) return;
+			KeyValuePair<string, clsVertexDescriptionComponent> kvp = RenderSubject.GeometryShaderLinks[e.RowIndex];
+			DataGridViewCell cell = datagridGeometryRouting.CurrentCell;
+			DataGridViewColumn column = cell.OwningColumn;
 			if (column.Name == "columnVertDesc")
 			{
-				clsVertexDescriptionComponent obj = lst.SelectedItem as clsVertexDescriptionComponent;
-				RenderSubject.GeometryShaderLinks[row.Index] = new KeyValuePair<string, clsVertexDescriptionComponent>(oldValue.Key, obj);
+				clsVertexDescriptionComponent comp = RenderSubject.Geometry.VertexDescription.FirstOrDefault(itm => itm.ToString() == cell.Value.ToString());
+				RenderSubject.GeometryShaderLinks[e.RowIndex] = new KeyValuePair<string, clsVertexDescriptionComponent>(kvp.Key, comp);
+			}
+			if (column.Name == "columnProgramAttr")
+			{
+				RenderSubject.GeometryShaderLinks[e.RowIndex] = new KeyValuePair<string, clsVertexDescriptionComponent>(cell.Value as string, kvp.Value);
 			}
 			cell.Tag = null;
 			RenderSubjectForm?.UpdateGeometryRouting();
@@ -460,8 +464,9 @@ namespace WinOpenGL_ShaderToy
 		{
 			clsUniformSet objValue = new clsUniformSet("<Float> 0");
 			datagridUniformsValues.CurrentRow.Cells["columnVariableValue"].Value = objValue.ToString();
-			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet> (null, objValue));
+			RenderSubject.Uniforms.Add(new KeyValuePair<string, clsUniformSet>(null, objValue));
 			datagridUniformsValues.CurrentRow.Tag = RenderSubject.Uniforms.Count - 1;
+			RenderSubject.LinkShaderUniforms();
 			UpdateUniformVariableList();
 		}
 		private void datagridUniformsValues_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -470,6 +475,7 @@ namespace WinOpenGL_ShaderToy
 			if(!int.TryParse(e.Row.Tag?.ToString(), out int intUni)) return;
 			if (intUni < 0 || intUni >= RenderSubject.Uniforms.Count) return;
 			RenderSubject.Uniforms.RemoveAt(intUni);
+			RenderSubject.LinkShaderUniforms();
 			UpdateUniformVariableList();
 		}
 		private void datagridUniformsValues_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -486,6 +492,7 @@ namespace WinOpenGL_ShaderToy
 			if(column.Name == "columnVariableName")
 			{
 				RenderSubject.Uniforms[intUni] = new KeyValuePair<string, clsUniformSet>(cell.Value as string, oldValue.Value);
+				RenderSubject?.LinkShaderUniforms();
 				UpdateUniformVariableList();
 			}
 			if(column.Name == "columnVariableValue")
@@ -495,7 +502,7 @@ namespace WinOpenGL_ShaderToy
 				{
 					clsUniformSet valueNew = new clsUniformSet(cellUniformData.Value.ToString());
 					valueNew.Type = cellUniformData.DataUniformType;
-					valueNew.Data = cellUniformData.DataObject;
+					valueNew.SetData(cellUniformData.DataObject.ToArray());
 					RenderSubject.Uniforms[intUni] = new KeyValuePair<string, clsUniformSet>(oldValue.Key, valueNew);
 				}
 			}
@@ -514,12 +521,12 @@ namespace WinOpenGL_ShaderToy
 						if (intUni < 0 || intUni >= RenderSubject.Uniforms.Count) continue;
 						clsUniformSet data = RenderSubject.Uniforms[intUni].Value;
 						object[] dataReset = UniformType_InitialValues[data.Type];
-						for (int itr = 0; itr < data.Data.Count; itr++)
+						for (int itr = 0; itr < data.ElementCount; itr++)
 						{
-							for (int itrElem = 0; itrElem < Math.Min(dataReset.Length, data.Data[itr].Length); itrElem++)
+							for (int itrElem = 0; itrElem < Math.Min(dataReset.Length, data.ComponentPerElement); itrElem++)
 							{
-								Type typ = data.Data[itr][itrElem].GetType();
-								data.Data[itr][itrElem] = Convert.ChangeType(dataReset[itrElem], typ);
+								Type typ = data.GetData(itr)[itrElem].GetType();
+								data.SetData(itr, itrElem, Convert.ChangeType(dataReset[itrElem], typ));
 							}
 						}
 						cell.Value = data;
@@ -561,11 +568,13 @@ namespace WinOpenGL_ShaderToy
 			string strUniform = e.Row.Cells["columnProgramUniform"].Value as string;
 			string strVarName = e.Row.Cells["columnVarName"].Value as string;
 			RenderSubject.UniformShaderLinks.Add(new KeyValuePair<string, string>(strUniform, strVarName));
+			RenderSubject.LinkShaderUniforms();
 			RenderSubjectForm?.UpdateGeometryRouting();
 		}
 		private void datagridUniformsRouting_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
 		{
 			RenderSubject.UniformShaderLinks.RemoveAt(e.Row.Index);
+			RenderSubject.LinkShaderUniforms();
 		}
 		private void datagridUniformsRouting_CellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
@@ -589,7 +598,8 @@ namespace WinOpenGL_ShaderToy
 				RenderSubject.UniformShaderLinks[row.Index] = new KeyValuePair<string, string>(oldValue.Key, obj);
 			}
 			cell.Tag = null;
-			RenderSubjectForm?.UpdateGeometryRouting();
+			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubject.LinkShaderUniforms();
 		}
 		private void datagridUniformsRouting_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
@@ -627,13 +637,13 @@ namespace WinOpenGL_ShaderToy
 		private void datagridEvents_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
 		{
 			clsEventScriptCell cell = datagridEvents.CurrentCell as clsEventScriptCell;
+			clsEventScriptEditor cellEdit = e.Control as clsEventScriptEditor;
 			if (cell == null) return;
-			controlEventScript control = e.Control as controlEventScript;
-			if (control == null) return;
+			if (cellEdit == null) return;
 			clsEventScript scriptNew = new clsEventScript();
 			scriptNew.Subject = RenderSubject;
+			cellEdit.ScriptContext = scriptNew.ScriptContext;
 			cell.Tag = scriptNew;
-			control.ScriptContext = scriptNew.ScriptContext;
 		}
 		private bool bolUpdateDataGridReady = false;
 		private void timerUpdateUniformDataGrid_EndInterval(object sender, HPIntervalEventArgs e)

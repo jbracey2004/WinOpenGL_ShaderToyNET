@@ -13,7 +13,8 @@ namespace WinOpenGL_ShaderToy
 		public EventHandler<InputEventArgs> PointerStart;
 		public EventHandler<InputEventArgs> PointerMove;
 		public EventHandler<InputEventArgs> PointerEnd;
-		private InputInterface TouchInterface;
+		public InputInterface InterfaceTouch { get => interfaceTouch; }
+		private InputInterface interfaceTouch;
 		private void InitializeComponent()
 		{
 			this.SuspendLayout();
@@ -50,19 +51,19 @@ namespace WinOpenGL_ShaderToy
 		private void InitTouchInterface()
 		{
 			UnloadTouchInterface();
-			TouchInterface = new InputInterface(this);
-			TouchInterface.TouchStart += TouchInterface_TouchStart;
-			TouchInterface.TouchMove += TouchInterface_TouchMove;
-			TouchInterface.TouchEnd += TouchInterface_TouchEnd;
+			interfaceTouch = new InputInterface(this);
+			interfaceTouch.TouchStart += TouchInterface_TouchStart;
+			interfaceTouch.TouchMove += TouchInterface_TouchMove;
+			interfaceTouch.TouchEnd += TouchInterface_TouchEnd;
 		}
 		private void UnloadTouchInterface()
 		{
-			if (TouchInterface == null) return;
-			TouchInterface.TouchStart -= TouchInterface_TouchStart;
-			TouchInterface.TouchMove -= TouchInterface_TouchMove;
-			TouchInterface.TouchEnd -= TouchInterface_TouchEnd;
-			TouchInterface.Dispose();
-			TouchInterface = null;
+			if (interfaceTouch == null) return;
+			interfaceTouch.TouchStart -= TouchInterface_TouchStart;
+			interfaceTouch.TouchMove -= TouchInterface_TouchMove;
+			interfaceTouch.TouchEnd -= TouchInterface_TouchEnd;
+			interfaceTouch.Dispose();
+			interfaceTouch = null;
 		}
 		public bool DoubleBuffering { get => base.DoubleBuffered; set { base.DoubleBuffered = value; } } 
 		private void TouchInterface_TouchStart(object sender, InputEventArgs e)
@@ -77,7 +78,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			PointerEnd?.Invoke(this, e);
 		}
-		private TouchInput MouseTouch = new TouchInput();
+		public TouchInput MouseTouch { get; private set; } = new TouchInput();
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			MouseTouch.ID = -1;
@@ -114,7 +115,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		protected override void WndProc(ref Message m)
 		{
-			bool bolHandled = WinProc_HandleTouch(this, ref m, ref TouchInterface);
+			bool bolHandled = WinProc_HandleTouch(this, ref m, ref interfaceTouch);
 			if (m.Result.ToInt64() != 0) return;
 			base.WndProc(ref m);
 		}

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -126,6 +128,49 @@ public class generalUtils
 			}
 		}
 		return strRet;
+	}
+	public static bool TryKeyPairParse(object obj, out KeyValuePair<dynamic, dynamic> kvpRet)
+	{
+		kvpRet = new KeyValuePair<dynamic, dynamic>();
+		Type typ = obj.GetType();
+		PropertyInfo[] props = typ.GetProperties();
+		if (props.Length != 2) return false;
+		if (props[0].Name != "Key") return false;
+		if (props[1].Name != "Value") return false;
+		kvpRet = new KeyValuePair<dynamic, dynamic>(props[0].GetValue(obj), props[1].GetValue(obj));
+		return true;
+	}
+	public static string ExpandedArrayString(object objArray)
+	{
+		if (objArray.GetType().Name == "String")
+		{
+			return $"\"{objArray}\"";
+		}
+		KeyValuePair<dynamic, dynamic> kvp;
+		if(TryKeyPairParse(objArray, out kvp))
+		{
+			return $"{{{kvp.Key.ToString()}: {ExpandedArrayString(kvp.Value)}}}";
+		}
+		Array ary = objArray as Array;
+		if (ary != null)
+		{
+			string strDisp = "[";
+			for(int itr = 0; itr < ary.Length; itr++) 
+			{ 
+				strDisp += ExpandedArrayString(ary.GetValue(itr)) + ((itr < ary.Length-1)?", ":""); 
+			}
+			strDisp += "]";
+			return strDisp;
+		}
+		IEnumerable aryEnm = objArray as IEnumerable;
+		if (aryEnm != null)
+		{
+			string strDisp = "[ ";
+			foreach (var itm in aryEnm) { strDisp += ExpandedArrayString(itm) + "; "; }
+			strDisp += "]";
+			return strDisp;
+		}
+		return objArray.ToString();
 	}
 	public class NumberConverter : DoubleConverter
 	{

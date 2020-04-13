@@ -33,12 +33,19 @@
 			// 
 			// controlConsole
 			// 
+			this.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
+    "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoScrollMinSize = new System.Drawing.Size(0, 14);
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+			this.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
 			this.ForeColor = System.Drawing.SystemColors.Control;
+			this.LeftBracket = '(';
+			this.LeftBracket2 = '{';
 			this.Name = "controlConsole";
+			this.RightBracket = ')';
+			this.RightBracket2 = '}';
 			this.ShowLineNumbers = false;
 			this.Size = new System.Drawing.Size(670, 193);
 			this.WordWrap = true;
