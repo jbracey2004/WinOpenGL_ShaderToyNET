@@ -31,16 +31,17 @@ namespace WinOpenGL_ShaderToy
 		public bool IsOutputPosting { get; private set; }
 		public int PromptRecallIndex { get; private set; }
 		public Place PromptPosition { get; private set; } = new Place();
-		public void Write(object obj)
+		public void Write(object obj, string scope = "")
 		{
-			Write(generalUtils.ExpandedArrayString(obj));
+			Write(generalUtils.ExpandedObjectString(obj, generalUtils.TypesExpandExempt, true), scope);
 		}
-		public void Write(string message)
+		public void Write(string message, string scope = "")
 		{
 			IsOutputPosting = true;
 			if (IsInputWaiting)
 			{
-				message = $"Log>\0{DateTime.Now} {DateTime.Now.Ticks}\0\n{message}\0\n";
+				if (string.IsNullOrEmpty(scope)) scope = $"{DateTime.Now} {DateTime.Now.Ticks}";
+				message = $"Log>\0{scope}\0\n{message}\0\n";
 				int intInsert = PlaceToPosition(new Place(0,PromptPosition.iLine));
 				Text = Text.Insert(intInsert, message);
 				PromptPosition = PositionToPlace(Text.LastIndexOf('\0') + 1);
@@ -163,7 +164,7 @@ namespace WinOpenGL_ShaderToy
 					}
 					if(e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
 					{
-						string strRecallText = new Range(this, new Place(0, 0), new Place(0, PromptPosition.iLine)).Text;
+						string strRecallText = Text.Substring(0, PlaceToPosition(new Place(0, PromptPosition.iLine)));
 						MatchCollection aryRecallLines = Regex.Matches(strRecallText, strParsePattern);
 						if (aryRecallLines.Count > 0)
 						{
@@ -171,7 +172,7 @@ namespace WinOpenGL_ShaderToy
 							if (e.KeyCode == Keys.Up) PromptRecallIndex = Math.Min(PromptRecallIndex + 1, aryRecallLines.Count);
 							if (e.KeyCode == Keys.Down) PromptRecallIndex = Math.Max(PromptRecallIndex - 1, 1);
 							string strSetRecall = aryRecallLines[aryRecallLines.Count - PromptRecallIndex].Groups["RecallText"].Value;
-							string strOldText = new Range(this, new Place(0, 0), PromptPosition).Text;
+							string strOldText = Text.Substring(0, PlaceToPosition(PromptPosition));
 							GoEnd();
 							Text = strOldText + strSetRecall;
 							GoEnd();

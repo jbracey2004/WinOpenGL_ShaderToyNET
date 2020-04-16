@@ -21,6 +21,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			formMain = this;
 			glInit(Handle);
+			DefaultScriptInit();
 			dockMainPanel = dockMain;
 			projectMain = new clsProject();
 			windowProject = new frmProject(projectMain);

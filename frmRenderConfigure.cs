@@ -111,7 +111,7 @@ namespace WinOpenGL_ShaderToy
 			{
 				try
 				{
-					return CSharpScript.EvaluateAsync(strCode, globals: consoleScriptContext).Result;
+					return MainScript.ContinueWith(strCode, GenericScriptOptions).RunAsync(consoleScriptContext).Result;
 				}
 				catch(Exception err)
 				{
@@ -121,19 +121,23 @@ namespace WinOpenGL_ShaderToy
 			Eval.Start();
 			while(!Eval.IsCompleted && !Eval.IsCanceled && !Eval.IsFaulted) { Application.DoEvents(); }
 			string strDisp = "\n";
-			if (Eval.Result as Exception == null)
+			ScriptState state = Eval.Result as ScriptState;
+			if (state != null)
 			{
-				if (Eval.Result != null)
+				object Ret = state.ReturnValue;
+				if (Ret != null)
 				{
-					strDisp = ExpandedArrayString(Eval.Result) + '\n';
+					strDisp = ExpandedObjectString(Ret, TypesExpandExempt, true) + '\n';
 				}
 				else
 				{
 					strDisp = Eval.Status.ToString() + '\n';
 				}
-			} else
+			}
+			else
 			{
-				string strErr = ""; Exception errInner = Eval.Result as Exception;
+				string strErr = "";
+				Exception errInner = Eval.Result as Exception;
 				while (errInner != null)
 				{
 					strErr += errInner.Message + "; ";

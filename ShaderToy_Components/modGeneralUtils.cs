@@ -1,4 +1,5 @@
-﻿using System;
+﻿using modProject;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -140,37 +141,108 @@ public class generalUtils
 		kvpRet = new KeyValuePair<dynamic, dynamic>(props[0].GetValue(obj), props[1].GetValue(obj));
 		return true;
 	}
-	public static string ExpandedArrayString(object objArray)
+	public static bool IsMemberBrowsable(MemberInfo member)
 	{
-		if (objArray.GetType().Name == "String")
+		foreach (CustomAttributeData attr in member.CustomAttributes)
 		{
-			return $"\"{objArray}\"";
+			if (attr.AttributeType != typeof(BrowsableAttribute)) continue;
+			if (attr.ConstructorArguments.Count != 1) continue;
+			if (attr.ConstructorArguments[0].ArgumentType != typeof(bool)) continue;
+			return (bool)attr.ConstructorArguments[0].Value;
 		}
-		KeyValuePair<dynamic, dynamic> kvp;
-		if(TryKeyPairParse(objArray, out kvp))
+		return true;
+	}
+	public static bool IsPropertyBrowsable(PropertyInfo prop)
+	{
+		foreach (CustomAttributeData attr in prop.CustomAttributes)
 		{
-			return $"{{{kvp.Key.ToString()}: {ExpandedArrayString(kvp.Value)}}}";
+			if (attr.AttributeType != typeof(BrowsableAttribute)) continue;
+			if (attr.ConstructorArguments.Count != 1) continue;
+			if (attr.ConstructorArguments[0].ArgumentType != typeof(bool)) continue;
+			return (bool)attr.ConstructorArguments[0].Value;
 		}
-		Array ary = objArray as Array;
+		return true;
+	}
+	public static List<Type> TypesExpandExempt = new List<Type> { typeof(clsProjectObject) };
+	public static string ExpandedObjectString(object obj, List<Type> TypeExempts, bool BroadExempts)
+	{
+		Stack<Type> stackTypes = new Stack<Type>();
+		return ExpandedObjectString(obj, ref stackTypes, TypeExempts, BroadExempts);
+	}
+	private static string ExpandedObjectString(object obj, ref Stack<Type> stackTypes, List<Type> TypeExempts, bool BroadExempts)
+	{
+		if (obj == null) return "<NULL>";
+		Type typ = obj.GetType();
+		if (typ.Name == "RuntimeType" || typ.Name == "Type") return obj.ToString();
+		if (typ.Name == "String") return $"\"{obj}\"";
+		if (TryKeyPairParse(obj, out KeyValuePair<dynamic, dynamic> kvp)) return $"{{{kvp.Key}: {kvp.Value}}}";
+		if (stackTypes.Count > 0)
+		{
+			if (TypeExempts != null)
+			{
+				if (BroadExempts)
+				{
+					if (TypeExempts.Find(itm => itm.IsInstanceOfType(obj)) != null) return obj.ToString();
+				}
+				else
+				{
+					if (TypeExempts.Contains(typ)) return obj.ToString();
+				}
+			}
+		}
+		if (stackTypes.Contains(typ)) return obj.ToString();
+		stackTypes.Push(typ);
+		IEnumerable ary = obj as IEnumerable;
 		if (ary != null)
 		{
+			IEnumerator Ienum = ary.GetEnumerator();
 			string strDisp = "[";
-			for(int itr = 0; itr < ary.Length; itr++) 
-			{ 
-				strDisp += ExpandedArrayString(ary.GetValue(itr)) + ((itr < ary.Length-1)?", ":""); 
+			bool bol = Ienum.MoveNext();
+			while (bol)
+			{
+				strDisp += ExpandedObjectString(Ienum.Current, ref stackTypes, TypeExempts, BroadExempts);
+				bol = Ienum.MoveNext();
+				if (bol) strDisp += ", ";
 			}
 			strDisp += "]";
+			stackTypes.Pop();
 			return strDisp;
 		}
-		IEnumerable aryEnm = objArray as IEnumerable;
-		if (aryEnm != null)
+		string strRet = "";
+		PropertyInfo[] aryProps = Array.FindAll(typ.GetProperties(), itm => (IsPropertyBrowsable(itm) && 
+																			itm.GetIndexParameters().Length == 0 &&
+																			(itm.GetMethod==null || !itm.GetMethod.IsStatic) &&
+																			(itm.SetMethod==null || !itm.SetMethod.IsStatic)));
+		if (aryProps.Length <= 0)
 		{
-			string strDisp = "[ ";
-			foreach (var itm in aryEnm) { strDisp += ExpandedArrayString(itm) + "; "; }
-			strDisp += "]";
-			return strDisp;
+			stackTypes.Pop();
+			return obj.ToString();
 		}
-		return objArray.ToString();
+		strRet += "{";
+		for (int itr = 0; itr < aryProps.Length; itr++)
+		{
+			object objProp = aryProps[itr].GetValue(obj);
+			string strProp = ExpandedObjectString(objProp, ref stackTypes, TypeExempts, BroadExempts);
+			string strName = aryProps[itr].Name;
+			strRet += $"{strName}: {strProp}{((itr < aryProps.Length - 1) ? ($"; ") : (""))}";
+		}
+		strRet += "}";
+		stackTypes.Pop();
+		return strRet;
+	}
+	public static string ArrayToString(IEnumerable ary)
+	{
+		IEnumerator Ienum = ary.GetEnumerator();
+		string strDisp = "[";
+		bool bol = Ienum.MoveNext();
+		while (bol)
+		{
+			strDisp += ExpandedObjectString(Ienum.Current, TypesExpandExempt, true);
+			bol = Ienum.MoveNext();
+			if (bol) strDisp += ", ";
+		}
+		strDisp += "]";
+		return strDisp;
 	}
 	public class NumberConverter : DoubleConverter
 	{

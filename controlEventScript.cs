@@ -236,28 +236,6 @@ namespace WinOpenGL_ShaderToy
 					break;
 				}
 			}
-			public static bool IsMemberBrowsable(MemberInfo member)
-			{
-				foreach(CustomAttributeData attr in member.CustomAttributes)
-				{
-					if (attr.AttributeType != typeof(BrowsableAttribute)) continue;
-					if (attr.ConstructorArguments.Count != 1) continue;
-					if (attr.ConstructorArguments[0].ArgumentType != typeof(bool)) continue;
-					return (bool)attr.ConstructorArguments[0].Value;
-				}
-				return true;
-			}
-			public static bool IsPropertyBrowsable(PropertyInfo prop)
-			{
-				foreach (CustomAttributeData attr in prop.CustomAttributes)
-				{
-					if (attr.AttributeType != typeof(BrowsableAttribute)) continue;
-					if (attr.ConstructorArguments.Count != 1) continue;
-					if (attr.ConstructorArguments[0].ArgumentType != typeof(bool)) continue;
-					return (bool)attr.ConstructorArguments[0].Value;
-				}
-				return true;
-			}
 			public IEnumerator<AutocompleteItem> GetEnumerator()
 			{
 				string strFragment = menu.Fragment.Text;

@@ -33,6 +33,7 @@ using System.Xml;
 using System.Text;
 using static modCommon.modWndProcInterop;
 using System.Threading.Tasks;
+using modCommon;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -75,6 +76,8 @@ namespace WinOpenGL_ShaderToy
 					return null;
 			}
 		}
+		public static ScriptOptions GenericScriptOptions;
+		public static Script MainScript;
 		public static frmMain formMain;
 		public static clsProject projectMain;
 		public static DockPanel dockMainPanel;
@@ -89,6 +92,15 @@ namespace WinOpenGL_ShaderToy
 			glMode_Main = new GraphicsMode();
 			glContext_Main = new GraphicsContext(glMode_Main, infoWindow, 4, 0, GraphicsContextFlags.ForwardCompatible);
 			glContext_Main.LoadAll();
+		}
+		public static void DefaultScriptInit()
+		{
+			GenericScriptOptions = ScriptOptions.Default
+				.AddReferences("WinOpenGL_ShaderToy", "modProject", "modCommon", "generalUtils",
+				"modWndProcInterop.InputInterface")
+				.AddImports("System");
+			MainScript = CSharpScript.Create("", GenericScriptOptions, typeof(clsEventScriptContext));
+			MainScript.Compile();
 		}
 	}
 }
@@ -419,6 +431,8 @@ namespace modProject
 		{
 			Dispose(true);
 		}
+
+		[Browsable(false)]
 		public Xml_Project Xml
 		{
 			get => new Xml_Project(this);
@@ -443,7 +457,7 @@ namespace modProject
 		}
 		public TValue this[TKey key]
 		{
-			get => Collection.First(itm => itm.Key.Equals(key)).Value;
+			get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
 			set
 			{
 				KeyValuePair<TKey, TValue> keypairOld = Collection.First(itm => itm.Key.Equals(key));
@@ -677,7 +691,7 @@ namespace modProject
 			}
 			public override string ToString()
 			{
-				return ExpandedArrayString(Collection.ToArray());
+				return generalUtils.ArrayToString(Collection);
 			}
 		}
 		private UniformType typType = UniformType.Int;
@@ -705,23 +719,25 @@ namespace modProject
 			SetData(dat);
 		}
 		public object[] DataInlined { private set; get; } = new object[] { };
-		public object[] this[int Element]
+		public object[] DataInlined_Formatted { private set; get; } = new object[] { };
+		public object[] this[int Element, bool bolFormatted = false]
 		{
-			get => GetData(Element);
+			get => GetData(Element, bolFormatted);
 			set { SetData(Element, value); }
 		}
-		public object this[int Element, int Component]
+		public object this[int Element, int Component, bool bolFormatted = false]
 		{
-			get => GetData(Element, Component);
+			get => GetData(Element, Component, bolFormatted);
 			set { SetData(Element, Component, value); }
 		}
-		public object[][] GetData()
+		public object[][] GetData(bool bolFormatted = false)
 		{
 			object[][] lstRet = new object[ElementCount][];
+			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
 			for (int itr = 0; itr < lstRet.Length; itr++)
 			{
 				lstRet[itr] = new object[ComponentPerElement];
-				DataInlined.CopyTo(lstRet[itr], itr * ComponentPerElement);
+				arySelected.CopyTo(lstRet[itr], itr * ComponentPerElement);
 			}
 			return lstRet;
 		}
@@ -733,35 +749,40 @@ namespace modProject
 			{
 				ary[itr].CopyTo(DataInlined, itr * ComponentPerElement);
 			}
+			DataInlined_Formatted = Array.ConvertAll(DataInlined, itm => Convert.ChangeType(itm, ComponentType));
 		}
-		public object[] GetData(int Element)
+		public object[] GetData(int Element, bool bolFormatted = false)
 		{
 			object[] aryRet = new object[ComponentPerElement];
-			Array.Copy(DataInlined, Element * ComponentPerElement, aryRet, 0, ComponentPerElement);
+			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
+			Array.Copy(arySelected, Element * ComponentPerElement, aryRet, 0, ComponentPerElement);
 			return aryRet;
 		}
 		public void SetData(int Element, object[] ary)
 		{
+			object[] aryFormatted = Array.ConvertAll(ary, itm => Convert.ChangeType(itm, ComponentType));
 			ary.CopyTo(DataInlined, Element * ComponentPerElement);
+			aryFormatted.CopyTo(DataInlined_Formatted, Element * ComponentPerElement);
+		}
+		public object GetData(int Element, int Component, bool bolFormatted = false)
+		{
+			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
+			return arySelected[Component + Element * ComponentPerElement];
 		}
 		public void SetData(int Element, int Component, object value)
 		{
 			DataInlined[Component + Element * ComponentPerElement] = value;
-		}
-		public object GetData(int Element, int Component)
-		{
-			return DataInlined[Component + Element * ComponentPerElement];
+			DataInlined_Formatted[Component + Element * ComponentPerElement] = Convert.ChangeType(value, ComponentType);
 		}
 		public void BindData()
 		{
 			if (string.IsNullOrEmpty(ShaderUniformLink.Key)) return;
 			if(ShaderUniformLink.Value < 0) return;
-			object[] ary = Array.ConvertAll(DataInlined, itm => Convert.ChangeType(itm, ComponentType));
-			UniformBindDelegate[Type](ShaderUniformLink.Value, ElementCount, ary);
+			UniformBindDelegate[Type](ShaderUniformLink.Value, ElementCount, DataInlined_Formatted);
 		}
 		public override string ToString()
 		{
-			return $"<{Type}> " + ArrayToString(GetData().ToList(), Type);
+			return $"<{Type}> " + ArrayToString(GetData(true).ToList());
 		}
 	}
 
@@ -821,7 +842,7 @@ namespace modProject
 			{
 				str += parms[itr].ParameterType.Name + " " + parms[itr].Name + ((itr < parms.Length - 1) ? ", " : "");
 			}
-			return $"{typ.ToString()} ( {str} ) {{ {src} }}";
+			return $"{typ} ( {str} ) {{ {src} }}";
 		}
 		public override string ToString()
 		{
@@ -830,7 +851,9 @@ namespace modProject
 
 		public class clsEventScriptContext
 		{
+			[Browsable(false)]
 			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
+			[Browsable(false)]
 			public event delegateArgumentsUpdated ArgumentsUpdated;
 			public clsRender RenderSubject { get; set; }
 			public clsUniformSetCollection Uniforms => new clsUniformSetCollection(RenderSubject.Uniforms);
@@ -1394,7 +1417,7 @@ namespace modProject
 				ParameterInfo[] EventParams = EventType_Parameters(typeEvent);
 				for (int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
 				{
-					Arguments.Add(EventParams[paramI].Name, args[paramI]);
+					Arguments.Add(EventParams[paramI].Name, (dynamic)args[paramI]);
 				}
 				ArgumentsUpdated?.Invoke(Arguments);
 			}
@@ -1432,7 +1455,7 @@ namespace modProject
 				ParameterInfo[] EventParams = EventType_Parameters(typeEvent);
 				for (int paramI = 0; paramI < Math.Min(args.Length, EventParams.Length); paramI++)
 				{
-					Arguments.Add(EventParams[paramI].Name, args[paramI]);
+					Arguments.Add(EventParams[paramI].Name, (dynamic)args[paramI]);
 				}
 				ArgumentsUpdated?.Invoke(Arguments);
 			}
@@ -1494,7 +1517,6 @@ namespace modProject
 				}
 			}
 		}
-		private Script script;
 		public clsEventScriptContext ScriptContext = new clsEventScriptContext();
 		private EventType typEvent;
 		public EventType Type 
@@ -1508,7 +1530,6 @@ namespace modProject
 				AttachSubject(subj); 
 			} 
 		}
-		
 		private clsRender renderSubject;
 		public clsRender Subject 
 		{ 
@@ -1521,6 +1542,7 @@ namespace modProject
 				AttachSubject(renderSubject); 
 			} 
 		}
+		[Browsable(false)]
 		public frmRenderConfigure ConfigureForm
 		{
 			get
@@ -1536,6 +1558,7 @@ namespace modProject
 			}
 		}
 		public string Source { get; set; }
+		[Browsable(false)]
 		public void AttachSubject(clsRender subject)
 		{
 			renderSubject = subject;
@@ -1562,6 +1585,7 @@ namespace modProject
 					break;
 			}
 		}
+		[Browsable(false)]
 		public void DetachSubject()
 		{
 			if (renderSubject == null) return;
@@ -1588,21 +1612,24 @@ namespace modProject
 			}
 			renderSubject = null;
 		}
+		private Script<object> script;
 		public void Compile()
 		{
 			if (Source == null) return;
-			ScriptOptions opts = ScriptOptions.Default;
 			script = null;
-			script = CSharpScript.Create(Source, opts, ScriptContext.GetType());
+			script = CSharpScript.Create(Source, GenericScriptOptions, ScriptContext.GetType());
 			script.Compile();
+			GC.Collect();
 		}
+		[Browsable(false)]
 		public void Run(EventType eventType, params object[] args)
 		{
 			if (script == null) return;
 			ScriptContext.SetArguments(eventType, args);
+			Task<ScriptState<object>> currentExe = null;
 			try
 			{
-				script.RunAsync(ScriptContext);
+				currentExe = script.RunAsync(ScriptContext);
 			}
 			catch(Exception err)
 			{
@@ -1612,7 +1639,16 @@ namespace modProject
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				Console.WriteLine(strErr);
+				ScriptContext.Console.Write(strErr, Source);
+			}
+			if(currentExe != null)
+			{
+				if(currentExe.Result != null && currentExe.Result.ReturnValue != null)
+				{
+					ScriptContext.Console.Write(currentExe.Result.ReturnValue, Source);
+				}
+				currentExe.Dispose();
+				currentExe = null;
 			}
 			if (ConfigureForm != null)
 			{
@@ -1624,8 +1660,8 @@ namespace modProject
 		{
 			DetachSubject();
 			Source = null;
-			script = null;
 			ScriptContext = null;
+			GC.Collect();
 		}
 	}
 	
@@ -1721,7 +1757,8 @@ namespace modProject
 		{
 			return Regex.Replace(Type.ToString(), @"Arb\z", "") + "_" + name;
 		}
-		
+
+		[Browsable(false)]
 		public override Xml_ProjectObject Xml
 		{
 			get => new Xml_Shader(this);
@@ -1806,7 +1843,8 @@ namespace modProject
 		{
 			Dispose(true);
 		}
-		
+
+		[Browsable(false)]
 		public override Xml_ProjectObject Xml
 		{
 			get => new Xml_Program(this);
@@ -2416,6 +2454,7 @@ namespace modProject
 				base.Dispose();
 			}
 
+			[Browsable(false)]
 			public override Xml_ProjectObject Xml
 			{
 				get => new Xml_VertexDescription(this);
@@ -3098,6 +3137,7 @@ namespace modProject
 			Dispose(true);
 		}
 
+		[Browsable(false)]
 		public override Xml_ProjectObject Xml
 		{
 			get => new Xml_Geometry(this);
@@ -3147,22 +3187,6 @@ namespace modProject
 				}
 			}
 		}
-		public void FormatUniforms()
-		{
-			foreach (KeyValuePair<string, clsUniformSet> itm in Uniforms)
-			{
-				clsUniformSet uni = itm.Value;
-				UniformType typUni = itm.Value.Type;
-				Type typ = UniformType_ComponentType[typUni];
-				for (int elemI = 0; elemI < uni.ElementCount; elemI++)
-				{
-					for (int compI = 0; compI < uni.ComponentPerElement; compI++)
-					{
-						uni.SetData(elemI, compI, Convert.ChangeType(uni.GetData(elemI, compI), typ));
-					}
-				}
-			}
-		}
 		protected override void Dispose(bool disposing)
 		{
 			Geometry = null;
@@ -3182,6 +3206,8 @@ namespace modProject
 		{
 			Dispose(true);
 		}
+
+		[Browsable(false)]
 		public override Xml_ProjectObject Xml
 		{
 			get => new Xml_Render(this);

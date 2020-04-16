@@ -1,6 +1,7 @@
 ﻿using ShaderToy_Components;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -43,16 +44,19 @@ namespace modProject
 		public static List<clsProjectObject> All = new List<clsProjectObject>() { };
 		public ProjectObjectTypes ProjectObjType { private set; get; }
 		public string Name { set; get; }
+		[Browsable(false)]
 		public controlProjectObject ParentControl { set; get; } = null;
 		public clsProjectObject(ProjectObjectTypes typ)
 		{
 			ProjectObjType = typ;
 		}
+		[Browsable(false)]
 		public void AddToCollection()
 		{
 			Name = NextFreeName(ToFullString(""), "New");
 			All.Add(this);
 		}
+		[Browsable(false)]
 		public void RemoveFromCollection()
 		{
 			All.Remove(this);
@@ -114,6 +118,8 @@ namespace modProject
 		{
 			Dispose(true);
 		}
+
+		[Browsable(false)]
 		public virtual Xml_ProjectObject Xml
 		{
 			get => new Xml_ProjectObject(this);
