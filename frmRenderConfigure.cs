@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 using static generalUtils;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -106,7 +107,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void ConsolePromptReplied(ref ConsoleActionArgs e)
 		{
-			string strCode = e.Message;
+			string strCode = PreProcess(e.Message, consoleScriptContext);
 			Task<object> Eval = new Task<object>(() => 
 			{
 				try
@@ -146,7 +147,7 @@ namespace WinOpenGL_ShaderToy
 				System.Console.WriteLine(strErr);
 				strDisp = strErr + '\n';
 			}
-			Invoke(new Action(() => { Console.Write(strDisp); }));
+			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode); }));
 		}
 		private DockPanel panelDockMain;
 		private Dictionary<string, DockContent> aryDockContent = new Dictionary<string, DockContent>();
@@ -614,6 +615,7 @@ namespace WinOpenGL_ShaderToy
 			clsEventScriptCell cell = datagridEvents.CurrentCell as clsEventScriptCell;
 			clsEventScriptEditor cellEdit = datagridEvents.EditingControl as clsEventScriptEditor;
 			clsEventScript scriptNew = cell.Tag as clsEventScript;
+			cell.Tag = null;
 			if (cellEdit.Source == "")
 			{
 				datagridEvents.Rows.RemoveAt(cell.RowIndex);
@@ -637,6 +639,8 @@ namespace WinOpenGL_ShaderToy
 			clsEventScript scriptTmp = RenderSubject.EventScripts[e.RowIndex];
 			clsEventScript.EventScript_FromString(cell.Value as string, ref scriptTmp);
 			scriptTmp.Compile();
+			cell.Tag = null;
+
 		}
 		private void datagridEvents_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
 		{
@@ -644,10 +648,15 @@ namespace WinOpenGL_ShaderToy
 			clsEventScriptEditor cellEdit = e.Control as clsEventScriptEditor;
 			if (cell == null) return;
 			if (cellEdit == null) return;
-			clsEventScript scriptNew = new clsEventScript();
-			scriptNew.Subject = RenderSubject;
-			cellEdit.ScriptContext = scriptNew.ScriptContext;
-			cell.Tag = scriptNew;
+			clsEventScript scriptTmp = null;
+			if(cell.RowIndex >= 0 && cell.RowIndex < RenderSubject.EventScripts.Count)
+			{
+				scriptTmp = RenderSubject.EventScripts[cell.RowIndex];
+			}
+			if (scriptTmp == null) scriptTmp = new clsEventScript();
+			scriptTmp.Subject = RenderSubject;
+			cellEdit.ScriptContext = scriptTmp.ScriptContext;
+			cell.Tag = scriptTmp;
 		}
 		private bool bolUpdateDataGridReady = false;
 		private void timerUpdateUniformDataGrid_EndInterval(object sender, HPIntervalEventArgs e)

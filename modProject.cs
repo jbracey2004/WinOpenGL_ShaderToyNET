@@ -95,12 +95,43 @@ namespace WinOpenGL_ShaderToy
 		}
 		public static void DefaultScriptInit()
 		{
+			Assembly[] aryAssm = new Assembly[]
+			{
+				Assembly.GetExecutingAssembly()
+			};
+			string[] aryImports = new string[] 
+			{
+				"System", 
+				"modCommon", 
+				"modCommon.modWndProcInterop", "modCommon.modWndProcInterop.InputInterface"
+			};
 			GenericScriptOptions = ScriptOptions.Default
-				.AddReferences("WinOpenGL_ShaderToy", "modProject", "modCommon", "generalUtils",
-				"modWndProcInterop.InputInterface")
-				.AddImports("System");
+				.AddReferences(aryAssm)
+				.AddImports(aryImports);
 			MainScript = CSharpScript.Create("", GenericScriptOptions, typeof(clsEventScriptContext));
 			MainScript.Compile();
+		}
+		public static string PreProcess(string strCode, clsEventScriptContext context)
+		{
+			return Regex.Replace(strCode, @"Obj\((?<objectDef>.*?)\)", match =>
+			{
+				if (!match.Success) return "";
+				if (match.Groups["objectDef"] == null) return "";
+				if (!match.Groups["objectDef"].Success) return "";
+				string strObj = match.Groups["objectDef"].Value;
+				object obj = null;
+				try
+				{
+					obj = CSharpScript.EvaluateAsync(strObj, GenericScriptOptions, context).Result;
+				}
+				catch(Exception err)
+				{
+					Console.WriteLine(err);
+				}
+				if (obj == null) return "";
+				Type typ = obj.GetType();
+				return $"({strObj} as {typ.Name})";
+			});
 		}
 	}
 }
@@ -695,16 +726,16 @@ namespace modProject
 			}
 		}
 		private UniformType typType = UniformType.Int;
-		public UniformType Type 
-		{ 
-			get => typType; 
-			set 
-			{ 
+		public UniformType Type
+		{
+			get => typType;
+			set
+			{
 				typType = value;
 				ComponentType = UniformType_ComponentType[typType];
 				ComponentPerElement = UniformType_ComponentCount(typType);
-				ElementCount = DataInlined.Length / ComponentPerElement;
-			} 
+				ElementCount = aryDataInlined.Length / ComponentPerElement;
+			}
 		}
 		public Type ComponentType { get; private set; }
 		public int ComponentPerElement { get; private set; }
@@ -718,8 +749,20 @@ namespace modProject
 			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
 			SetData(dat);
 		}
-		public object[] DataInlined { private set; get; } = new object[] { };
-		public object[] DataInlined_Formatted { private set; get; } = new object[] { };
+		private object[] aryDataInlined = new object[] { };
+		private object[] aryDataInlined_Formatted = new object[] { };
+		public object[] DataInlined
+		{
+			get => aryDataInlined;
+			set
+			{
+				object[] ary = Array.ConvertAll(value, itm => Convert.ChangeType(itm, ComponentType));
+				Array.Copy(value, 0, aryDataInlined, 0, Math.Min(value.Length, aryDataInlined.Length));
+				Array.Copy(ary, 0, aryDataInlined_Formatted, 0, Math.Min(value.Length, aryDataInlined_Formatted.Length));
+			}
+		}
+		public object[] DataInlined_Formatted { get => aryDataInlined_Formatted; set { DataInlined = value; } }
+		public object[][] Data { get => GetData(); set { SetData(value); } }
 		public object[] this[int Element, bool bolFormatted = false]
 		{
 			get => GetData(Element, bolFormatted);
@@ -733,7 +776,7 @@ namespace modProject
 		public object[][] GetData(bool bolFormatted = false)
 		{
 			object[][] lstRet = new object[ElementCount][];
-			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
+			object[] arySelected = (bolFormatted) ? aryDataInlined_Formatted : aryDataInlined;
 			for (int itr = 0; itr < lstRet.Length; itr++)
 			{
 				lstRet[itr] = new object[ComponentPerElement];
@@ -744,41 +787,41 @@ namespace modProject
 		public void SetData(object[][] ary)
 		{
 			ElementCount = ary.Length;
-			DataInlined = new object[ElementCount * ComponentPerElement];
+			aryDataInlined = new object[ElementCount * ComponentPerElement];
 			for (int itr = 0; itr < ElementCount; itr++)
 			{
-				ary[itr].CopyTo(DataInlined, itr * ComponentPerElement);
+				ary[itr].CopyTo(aryDataInlined, itr * ComponentPerElement);
 			}
-			DataInlined_Formatted = Array.ConvertAll(DataInlined, itm => Convert.ChangeType(itm, ComponentType));
+			aryDataInlined_Formatted = Array.ConvertAll(aryDataInlined, itm => Convert.ChangeType(itm, ComponentType));
 		}
 		public object[] GetData(int Element, bool bolFormatted = false)
 		{
 			object[] aryRet = new object[ComponentPerElement];
-			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
+			object[] arySelected = (bolFormatted) ? aryDataInlined_Formatted : aryDataInlined;
 			Array.Copy(arySelected, Element * ComponentPerElement, aryRet, 0, ComponentPerElement);
 			return aryRet;
 		}
 		public void SetData(int Element, object[] ary)
 		{
 			object[] aryFormatted = Array.ConvertAll(ary, itm => Convert.ChangeType(itm, ComponentType));
-			ary.CopyTo(DataInlined, Element * ComponentPerElement);
-			aryFormatted.CopyTo(DataInlined_Formatted, Element * ComponentPerElement);
+			ary.CopyTo(aryDataInlined, Element * ComponentPerElement);
+			aryFormatted.CopyTo(aryDataInlined_Formatted, Element * ComponentPerElement);
 		}
 		public object GetData(int Element, int Component, bool bolFormatted = false)
 		{
-			object[] arySelected = (bolFormatted) ? DataInlined_Formatted : DataInlined;
+			object[] arySelected = (bolFormatted) ? aryDataInlined_Formatted : aryDataInlined;
 			return arySelected[Component + Element * ComponentPerElement];
 		}
 		public void SetData(int Element, int Component, object value)
 		{
-			DataInlined[Component + Element * ComponentPerElement] = value;
-			DataInlined_Formatted[Component + Element * ComponentPerElement] = Convert.ChangeType(value, ComponentType);
+			aryDataInlined[Component + Element * ComponentPerElement] = value;
+			aryDataInlined_Formatted[Component + Element * ComponentPerElement] = Convert.ChangeType(value, ComponentType);
 		}
 		public void BindData()
 		{
 			if (string.IsNullOrEmpty(ShaderUniformLink.Key)) return;
 			if(ShaderUniformLink.Value < 0) return;
-			UniformBindDelegate[Type](ShaderUniformLink.Value, ElementCount, DataInlined_Formatted);
+			UniformBindDelegate[Type](ShaderUniformLink.Value, ElementCount, aryDataInlined_Formatted);
 		}
 		public override string ToString()
 		{
@@ -1190,6 +1233,7 @@ namespace modProject
 			public object Matrix_Det(int numCols, int numRows, object[] args)
 			{
 				double dRet = 0;
+				if((numCols == 1) && (numRows == 1)) return args[0];
 				for (int itrCol = 0; itrCol < ((numCols==2)?1:numCols); itrCol++)
 				{
 					double dProdPos = 1;
@@ -1242,7 +1286,7 @@ namespace modProject
 				double sin = Math.Sin(ang);
 				return new object[] {cos, sin, -sin, cos};
 			}
-			public void Matrix_Rot2x2(double ang, int argCols, int argRows, ref object[] args)
+			public void Matrix_Rot2x2(int argCols, int argRows, double ang, ref object[] args)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
@@ -1259,11 +1303,11 @@ namespace modProject
 				double.TryParse(Vec_Elem(vecAxis, 0).ToString(), out double x);
 				double.TryParse(Vec_Elem(vecAxis, 1).ToString(), out double y);
 				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
-			return new object[] { x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) - y*sin,
+			return new object[] { x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
 								  y*x*(1-cos) + z*sin, y*y*(1-cos) + cos,   y*z*(1-cos) - x*sin,
 								  z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, z*z*(1-cos) + cos   };
 			}
-			public void Matrix_Rot3x3(double ang, object[] vecAxis, int argCols, int argRows, ref object[] args)
+			public void Matrix_Rot3x3(int argCols, int argRows, double ang, object[] vecAxis,  ref object[] args)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
@@ -1272,7 +1316,7 @@ namespace modProject
 				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
 				Matrix_Elem(argCols, argRows, 0, 0, ref args, x * x * (1 - cos) + cos);
 				Matrix_Elem(argCols, argRows, 1, 0, ref args, x * y * (1 - cos) - z * sin);
-				Matrix_Elem(argCols, argRows, 2, 0, ref args, x * z * (1 - cos) - y * sin);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, x * z * (1 - cos) + y * sin);
 				Matrix_Elem(argCols, argRows, 0, 1, ref args, y * x * (1 - cos) + z * sin);
 				Matrix_Elem(argCols, argRows, 1, 1, ref args, y * y * (1 - cos) + cos);
 				Matrix_Elem(argCols, argRows, 2, 1, ref args, y * z * (1 - cos) - x * sin);
@@ -1617,9 +1661,10 @@ namespace modProject
 		{
 			if (Source == null) return;
 			script = null;
-			script = CSharpScript.Create(Source, GenericScriptOptions, ScriptContext.GetType());
-			script.Compile();
 			GC.Collect();
+			string str = PreProcess(Source, ScriptContext);
+			script = CSharpScript.Create(str, GenericScriptOptions, ScriptContext.GetType());
+			script.Compile();
 		}
 		[Browsable(false)]
 		public void Run(EventType eventType, params object[] args)
@@ -1639,13 +1684,13 @@ namespace modProject
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				ScriptContext.Console.Write(strErr, Source);
+				ScriptContext.Console.Write(strErr, "Error>\0", Source);
 			}
 			if(currentExe != null)
 			{
 				if(currentExe.Result != null && currentExe.Result.ReturnValue != null)
 				{
-					ScriptContext.Console.Write(currentExe.Result.ReturnValue, Source);
+					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log>\0", Source);
 				}
 				currentExe.Dispose();
 				currentExe = null;
@@ -1660,6 +1705,7 @@ namespace modProject
 		{
 			DetachSubject();
 			Source = null;
+			script = null;
 			ScriptContext = null;
 			GC.Collect();
 		}

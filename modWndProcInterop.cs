@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -187,8 +188,8 @@ namespace modCommon
 					{
 						Point ret = Point.Empty;
 						if (TouchPoints.Count < 2) return ret;
-						Point pt1 = TouchPoints[TouchPoints.Count - 1].Location;
-						Point pt2 = TouchPoints[TouchPoints.Count - 2].Location;
+						Point pt1 = TouchPoints[TouchPoints.Count - 2].Location;
+						Point pt2 = TouchPoints[TouchPoints.Count - 1].Location;
 						ret = new Point(pt2.X - pt1.X, pt2.Y - pt1.Y);
 						return ret;
 					}
@@ -199,8 +200,8 @@ namespace modCommon
 					{
 						Point ret = Point.Empty;
 						if (TouchPoints.Count < 2) return ret;
-						Point pt1 = TouchPoints[TouchPoints.Count - 1].Location;
-						Point pt2 = TouchPoints[0].Location;
+						Point pt1 = TouchPoints[0].Location;
+						Point pt2 = TouchPoints[TouchPoints.Count - 1].Location;
 						ret = new Point(pt2.X - pt1.X, pt2.Y - pt1.Y);
 						return ret;
 					}
@@ -220,9 +221,9 @@ namespace modCommon
 				public InputInterface InputInterface { get; set; }
 				public override string ToString()
 				{
-					string strInterface = (InputInterface != null) ? $"Interface:{InputInterface.ToString()};" : "";
-					string strTouch = (InputTouch != null) ? $"Input:{InputTouch.ToString()};" : "";
-					string strPoint = (InputPoint != null) ? $"Point:{InputPoint.ToString()};" : "";
+					string strInterface = (InputInterface != null) ? $"Interface:{InputInterface};" : "";
+					string strTouch = (InputTouch != null) ? $"Input:{InputTouch};" : "";
+					string strPoint = (InputPoint != null) ? $"Point:{InputPoint};" : "";
 					return $"{{{strInterface} {strTouch} {strPoint}}};";
 				}
 			}
@@ -241,7 +242,7 @@ namespace modCommon
 				if (!RegisterTouchWindow(Widget.Handle, 0))
 				{
 					int intErr = Marshal.GetLastWin32Error();
-					Console.WriteLine($"Touch Interface Handle {Widget.Handle.ToString()} Failed To Register. Error {intErr}");
+					Console.WriteLine($"Touch Interface Handle {Widget.Handle} Failed To Register. Error {intErr}");
 				}
 				handleModule = GetModuleHandle(null);
 				ptrThreadID = GetCurrentThreadId();

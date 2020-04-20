@@ -304,6 +304,7 @@ namespace WinOpenGL_ShaderToy
 			this.datagridUniformsValues.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.datagridUniformsValues_CellEndEdit);
 			this.datagridUniformsValues.UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.datagridUniformsValues_UserAddedRow);
 			this.datagridUniformsValues.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.datagridUniformsValues_UserDeletingRow);
+			this.datagridUniformsValues.KeyUp += new System.Windows.Forms.KeyEventHandler(this.datagridUniformsValues_KeyUp);
 			// 
 			// columnVariableName
 			// 
