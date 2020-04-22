@@ -107,6 +107,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void ConsolePromptReplied(ref ConsoleActionArgs e)
 		{
+			if (string.IsNullOrEmpty(e.Message)) return;
 			string strCode = PreProcess(e.Message, consoleScriptContext);
 			Task<object> Eval = new Task<object>(() => 
 			{
@@ -144,10 +145,9 @@ namespace WinOpenGL_ShaderToy
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				System.Console.WriteLine(strErr);
 				strDisp = strErr + '\n';
 			}
-			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode); }));
+			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode, false); }));
 		}
 		private DockPanel panelDockMain;
 		private Dictionary<string, DockContent> aryDockContent = new Dictionary<string, DockContent>();

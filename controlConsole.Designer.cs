@@ -49,6 +49,7 @@
 			this.ShowLineNumbers = false;
 			this.Size = new System.Drawing.Size(670, 193);
 			this.WordWrap = true;
+			this.Load += new System.EventHandler(this.controlConsole_Load);
 			((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 			this.ResumeLayout(false);
 

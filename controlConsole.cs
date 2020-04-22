@@ -12,6 +12,7 @@ using System.Threading;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -19,12 +20,14 @@ namespace WinOpenGL_ShaderToy
 	{
 		public class ConsoleEntry
 		{
+			public controlConsole Console;
+			public bool Written = false;
 			public string PromptText { get; set; }
 			public string RecallText { get; set; }
 			public string OutputText { get; set; }
 			public string Text
 			{
-				get => $"{PromptText}\0{RecallText}\0\n{OutputText}\0\n";
+				get => $"{PromptText}\0{RecallText}\0\r\n{OutputText}\0\r\n";
 				set
 				{
 					Match match = Regex.Match(value, strParsePattern);
@@ -42,6 +45,10 @@ namespace WinOpenGL_ShaderToy
 		}
 		public class ConsoleEntryGroup
 		{
+			public controlConsole Console;
+			public string LastWrittenText = "";
+			public int LastWrittenLocation => ((!string.IsNullOrEmpty(LastWrittenText)) ? (Console.Text.Replace('\0', ' ').LastIndexOf(LastWrittenText)) : (-1));
+			public int LastWrittenLength => ((!string.IsNullOrEmpty(LastWrittenText)) ? (LastWrittenText.Length) : (0));
 			public string ScopeText { get; set; }
 			public string HeaderText
 			{
@@ -73,18 +80,104 @@ namespace WinOpenGL_ShaderToy
 		public int PromptRecallIndex { get; private set; }
 		public Place PromptPosition { get; private set; } = new Place();
 		public List<ConsoleEntryGroup> EntryGroups { get; private set; } = new List<ConsoleEntryGroup>();
+		private Thread threadWriteGroupEntries;
+		private bool bolMainLoop;
+		private bool bolWriteLock = false;
 		public controlConsole()
 		{
 			InitializeComponent();
 		}
-		public void Write(object obj, string prompt, string scope)
+		private void controlConsole_Load(object sender, EventArgs e)
 		{
-			Write(generalUtils.ExpandedObjectString(obj, generalUtils.TypesExpandExempt, true), prompt, scope);
+			bolMainLoop = true;
+			threadWriteGroupEntries = new Thread(loopWriteGroupEntries);
+			threadWriteGroupEntries.Priority = ThreadPriority.BelowNormal;
+			threadWriteGroupEntries.Start();
 		}
-		public void Write(string message, string prompt, string scope)
+		private void loopWriteGroupEntries()
 		{
-			IsOutputPosting = true;
+			int idxGroup = 0;
+			while(bolMainLoop)
+			{
+				if(idxGroup < EntryGroups.Count)
+				{
+					ConsoleEntryGroup group = EntryGroups[idxGroup];
+					if(group.Entries.Count > 0)
+					{
+						ConsoleEntry entry = group.Entries[group.Entries.Count - 1];
+						if (entry != null && !entry.Written)
+						{
+							while (bolWriteLock) { Application.DoEvents(); }
+							bolWriteLock = true;
+							try
+							{
+								Invoke(new Action(() =>
+								{
+									int intIndexPromptPosition;
+									bool bolIsAtPrompt = (Selection.Start >= PromptPosition && Selection.End >= PromptPosition);
+									int[] posAfterPrompt = new int[2];
+									if (bolIsAtPrompt)
+									{
+										posAfterPrompt[0] = PlaceToPosition(Selection.Start) - PlaceToPosition(PromptPosition);
+										posAfterPrompt[1] = PlaceToPosition(Selection.End) - PlaceToPosition(PromptPosition);
+									}
+									int loc = group.LastWrittenLocation;
+									if (loc == -1) loc = PlaceToPosition(new Place(0, PromptPosition.iLine));
+									int len = group.LastWrittenLength;
+									Place placeInsert = PositionToPlace(loc);
+									Place placeEnd = PositionToPlace(loc + len);
+									Range rangeInsert = new Range(this, placeInsert, placeEnd);
+									string str = $"{group}\r\n";
+									IsOutputPosting = true;
+									BeginUpdate();
+									InsertTextAndRestoreSelection(rangeInsert, str, null);
+									EndUpdate();
+									IsOutputPosting = false;
+									entry.Written = true;
+									group.LastWrittenText = str;
+									if (bolIsAtPrompt)
+									{
+										intIndexPromptPosition = Text.LastIndexOf('\0') + 1;
+										PromptPosition = PositionToPlace(intIndexPromptPosition);
+										Selection = new Range(this, PositionToPlace(posAfterPrompt[0] + intIndexPromptPosition),
+																	PositionToPlace(posAfterPrompt[1] + intIndexPromptPosition));
+										DoSelectionVisible();
+									}
+									//Application.DoEvents();
+								}));
+							}
+							catch (Exception err)
+							{
+								Console.WriteLine(err);
+							}
+							bolWriteLock = false;
+						}
+					}
+					idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
+				}
+				idxGroup = idxGroup % Math.Max(EntryGroups.Count, 1);
+				Application.DoEvents();
+				Thread.Sleep(20);
+			}
+		}
+		public void Write(object obj, string Label)
+		{
+			Write(generalUtils.ExpandedObjectString(obj, generalUtils.TypesExpandExempt, true), "Log>", Label, true);
+		}
+		public void Write(string message, string Label)
+		{
+			Write(message, "Log>", Label, true);
+		}
+		[Browsable(false)]
+		public void Write(object obj, string prompt, string scope, bool IsOutputAsync)
+		{
+			Write(generalUtils.ExpandedObjectString(obj, generalUtils.TypesExpandExempt, true), prompt, scope, IsOutputAsync);
+		}
+		[Browsable(false)]
+		public void Write(string message, string prompt, string scope, bool IsOutputAsync)
+		{
 			ConsoleEntryGroup group = null;
+			ConsoleEntry entry = null;
 			if (!string.IsNullOrEmpty(prompt) && !string.IsNullOrEmpty(scope) && !string.IsNullOrEmpty(message))
 			{
 				group = EntryGroups.Find(itm => itm.ScopeText == scope);
@@ -92,76 +185,49 @@ namespace WinOpenGL_ShaderToy
 				{
 					group = new ConsoleEntryGroup()
 					{
+						Console = this,
 						ScopeText = scope
 					};
 					EntryGroups.Add(group);
 				}
-				group.Entries.Add(new ConsoleEntry()
+				entry = new ConsoleEntry()
 				{
-					PromptText = prompt.Trim('\0', '\n'),
-					RecallText = scope.Trim('\0', '\n'),
-					OutputText = message.Trim('\0', '\n')
-				});
+					Console = this,
+					Written = !IsOutputAsync,
+					PromptText = prompt.Trim('\0', '\r', '\n'),
+					RecallText = scope.Trim('\0', '\r', '\n'),
+					OutputText = message.Trim('\0', '\r', '\n')
+				};
+				group.Entries.Add(entry);
 			}
-			if (IsInputWaiting)
+			if (!IsOutputAsync)
 			{
-				message = $"{prompt}{scope}\0\n{message}\0\n";
-				/*bool bolIsAtPrompt = (Selection.Start >= PromptPosition && Selection.End >= PromptPosition);
-				int[] posAfterPrompt = new int[2];
-				if (bolIsAtPrompt) 
-				{
-					posAfterPrompt[0] = PlaceToPosition(Selection.Start) - PlaceToPosition(PromptPosition);
-					posAfterPrompt[1] = PlaceToPosition(Selection.End) - PlaceToPosition(PromptPosition);
-				}
-				MatchCollection collLines = Regex.Matches(Text.Substring(0, PlaceToPosition(new Place(0, PromptPosition.iLine))), strParsePattern);
-				Match[] aryLines = new Match[collLines.Count];
-				collLines.CopyTo(aryLines, 0); collLines = null;
-				Match LineMatch = aryLines.LastOrDefault(itm =>
-				{
-					if (!itm.Groups["RecallText"].Success) return false;
-					if (!itm.Groups["OutputText"].Success) return false;
-					if (itm.Groups["RecallText"].Value.Trim() == scope.Trim()) return true;
-					if (itm.Groups["OutputText"].Value.Trim() == message.Trim()) return true;
-					return false;
-				});
-				int intInsert = PlaceToPosition(new Place(0,PromptPosition.iLine));
-				if(LineMatch != null)
-				{
-					intInsert = LineMatch.Index + LineMatch.Length + 2;
-				}
-				Place placeInsert = PositionToPlace(intInsert);
-				Range rangeInsert = new Range(this, placeInsert, placeInsert);
-				BeginUpdate();
-				InsertTextAndRestoreSelection(rangeInsert, message, null);
-				EndUpdate();
-				int intIndexPromptPosition = Text.LastIndexOf('\0') + 1;
-				PromptPosition = PositionToPlace(intIndexPromptPosition);
-				if (bolIsAtPrompt)
-				{
-					Selection = new Range(this, PositionToPlace(posAfterPrompt[0] + intIndexPromptPosition), 
-												PositionToPlace(posAfterPrompt[1] + intIndexPromptPosition));
-					DoSelectionVisible();
-				}*/
-			} else
-			{
+				while (bolWriteLock) { Application.DoEvents(); }
+				bolWriteLock = true;
+				IsOutputPosting = true;
+				int loc = PlaceToPosition(Range.End);
 				AppendText(message);
+				IsOutputPosting = false;
+				bolWriteLock = false;
 			}
-			IsOutputPosting = false;
 		}
 		public string Prompt(string message)
 		{
+			while (bolWriteLock) { Application.DoEvents(); }
+			bolWriteLock = true;
 			Invoke(new Action(() => {
 				GoEnd();
-				Write($"{message}\0","", "");
+				AppendText($"{message}\0");
 				GoEnd();
 				PromptPosition = Range.End;
 			}));
+			bolWriteLock = false;
 			IsInputWaiting = true;
 			PromptRecallIndex = 0;
 			while (IsInputWaiting)
 			{
 				Application.DoEvents();
-				Thread.Sleep(100);
+				Thread.Sleep(250);
 			}
 			IsInputWaiting = false;
 			ClearUndo();
@@ -202,17 +268,26 @@ namespace WinOpenGL_ShaderToy
 					break;
 				}
 				string strPrompt = ActionArgs.Message;
-				string str = Prompt(ActionArgs.Message);
-				Invoke(new Action(() => {AppendText("\b\0\n");}));
-				ActionArgs.Message = str;
-				ActionArgs.BreakLoop = false;
-				Application.DoEvents();
-				Invoke(OnPromptReplied, ActionArgs);
-				Invoke(new Action(() => { AppendText("\b\0\n"); }));
-				if (ActionArgs.BreakLoop)
+				string str = Prompt(strPrompt);
+				if(!string.IsNullOrEmpty(str))
 				{
-					IsPromptLoop = false;
-					break;
+					while(bolWriteLock) { Application.DoEvents(); }
+					bolWriteLock = true;
+					Invoke(new Action(() => {AppendText("\b\0\n");}));
+					bolWriteLock = false;
+					ActionArgs.Message = str;
+					ActionArgs.BreakLoop = false;
+					Application.DoEvents();
+					Invoke(OnPromptReplied, ActionArgs);
+					while(bolWriteLock) { Application.DoEvents(); }
+					bolWriteLock = true;
+					Invoke(new Action(() => { AppendText("\b\0\n"); }));
+					bolWriteLock = false;
+					if (ActionArgs.BreakLoop)
+					{
+						IsPromptLoop = false;
+						break;
+					}
 				}
 			}
 			Application.DoEvents();
@@ -228,8 +303,11 @@ namespace WinOpenGL_ShaderToy
 				{
 					if(!IsOutputPosting)
 					{
+						while(bolWriteLock) { Application.DoEvents(); }
+						bolWriteLock = true;
 						text = "";
 						GoEnd();
+						bolWriteLock = false;
 						return;
 					}
 				}
@@ -237,81 +315,92 @@ namespace WinOpenGL_ShaderToy
 				{
 					if (text == "\b")
 					{
+						while (bolWriteLock) { Application.DoEvents(); }
+						bolWriteLock = true;
 						text = "";
 						GoEnd();
+						bolWriteLock = false;
 						return;
 					}
 				}
 			}
 			base.OnTextChanging(ref text);
 		}
-		public override void OnTextChangedDelayed(Range changedRange)
-		{
-			base.OnTextChangedDelayed(changedRange);
-		}
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
-			if (IsInputWaiting)
+			if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
 			{
-				if (Selection.Start >= PromptPosition)
+				if(IsInputWaiting) 
 				{
-					if(e.KeyCode == Keys.Enter || e.KeyCode == Keys.Return)
+					if(Selection.Start >= PromptPosition && Selection.End >= PromptPosition)
 					{
-						if(IsInputWaiting) 
+						if(Selection.Start == Range.End || Selection.End == Range.End)
 						{
-							if(Selection.Start == Range.End || Selection.End == Range.End)
+							if(!string.IsNullOrWhiteSpace(new Range(this, PromptPosition, Selection.End).Text.Replace('\0', ' ').Trim()))
 							{
 								IsInputWaiting = false;
 							}
 						}
 					}
-					if(e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+				}
+			}
+			if(e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+			{
+				if(Selection.Start >= PromptPosition && Selection.End >= PromptPosition)
+				{
+					if (IsInputWaiting && EntryGroups.Count > 0)
 					{
-						if (EntryGroups.Count > 0)
-						{
-							IsOutputPosting = true;
-							if (e.KeyCode == Keys.Up) PromptRecallIndex = Math.Min(PromptRecallIndex + 1, EntryGroups.Count);
-							if (e.KeyCode == Keys.Down) PromptRecallIndex = Math.Max(PromptRecallIndex - 1, 1);
-							string strSetRecall = EntryGroups[EntryGroups.Count - PromptRecallIndex].ScopeText;
-							string strOldText = Text.Substring(0, PlaceToPosition(PromptPosition));
-							GoEnd();
-							BeginUpdate();
-							Text = strOldText + strSetRecall;
-							EndUpdate();
-							GoEnd();
-							IsOutputPosting = false;
-							return;
-						}
+						if (e.KeyCode == Keys.Up) PromptRecallIndex = Math.Min(PromptRecallIndex + 1, EntryGroups.Count);
+						if (e.KeyCode == Keys.Down) PromptRecallIndex = Math.Max(PromptRecallIndex - 1, 1);
+						string strSetRecall = EntryGroups[EntryGroups.Count - PromptRecallIndex].ScopeText;
+						string strOldText = Text.Substring(0, PlaceToPosition(PromptPosition));
+						while (bolWriteLock) { Application.DoEvents(); }
+						bolWriteLock = true;
+						IsOutputPosting = true;
+						GoEnd();
+						BeginUpdate();
+						Text = strOldText + strSetRecall;
+						EndUpdate();
+						GoEnd();
+						IsOutputPosting = false;
+						bolWriteLock = false;
+						return;
 					}
 				}
 			}
 			if(e.Control && e.KeyCode == Keys.Delete)
 			{
 				Clear();
+				return;
 			}
 			base.OnKeyDown(e);
 		}
 		public override void Clear()
 		{
-			if (!IsInputWaiting) { base.Clear(); return; }
-			int intLinePrompt = PlaceToPosition(new Place(0, PromptPosition.iLine));
+			while (bolWriteLock) { Application.DoEvents(); }
+			bolWriteLock = true;
 			IsOutputPosting = true;
-			BeginUpdate();
-			Text = Text.Substring(intLinePrompt, Text.Length - intLinePrompt);
-			EndUpdate();
+			base.Clear();
 			IsOutputPosting = false;
-			int intIndexPromptPosition = Text.LastIndexOf('\0') + 1;
-			PromptPosition = PositionToPlace(intIndexPromptPosition);
-			GoEnd();
+			EntryGroups.Clear();
+			PromptPosition = Place.Empty;
+			IsInputWaiting = false;
+			bolWriteLock = false;
 		}
 		public new void Dispose()
 		{
+			bolMainLoop = false;
 			IsInputWaiting = false;
 			IsPromptLoop = false;
-			if(threadPromptLoop != null)
+			if (threadWriteGroupEntries != null)
+			{
+				if (threadWriteGroupEntries.IsAlive) threadWriteGroupEntries.Abort();
+			}
+			if (threadPromptLoop != null)
 			{
 				while (threadPromptLoop.IsAlive) { }
 			}
+			EntryGroups.Clear();
 			base.Dispose();
 		}
 	}

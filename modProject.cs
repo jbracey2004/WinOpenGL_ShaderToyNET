@@ -1006,7 +1006,7 @@ namespace modProject
 			public object Matrix_Elem(int numCols, int numRows, int indexCol, int indexRow, object[] args)
 			{
 				object objRet = 0;
-				if(indexCol < numCols && indexRow < numRows)
+				if(indexCol < numCols && indexRow < numRows && indexCol + indexRow * numCols < args.Length)
 				{
 					objRet = args[indexCol + indexRow*numCols];
 				}
@@ -1014,7 +1014,7 @@ namespace modProject
 			}
 			public void Matrix_Elem<T>(int numCols, int numRows, int indexCol, int indexRow, ref object[] args, T value)
 			{
-				if (indexCol < numCols && indexRow < numRows)
+				if (indexCol < numCols && indexRow < numRows && indexCol + indexRow * numCols < args.Length)
 				{
 					args[indexCol + indexRow * numCols] = value;
 				}
@@ -1026,7 +1026,10 @@ namespace modProject
 				{
 					for (int idxCol = 0; idxCol < numCols; idxCol++)
 					{
-						objRet[idxCol] = args[idxCol + indexRow * numCols];
+						if (idxCol + indexRow * numCols < args.Length)
+						{
+							objRet[idxCol] = args[idxCol + indexRow * numCols];
+						}
 					}
 				}
 				return objRet;
@@ -1037,7 +1040,10 @@ namespace modProject
 				{
 					for (int idxCol = 0; idxCol < Math.Min(numCols, value.Length); idxCol++)
 					{
-						args[idxCol + indexRow * numCols] = value[idxCol];
+						if (idxCol + indexRow * numCols < args.Length)
+						{
+							args[idxCol + indexRow * numCols] = value[idxCol];
+						}
 					}
 				}
 			}
@@ -1048,7 +1054,10 @@ namespace modProject
 				{
 					for (int idxRow = 0; idxRow < numRows; idxRow++)
 					{
-						objRet[idxRow] = args[indexColumn + idxRow * numCols];
+						if (indexColumn + idxRow * numCols < args.Length)
+						{
+							objRet[idxRow] = args[indexColumn + idxRow * numCols];
+						}
 					}
 				}
 				return objRet;
@@ -1059,7 +1068,10 @@ namespace modProject
 				{
 					for (int idxRow = 0; idxRow < Math.Min(numRows, value.Length); idxRow++)
 					{
-						args[indexColumn + idxRow * numCols] = value[idxRow];
+						if (indexColumn + idxRow * numCols < args.Length)
+						{
+							args[indexColumn + idxRow * numCols] = value[idxRow];
+						}
 					}
 				}
 			}
@@ -1684,13 +1696,14 @@ namespace modProject
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				ScriptContext.Console.Write(strErr, "Error>\0", Source);
+				ScriptContext.Console.Write(strErr, "Error>\0", Source, true);
+				currentExe = null;
 			}
 			if(currentExe != null)
 			{
 				if(currentExe.Result != null && currentExe.Result.ReturnValue != null)
 				{
-					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log>\0", Source);
+					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log>\0", Source, true);
 				}
 				currentExe.Dispose();
 				currentExe = null;
