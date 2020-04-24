@@ -56,7 +56,7 @@
 			// 
 			// panelMain
 			// 
-			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			
 			// 
 			// panelMain.Content
 			// 
@@ -65,13 +65,11 @@
 			this.panelMain.Content.Controls.Add(this.splitterLinkStatus);
 			this.panelMain.Content.Controls.Add(this.panelLinkStatus);
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(423, 250);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";

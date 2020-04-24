@@ -83,11 +83,11 @@ namespace WinOpenGL_ShaderToy
 			consoleScriptContext = new clsEventScriptContext();
 			consoleScriptContext.RenderSubject = RenderSubject;
 			Console = new controlConsole();
-			consoleAutoComplete = new clsAutoComplete(Console);
+			consoleAutoComplete = new clsAutoComplete(Console.Input);
 			consoleAutoComplete.SearchPattern = @"[\w\d\.\[\(\]\)\""]";
 			consoleAutoComplete.AutoSize = true;
 			consoleAutoComplete.MinFragmentLength = 1;
-			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, Console, consoleAutoComplete);
+			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, Console.Input, consoleAutoComplete);
 			consoleAutoComplete.Items.SetAutocompleteItems(consoleItemsCollection);
 			Console.Parent = panelEventsConsole;
 			Console.Dock = DockStyle.Fill;
@@ -147,7 +147,7 @@ namespace WinOpenGL_ShaderToy
 				}
 				strDisp = strErr + '\n';
 			}
-			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode, false); }));
+			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode, true); }));
 		}
 		private DockPanel panelDockMain;
 		private Dictionary<string, DockContent> aryDockContent = new Dictionary<string, DockContent>();

@@ -37,7 +37,7 @@ namespace ShaderToy_Components
 			// 
 			// panelContent
 			// 
-			this.panelContent.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.panelContent.BackColor = System.Drawing.SystemColors.WindowFrame;
 			this.panelContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelContent.ForeColor = System.Drawing.SystemColors.Window;
@@ -49,7 +49,7 @@ namespace ShaderToy_Components
 			// panelStatus
 			// 
 			this.panelStatus.AutoSize = true;
-			this.panelStatus.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.panelStatus.BackColor = System.Drawing.Color.Gray;
 			this.panelStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelStatus.Controls.Add(this.txtName);
 			this.panelStatus.Dock = System.Windows.Forms.DockStyle.Bottom;

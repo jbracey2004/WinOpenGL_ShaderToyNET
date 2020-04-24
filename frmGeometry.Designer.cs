@@ -65,7 +65,6 @@
 			this.panelMain.Content.Size = new System.Drawing.Size(871, 479);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -75,8 +74,7 @@
 			this.panelMain.Size = new System.Drawing.Size(871, 509);
 			// 
 			// panelMain.Status
-			// 
-			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
+			//
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.lblVertexDesc);
@@ -84,7 +82,6 @@
 			this.panelMain.Status.Controls.Add(this.lblPositionAttr);
 			this.panelMain.Status.Controls.Add(this.lstPositionAttr);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 479);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(871, 30);

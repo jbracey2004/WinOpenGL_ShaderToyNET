@@ -50,7 +50,6 @@
 			this.panelMain.Content.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Content.Controls.Add(this.datagridVertexDescriptions);
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlText;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(519, 260);
@@ -64,12 +63,10 @@
 			this.panelMain.Size = new System.Drawing.Size(519, 290);
 			// 
 			// panelMain.Status
-			// 
-			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
+			//
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 260);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(519, 30);

@@ -60,14 +60,12 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.panelMain.Content.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 420);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -77,15 +75,13 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Size = new System.Drawing.Size(800, 450);
 			// 
 			// panelMain.Status
-			// 
-			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
+			//
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.btnConfigure);
 			this.panelMain.Status.Controls.Add(this.panelFrameCount);
 			this.panelMain.Status.Controls.Add(this.toolStripFPS);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 420);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(800, 30);

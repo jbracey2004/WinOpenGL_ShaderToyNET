@@ -1696,17 +1696,16 @@ namespace modProject
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				ScriptContext.Console.Write(strErr, "Error>\0", Source, true);
+				ScriptContext.Console.Write(strErr, "Error>\0", Source, false);
 				currentExe = null;
 			}
 			if(currentExe != null)
 			{
 				if(currentExe.Result != null && currentExe.Result.ReturnValue != null)
 				{
-					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log>\0", Source, true);
+					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log>\0", Source, false);
 				}
 				currentExe.Dispose();
-				currentExe = null;
 			}
 			if (ConfigureForm != null)
 			{

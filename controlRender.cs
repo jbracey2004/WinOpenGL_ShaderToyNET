@@ -32,6 +32,7 @@ namespace WinOpenGL_ShaderToy
 		public controlRender() : base()
 		{
 			InitializeComponent();
+			base.DoubleBuffered = true;
 		}
 		protected override void Dispose(bool disposing)
 		{
@@ -65,7 +66,7 @@ namespace WinOpenGL_ShaderToy
 			interfaceTouch.Dispose();
 			interfaceTouch = null;
 		}
-		public bool DoubleBuffering { get => base.DoubleBuffered; set { base.DoubleBuffered = value; } } 
+		public new bool DoubleBuffered { get => base.DoubleBuffered; set { base.DoubleBuffered = value; } } 
 		private void TouchInterface_TouchStart(object sender, InputEventArgs e)
 		{
 			PointerStart?.Invoke(this, e);

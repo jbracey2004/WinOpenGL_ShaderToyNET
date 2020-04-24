@@ -65,7 +65,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelMain
 			// 
-			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			
 			// 
 			// panelMain.Content
 			// 
@@ -74,13 +74,11 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.Controls.Add(this.splitterCompileStatus);
 			this.panelMain.Content.Controls.Add(this.panelCompileStatus);
 			this.panelMain.Content.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.Content.ForeColor = System.Drawing.SystemColors.ControlDark;
 			this.panelMain.Content.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 419);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -90,15 +88,13 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Size = new System.Drawing.Size(800, 449);
 			// 
 			// panelMain.Status
-			// 
-			this.panelMain.Status.BackColor = System.Drawing.SystemColors.ControlDark;
+			//
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lstShaderType);
 			this.panelMain.Status.Controls.Add(this.btnLoad);
 			this.panelMain.Status.Controls.Add(this.btnSave);
 			this.panelMain.Status.Controls.Add(this.gadgetCompile);
 			this.panelMain.Status.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelMain.Status.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Status.Location = new System.Drawing.Point(0, 419);
 			this.panelMain.Status.Name = "Status";
 			this.panelMain.Status.Size = new System.Drawing.Size(800, 30);
