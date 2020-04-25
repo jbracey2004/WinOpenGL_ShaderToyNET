@@ -61,7 +61,6 @@
 			this.Output.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Output.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Output.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.Output.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.Output.IsReplaceMode = false;
 			this.Output.Location = new System.Drawing.Point(0, 0);
 			this.Output.MinimumSize = new System.Drawing.Size(0, 24);
@@ -104,6 +103,7 @@
 			this.Input.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Input.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Input.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.Input.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.Input.IsReplaceMode = false;
 			this.Input.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.Input.LeftBracket = '(';
@@ -124,6 +124,7 @@
 			this.Input.Zoom = 100;
 			this.Input.TextChanging += new System.EventHandler<FastColoredTextBoxNS.TextChangingEventArgs>(this.Input_TextChanging);
 			this.Input.SelectionChanged += new System.EventHandler(this.Input_SelectionChanged);
+			this.Input.SizeChanged += new System.EventHandler(this.Input_SizeChanged);
 			this.Input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Input_KeyDown);
 			// 
 			// controlConsole

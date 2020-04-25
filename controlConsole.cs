@@ -13,14 +13,16 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Operations;
+using System.Windows.Forms.DataVisualization.Charting;
+using System.Runtime.Remoting.Messaging;
 
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlConsole : UserControl
 	{
-		protected static string strParsePattern = @"(?<PromptText>((.*?)(\s{0,}))+)\0" +
-												  @"(?<RecallText>((.*?)(\s{0,}))+)\0\s+" +
-												  @"(?<OutputText>((.*?)(\s{0,}))+)\0";
+		protected static string strParsePattern = @"(?<PromptText>((.*?)(\s{0,}))+)\s" +
+												  @"(?<RecallText>((.*?)(\s{0,}))+)\s\s+" +
+												  @"(?<OutputText>((.*?)(\s{0,}))+)\s";
 		public class ConsoleEntry
 		{
 			public FastColoredTextBox Console;
@@ -31,7 +33,7 @@ namespace WinOpenGL_ShaderToy
 			public string OutputText { get; set; }
 			public string Text
 			{
-				get => $"{PromptText}\0{RecallText}\0\r\n{OutputText}\0\r\n";
+				get => $"{PromptText} {RecallText}\r\n{OutputText}\r\n";
 				set
 				{
 					Match match = Regex.Match(value, strParsePattern);
@@ -51,8 +53,19 @@ namespace WinOpenGL_ShaderToy
 		{
 			public FastColoredTextBox Console;
 			public string LastWrittenText = "";
-			public int LastWrittenLocation => ((!string.IsNullOrEmpty(LastWrittenText)) ? (Console.Text.Replace('\0', ' ').LastIndexOf(LastWrittenText)) : (-1));
-			public int LastWrittenLength => ((!string.IsNullOrEmpty(LastWrittenText)) ? (LastWrittenText.Length) : (0));
+			public int LastWrittenLocation(bool Append)
+			{
+				int intRet = -1;
+				string strTxt = @Console.Text.Replace('\0', ' ');
+				string strL = @LastWrittenText.Replace('\0', ' ');
+				if (!string.IsNullOrEmpty(LastWrittenText)) 
+				{
+					intRet = (Append) ? (strTxt.LastIndexOf(strL)) : (strTxt.IndexOf(strL));
+				}
+				if(intRet == -1) intRet = (Append) ? (strTxt.Length) : (0);
+				return intRet;
+			}
+			public int LastWrittenLength() { return ((!string.IsNullOrEmpty(LastWrittenText)) ? (@LastWrittenText.Length) : (0)); }
 			public string ScopeText { get; set; }
 			public string HeaderText
 			{
@@ -63,14 +76,15 @@ namespace WinOpenGL_ShaderToy
 					return $"{tmp.PromptText} {tmp.RecallText} : {tmp.OutputText}";
 				}
 			}
+			public ConsoleEntry CurrentEntry { get => (Entries.Count > 0) ? (Entries[Entries.Count-1]) : (null); }
 			public List<ConsoleEntry> Entries { get; private set; } = new List<ConsoleEntry>();
-			public string Text => Entries.Aggregate("", (str, itm) => str += itm.Text);
-			public string DisplayableText => Text.Replace('\0', ' ');
+			public string Text { get => Entries.Aggregate("", (str, itm) => str += itm.Text); }
+			public string DisplayableText { get => Text.Replace('\0', ' '); }
 			public override string ToString()
 			{
 				if (Entries.Count <= 0) return "";
 				ConsoleEntry tmp = Entries[Entries.Count - 1];
-				return $"{tmp.PromptText} {tmp.RecallText}{((Entries.Count > 1)?($" x{Entries.Count}"):(""))}\n{tmp.OutputText}";
+				return $"{tmp.PromptText} {tmp.RecallText}{((Entries.Count > 1)?($" x{Entries.Count}"):(""))}\r\n{tmp.OutputText}";
 			}
 		}
 		public class ConsoleActionArgs : EventArgs
@@ -117,11 +131,10 @@ namespace WinOpenGL_ShaderToy
 							{
 								Invoke(new Action(() =>
 								{
-									int loc = group.LastWrittenLocation;
-									if (loc == -1) loc = (entry.Append)?(Output.TextLength):(0);
-									int len = group.LastWrittenLength;
+									int loc = group.LastWrittenLocation(entry.Append);
+									int locend = loc + group.LastWrittenLength();
 									Place placeInsert = Output.PositionToPlace(loc);
-									Place placeEnd = Output.PositionToPlace(loc + len + 1);
+									Place placeEnd = Output.PositionToPlace(locend);
 									Range rangeInsert = new Range(Output, placeInsert, placeEnd);
 									string str = $"{group}\r\n";
 									Output.BeginUpdate();
@@ -185,15 +198,17 @@ namespace WinOpenGL_ShaderToy
 				group.Entries.Add(entry);
 			}
 		}
-		public string Prompt(string message)
+		public string Prompt(string message, string RetainText)
 		{
 			Invoke(new Action(() => {
-				Input.AppendText($"{message}\0");
+				if(!string.IsNullOrEmpty(RetainText)) Input.Clear();
+				Input.AppendText($"{message} ");
+				PromptPosition = Input.Range.End;
+				Input.AppendText($"{RetainText}");
 				Input.GoEnd();
 			}));
 			IsInputWaiting = true;
 			PromptRecallIndex = 0;
-			PromptPosition = Input.Range.End;
 			while (IsInputWaiting)
 			{
 				Application.DoEvents();
@@ -239,7 +254,7 @@ namespace WinOpenGL_ShaderToy
 					break;
 				}
 				string strPrompt = ActionArgs.Message;
-				string str = Prompt(strPrompt);
+				string str = Prompt(strPrompt, Input.Text);
 				if(!string.IsNullOrEmpty(str))
 				{
 					ActionArgs.Message = str;
@@ -255,18 +270,32 @@ namespace WinOpenGL_ShaderToy
 			}
 			Application.DoEvents();
 		}
+		private bool bolSelectionLock = false;
 		private void Input_SelectionChanged(object sender, EventArgs e)
 		{
+			if (bolSelectionLock) return;
 			if (IsInputWaiting)
 			{
-				Range cur = Input.Selection;
-				if (cur.Start < PromptPosition) cur.Start = PromptPosition;
-				if (cur.End < PromptPosition) cur.End = PromptPosition;
+				Place st = Input.Selection.Start;
+				Place ed = Input.Selection.End;
+				if (st < PromptPosition) st = PromptPosition;
+				if (ed < PromptPosition) ed = PromptPosition;
+				bolSelectionLock = true;
+				Input.Selection = new Range(Input, st, ed);
+				bolSelectionLock = false;
 			}
-			if(bolInit)
+			ResizeInputWindow();
+		}
+		private void Input_SizeChanged(object sender, EventArgs e)
+		{
+			ResizeInputWindow();
+		}
+		private void ResizeInputWindow()
+		{
+			if (bolInit)
 			{
 				int intLineCount = Input.LineInfos.Aggregate(0, (count, itm) => count += itm.WordWrapStringsCount);
-				Invoke(new Action(() => { Input.Height = intLineCount * (Input.CharHeight + 1); }));
+				Invoke(new Action(() => { Input.Height = intLineCount * (Input.CharHeight); }));
 			}
 		}
 		private void Input_TextChanging(object sender, TextChangingEventArgs e)
@@ -307,13 +336,24 @@ namespace WinOpenGL_ShaderToy
 				{
 					if (IsInputWaiting && EntryGroups.Count > 0)
 					{
-						if (e.KeyCode == Keys.Up) PromptRecallIndex = Math.Min(PromptRecallIndex + 1, EntryGroups.Count);
-						if (e.KeyCode == Keys.Down) PromptRecallIndex = Math.Max(PromptRecallIndex - 1, 1);
-						string strSetRecall = EntryGroups[EntryGroups.Count - PromptRecallIndex].ScopeText;
-						Input.BeginUpdate();
-						Input.InsertTextAndRestoreSelection(new Range(Input, PromptPosition, Input.Range.End), strSetRecall, null);
-						Input.EndUpdate();
-						Input.GoEnd();
+						int dir = ((e.KeyCode == Keys.Up)?1:0) - ((e.KeyCode == Keys.Down)?1:0);
+						string strSetRecall = "";
+						while (dir != 0)
+						{
+							PromptRecallIndex += dir;
+							if (PromptRecallIndex < 1) { dir = 0; PromptRecallIndex = 1; continue; }
+							if (PromptRecallIndex > EntryGroups.Count) { dir = 0; PromptRecallIndex = EntryGroups.Count; continue; }
+							int idx = EntryGroups.Count - PromptRecallIndex;
+							if (!EntryGroups[idx].CurrentEntry.Append) { continue; }
+							strSetRecall = EntryGroups[idx].ScopeText; dir = 0;
+						}
+						if(!string.IsNullOrEmpty(strSetRecall))
+						{
+							Input.BeginUpdate();
+							Input.InsertTextAndRestoreSelection(new Range(Input, PromptPosition, Input.Range.End), strSetRecall, null);
+							Input.EndUpdate();
+							Input.GoEnd();
+						}
 						e.Handled = true;
 					}
 				}

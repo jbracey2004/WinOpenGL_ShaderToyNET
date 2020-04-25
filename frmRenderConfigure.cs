@@ -122,18 +122,18 @@ namespace WinOpenGL_ShaderToy
 			});
 			Eval.Start();
 			while(!Eval.IsCompleted && !Eval.IsCanceled && !Eval.IsFaulted) { Application.DoEvents(); }
-			string strDisp = "\n";
+			string strDisp = "\r\n";
 			ScriptState state = Eval.Result as ScriptState;
 			if (state != null)
 			{
 				object Ret = state.ReturnValue;
 				if (Ret != null)
 				{
-					strDisp = ExpandedObjectString(Ret, TypesExpandExempt, true) + '\n';
+					strDisp = ExpandedObjectString(Ret, TypesExpandExempt, true) + "\r\n";
 				}
 				else
 				{
-					strDisp = Eval.Status.ToString() + '\n';
+					strDisp = Eval.Status.ToString() + "\r\n";
 				}
 			}
 			else
@@ -145,9 +145,9 @@ namespace WinOpenGL_ShaderToy
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				strDisp = strErr + '\n';
+				strDisp = strErr + "\r\n";
 			}
-			Invoke(new Action(() => { Console.Write(strDisp, ">\0", strCode, true); }));
+			Invoke(new Action(() => { Console.Write(strDisp, ">", strCode, true); }));
 		}
 		private DockPanel panelDockMain;
 		private Dictionary<string, DockContent> aryDockContent = new Dictionary<string, DockContent>();
