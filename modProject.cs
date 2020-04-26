@@ -1375,7 +1375,12 @@ namespace modProject
 				Matrix_Elem(argCols, argRows, 2, 3, ref args, 0);
 				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
 			}
-
+			public object[] Matrix_Perspective(double NearDist, double FarDist, double HorizontalAngle, double VerticalAngle)
+			{
+				double[] fov = new double[] { 1.0/Math.Tan(0.5*HorizontalAngle), 1.0 / Math.Tan(0.5 * VerticalAngle) };
+				double Nf = NearDist / (FarDist - NearDist);
+				return Matrix(4,4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, -Nf, -1, 0, 0, -Nf*NearDist, 0);
+			}
 			public object[][] Uniform_Get(string name)
 			{
 				object[][] objRet = new object[][] { new object[] { } };

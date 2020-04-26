@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics.ES10;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -27,12 +28,10 @@ namespace WinOpenGL_ShaderToy
 			this.Name = "controlRender";
 			this.Size = new System.Drawing.Size(260, 260);
 			this.ResumeLayout(false);
-
 		}
 		public controlRender() : base()
 		{
 			InitializeComponent();
-			base.DoubleBuffered = true;
 		}
 		protected override void Dispose(bool disposing)
 		{

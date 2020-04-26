@@ -25,7 +25,6 @@ namespace WinOpenGL_ShaderToy
 		private infoFramePerformance tsRender;
 		private infoFramePerformance tsRenderTimer;
 		private Stopwatch tsTimeElapsed;
-		private Graphics gfxContext;
 		public double FrameCount { get; private set; }
 		public double CurrentTimeStamp { get; private set; }
 		public double PreviousTimeStamp { get; private set; }
@@ -40,7 +39,6 @@ namespace WinOpenGL_ShaderToy
 			btnInterval.VisibleChanged += BtnInterval_DropDownClosed;
 			btnFPS.DropDownOpening += BtnFPS_DropDownClosed;
 			btnInterval.DropDownOpening += BtnInterval_DropDownClosed;
-			gfxContext = glRender.CreateGraphics();
 			timerRender = new clsHPTimer(this);
 			timerRender.IntervalEnd += TimerRender_Tick;
 			txtInterval.Text = ((Render!=null)?(Render.RenderInterval):(1000.0/60.0)).ToString("0.########");
@@ -91,6 +89,9 @@ namespace WinOpenGL_ShaderToy
 			glRender.PointerStart += glMain_PointerStart;
 			glRender.PointerMove += glMain_PointerMove;
 			glRender.PointerEnd += glMain_PointerEnd;
+			glRender.Paint += glMain_Render;
+			glRender.DoubleBuffered = false;
+			glRender.VSync = true;
 			glRender.MakeCurrent();
 			tsTimeElapsed = new Stopwatch();
 			tsTimeElapsed.Start();
@@ -110,7 +111,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
-			glMain_Render();
+			glRender.Invalidate();
 			double tsDelta = e.TimeDelta * 0.001;
 			if (bolIsRenderFrameValid)
 			{
@@ -144,7 +145,7 @@ namespace WinOpenGL_ShaderToy
 			UpdateGeometryRouting();
 		}
 		private bool bolIsRenderFrameValid = false;
-		private void glMain_Render()
+		private void glMain_Render(object sender, PaintEventArgs e)
 		{
 			bolIsRenderFrameValid = true;
 			if (!glRender.Context.IsCurrent)
@@ -164,32 +165,24 @@ namespace WinOpenGL_ShaderToy
 			}
 			if (bolIsRenderFrameValid) tsRender.StartInterval();
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-			if(bolIsRenderFrameValid)
+			if (bolIsRenderFrameValid)
 			{
 				UpdateUniformRouting();
 				GL.EnableClientState(ArrayCap.IndexArray);
 				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
 				GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
 			}
-			glRender.Context.SwapBuffers();
+			glRender.SwapBuffers();
 			if (bolIsRenderFrameValid)
 			{
 				tsRender.StopInterval();
 				tsRender.SampleInterval(CurrentTimeStamp);
 				tsRender.ResetInterval();
-			} else
-			{
-				//Console.WriteLine($"Progrm:{((Render.Program!=null)?Render.Program.IsValid.ToString(): "Ø")}; " +
-				//$"Geometry:{{Index:{((Render.Geometry!=null)?Render.Geometry.IsIndexBufferValid.ToString(): "Ø")}; " +
-				//$"Buffers:[{((Render.Geometry!=null)?NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2): "Ø")}]}};");
-				if(gfxContext != null)
-				{
-					string str = $"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
-					$"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
-					$"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
-					gfxContext.DrawString(str, Font, new SolidBrush(ForeColor), new Point(8, 8));
-				}
 			}
+			string str = $"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
+						 $"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
+						 $"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
+			e.Graphics.DrawString(str, Font, new SolidBrush(ForeColor), new Point(8, 8));
 		}
 		public void UpdateGeometryRouting()
 		{

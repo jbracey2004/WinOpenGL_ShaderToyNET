@@ -148,13 +148,14 @@ namespace WinOpenGL_ShaderToy
 							{
 								Console.WriteLine(err);
 							}
+							Application.DoEvents();
+							Thread.Sleep(10);
 						}
 					}
 					idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
 				}
 				idxGroup = idxGroup % Math.Max(EntryGroups.Count, 1);
 				Application.DoEvents();
-				Thread.Sleep(50);
 			}
 		}
 		public void Write(object obj, string Label)
