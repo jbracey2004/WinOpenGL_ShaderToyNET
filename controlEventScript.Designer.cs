@@ -60,7 +60,7 @@ namespace WinOpenGL_ShaderToy
         '\''};
 			this.txtSource.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
     "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
-			this.txtSource.AutoScrollMinSize = new System.Drawing.Size(25, 12);
+			this.txtSource.AutoScrollMinSize = new System.Drawing.Size(0, 12);
 			this.txtSource.BackBrush = null;
 			this.txtSource.BackColor = System.Drawing.Color.Black;
 			this.txtSource.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
@@ -85,6 +85,7 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("txtSource.ServiceColors")));
 			this.txtSource.Size = new System.Drawing.Size(575, 136);
 			this.txtSource.TabIndex = 1;
+			this.txtSource.WordWrap = true;
 			this.txtSource.Zoom = 100;
 			// 
 			// panelMain

@@ -65,7 +65,9 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 420);
 			this.panelMain.Content.TabIndex = 2;
+			this.panelMain.Content.Paint += new System.Windows.Forms.PaintEventHandler(this.panelMain_Content_Paint);
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -75,7 +77,7 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Size = new System.Drawing.Size(800, 450);
 			// 
 			// panelMain.Status
-			//
+			// 
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.btnConfigure);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using static modCommon.modWndProcInterop.InputInterface;
 
@@ -179,6 +180,7 @@ namespace modCommon
 				public int ID { get; set; }
 				public int InputFlags { get; set; }
 				public double Distance { get; set; }
+				public double DistanceUV { get; set; }
 				public List<TouchPoint> TouchPoints { get; private set; } = new List<TouchPoint>();
 				public TouchPoint CurrentTouchPoint { get => ((TouchPoints.Count > 0) ? (TouchPoints[TouchPoints.Count - 1]): (TouchPoint.Empty)); }
 				public TouchPoint PreviousTouchPoint { get => ((TouchPoints.Count > 1) ? (TouchPoints[TouchPoints.Count - 2]) : (TouchPoint.Empty)); }
@@ -194,6 +196,18 @@ namespace modCommon
 						return ret;
 					}
 				}
+				public PointF MoveDeltaUV
+				{
+					get
+					{
+						PointF ret = PointF.Empty;
+						if (TouchPoints.Count < 2) return ret;
+						PointF pt1 = TouchPoints[TouchPoints.Count - 2].UV;
+						PointF pt2 = TouchPoints[TouchPoints.Count - 1].UV;
+						ret = new PointF(pt2.X - pt1.X, pt2.Y - pt1.Y);
+						return ret;
+					}
+				}
 				public Point MoveNetDelta
 				{
 					get
@@ -203,6 +217,18 @@ namespace modCommon
 						Point pt1 = TouchPoints[0].Location;
 						Point pt2 = TouchPoints[TouchPoints.Count - 1].Location;
 						ret = new Point(pt2.X - pt1.X, pt2.Y - pt1.Y);
+						return ret;
+					}
+				}
+				public PointF MoveNetDeltaUV
+				{
+					get
+					{
+						PointF ret = PointF.Empty;
+						if (TouchPoints.Count < 2) return ret;
+						PointF pt1 = TouchPoints[0].UV;
+						PointF pt2 = TouchPoints[TouchPoints.Count - 1].UV;
+						ret = new PointF(pt2.X - pt1.X, pt2.Y - pt1.Y);
 						return ret;
 					}
 				}
@@ -230,6 +256,33 @@ namespace modCommon
 			public EventHandler<InputEventArgs> TouchStart;
 			public EventHandler<InputEventArgs> TouchMove;
 			public EventHandler<InputEventArgs> TouchEnd;
+			public InputEventArgs RaiseTouchStartArgs = null;
+			public InputEventArgs RaiseTouchMoveArgs = null;
+			public InputEventArgs RaiseTouchEndArgs = null;
+			public void ResetRaiseEventArgs() 
+			{ 
+				RaiseTouchStartArgs = null;
+				RaiseTouchMoveArgs = null;
+				RaiseTouchEndArgs = null; 
+			}
+			public void RaiseEvents()
+			{
+				if (RaiseTouchStartArgs != null && TouchStart != null) 
+				{
+					TouchStart.Invoke(Widget, RaiseTouchStartArgs);
+					RaiseTouchStartArgs = null; 
+				}
+				if (RaiseTouchMoveArgs != null && TouchMove != null) 
+				{
+					TouchMove.Invoke(Widget, RaiseTouchMoveArgs);
+					RaiseTouchMoveArgs = null; 
+				}
+				if (RaiseTouchEndArgs != null && TouchEnd != null) 
+				{
+					TouchEnd.Invoke(Widget, RaiseTouchEndArgs);
+					RaiseTouchEndArgs = null; 
+				}
+			}
 			private IntPtr hookMouse;
 			private IntPtr handleModule;
 			private uint ptrThreadID;
@@ -361,28 +414,39 @@ namespace modCommon
 						instTouch.ID = (int)touchI.dwID;
 					}
 					TouchPoint touchPt = new TouchPoint() { Location = pt, ContactSize = sz, ControlSize = sender.Size };
-					instTouch.TouchPoints.Add(touchPt);
-					Point mov = instTouch.MoveDelta;
-					double dist = Math.Sqrt(mov.X*mov.X + mov.Y*mov.Y);
-					instTouch.Distance += dist;
+					Point ptDiff = Point.Subtract(instTouch.CurrentTouchPoint.Location, new Size(pt));
+					if (instTouch.TouchPoints.Count == 0 || !ptDiff.IsEmpty)
+					{
+						instTouch.TouchPoints.Add(touchPt);
+						Point mov = instTouch.MoveDelta;
+						PointF movUV = instTouch.MoveDeltaUV;
+						double dist = Math.Sqrt(mov.X * mov.X + mov.Y * mov.Y);
+						double distUV = Math.Sqrt(movUV.X * movUV.X + movUV.Y * movUV.Y);
+						instTouch.Distance += dist;
+						instTouch.DistanceUV += distUV;
+					}
 					InputEventArgs Args = new InputEventArgs() { InputInterface = TouchInterface, 
 																 InputTouch = instTouch,
 																 InputPoint = touchPt };
 					if (((int)touchI.dwFlags & (int)WinTouch.Down) != 0)
 					{
 						TouchInterface.Touches.Add(instTouch);
-						TouchInterface.TouchStart?.Invoke(sender, Args);
+						TouchInterface.RaiseTouchStartArgs = Args;
 					}
 					else if (((int)touchI.dwFlags & (int)WinTouch.Up) != 0)
 					{
-						TouchInterface.TouchEnd?.Invoke(sender, Args);
+						TouchInterface.RaiseTouchEndArgs = Args;
 						TouchInterface.Touches.Remove(instTouch);
 						instTouch.TouchPoints.Clear();
 						instTouch = null;
+						GC.Collect();
 					}
 					else if (((int)touchI.dwFlags & (int)WinTouch.Move) != 0)
 					{
-						TouchInterface.TouchMove?.Invoke(sender, Args);
+						if(!ptDiff.IsEmpty)
+						{
+							TouchInterface.RaiseTouchMoveArgs = Args;
+						}
 					}
 					else
 					{

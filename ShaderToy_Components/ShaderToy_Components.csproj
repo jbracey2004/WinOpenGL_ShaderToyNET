@@ -95,6 +95,12 @@
     <Compile Include="controlProjectObject.Designer.cs">
       <DependentUpon>controlProjectObject.cs</DependentUpon>
     </Compile>
+    <Compile Include="controlTransparent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controlTransparent.Designer.cs">
+      <DependentUpon>controlTransparent.cs</DependentUpon>
+    </Compile>
     <Compile Include="modGeneralUtils.cs" />
     <Compile Include="modProject.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -106,6 +112,9 @@
   <ItemGroup>
     <EmbeddedResource Include="controlProjectObject.resx">
       <DependentUpon>controlProjectObject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controlTransparent.resx">
+      <DependentUpon>controlTransparent.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

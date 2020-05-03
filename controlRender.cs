@@ -1,7 +1,10 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.ES10;
+using ShaderToy_Components;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using static modCommon.modWndProcInterop;
@@ -18,25 +21,19 @@ namespace WinOpenGL_ShaderToy
 		private InputInterface interfaceTouch;
 		private void InitializeComponent()
 		{
-			this.SuspendLayout();
 			// 
 			// controlRender
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.BackColor = System.Drawing.Color.Black;
 			this.ForeColor = System.Drawing.Color.White;
 			this.Name = "controlRender";
-			this.Size = new System.Drawing.Size(260, 260);
+			this.Size = new System.Drawing.Size(400, 400);
 			this.ResumeLayout(false);
+
 		}
 		public controlRender() : base()
 		{
 			InitializeComponent();
-		}
-		protected override void Dispose(bool disposing)
-		{
-			Context.Dispose();
-			base.Dispose(disposing);
 		}
 		protected override void OnHandleCreated(EventArgs e)
 		{
@@ -65,18 +62,17 @@ namespace WinOpenGL_ShaderToy
 			interfaceTouch.Dispose();
 			interfaceTouch = null;
 		}
-		public new bool DoubleBuffered { get => base.DoubleBuffered; set { base.DoubleBuffered = value; } } 
 		private void TouchInterface_TouchStart(object sender, InputEventArgs e)
 		{
-			PointerStart?.Invoke(this, e);
+			PointerStart?.Invoke(sender, e);
 		}
 		private void TouchInterface_TouchMove(object sender, InputEventArgs e)
 		{
-			PointerMove?.Invoke(this, e);
+			PointerMove?.Invoke(sender, e);
 		}
 		private void TouchInterface_TouchEnd(object sender, InputEventArgs e)
 		{
-			PointerEnd?.Invoke(this, e);
+			PointerEnd?.Invoke(sender, e);
 		}
 		public TouchInput MouseTouch { get; private set; } = new TouchInput();
 		protected override void OnMouseDown(MouseEventArgs e)
@@ -84,6 +80,7 @@ namespace WinOpenGL_ShaderToy
 			MouseTouch.ID = -1;
 			MouseTouch.InputFlags = (int)InputFlags_MouseButtons(e.Button);
 			MouseTouch.TouchPoints.Clear();
+			GC.Collect();
 			TouchPoint Pt = new TouchPoint() { ControlSize = Size, Location = e.Location };
 			MouseTouch.TouchPoints.Add(Pt);
 			PointerStart?.Invoke(this, new InputEventArgs() { InputTouch = MouseTouch, InputPoint = Pt } );
@@ -91,15 +88,22 @@ namespace WinOpenGL_ShaderToy
 		}
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			MouseTouch.InputFlags = (int)InputFlags_MouseButtons(e.Button);
-			TouchPoint Pt = new TouchPoint() { ControlSize = Size, Location = e.Location };
-			MouseTouch.TouchPoints.Add(Pt);
-			Point mov = MouseTouch.MoveDelta;
-			double dist = Math.Sqrt(mov.X * mov.X + mov.Y * mov.Y);
-			MouseTouch.Distance += dist;
-			PointerMove?.Invoke(this, new InputEventArgs() { InputTouch = MouseTouch, InputPoint = Pt } );
-			if (MouseTouch.ID != -1) { MouseTouch.TouchPoints.Clear(); MouseTouch.Distance = 0; MouseTouch.TouchPoints.Add(Pt); }
-			base.OnMouseMove(e);
+			Point ptDiff = Point.Subtract(MouseTouch.CurrentTouchPoint.Location, new Size(e.Location));
+			if (!ptDiff.IsEmpty)
+			{
+				MouseTouch.InputFlags = (int)InputFlags_MouseButtons(e.Button);
+				TouchPoint Pt = new TouchPoint() { ControlSize = Size, Location = e.Location };
+				MouseTouch.TouchPoints.Add(Pt);
+				Point mov = MouseTouch.MoveDelta;
+				PointF movUV = MouseTouch.MoveDeltaUV;
+				double dist = Math.Sqrt(mov.X * mov.X + mov.Y * mov.Y);
+				double distUV = Math.Sqrt(movUV.X * movUV.X + movUV.Y * movUV.Y);
+				MouseTouch.Distance += dist;
+				MouseTouch.DistanceUV += distUV;
+				PointerMove?.Invoke(this, new InputEventArgs() { InputTouch = MouseTouch, InputPoint = Pt });
+				if (MouseTouch.ID != -1) { MouseTouch.TouchPoints.Clear(); MouseTouch.Distance = 0; MouseTouch.DistanceUV = 0; MouseTouch.TouchPoints.Add(Pt); }
+				base.OnMouseMove(e);
+			}
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
@@ -110,14 +114,20 @@ namespace WinOpenGL_ShaderToy
 			PointerEnd?.Invoke(this, new InputEventArgs() { InputTouch = MouseTouch, InputPoint = Pt } );
 			MouseTouch.TouchPoints.Clear();
 			MouseTouch.Distance = 0;
+			MouseTouch.DistanceUV = 0;
 			MouseTouch.ID = 0;
+			GC.Collect();
 			base.OnMouseUp(e);
 		}
 		protected override void WndProc(ref Message m)
 		{
-			bool bolHandled = WinProc_HandleTouch(this, ref m, ref interfaceTouch);
-			if (m.Result.ToInt64() != 0) return;
-			base.WndProc(ref m);
+			bool bolHandled = false;
+			if (interfaceTouch != null)
+			{
+				bolHandled = WinProc_HandleTouch(this, ref m, ref interfaceTouch);
+				if (bolHandled) interfaceTouch.RaiseEvents();
+			}
+			if(!bolHandled) base.WndProc(ref m);
 		}
 	}
 }

@@ -42,6 +42,7 @@ namespace WinOpenGL_ShaderToy
 				windowProject.Dispose();
 				windowProject = null;
 			}
+			GC.Collect();
 		}
 		private void MenuWindows_Closing(object sender, ToolStripDropDownClosingEventArgs e)
 		{
@@ -65,6 +66,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			CloseAllForms();
 			projectMain.Dispose();
+			GC.Collect();
 			projectMain = new clsProject();
 			windowProject.Project = projectMain;
 			windowProject.UpdateProjectTree();
@@ -79,6 +81,7 @@ namespace WinOpenGL_ShaderToy
 			writeBin.Serialize(file, projectMain.Xml);
 			file.Close();
 			file.Dispose();
+			GC.Collect();
 		}
 		private void menuFile_LoadProject_Click(object sender, EventArgs e)
 		{
@@ -93,6 +96,7 @@ namespace WinOpenGL_ShaderToy
 			file.Dispose();
 			CloseAllForms();
 			projectMain.Dispose();
+			GC.Collect();
 			projectMain = new clsProject();
 			XmlProject.InitObject(ref projectMain);
 			windowProject.Project = projectMain;
@@ -106,6 +110,7 @@ namespace WinOpenGL_ShaderToy
 				frm.Close();
 				frm.Dispose();
 			}
+			GC.Collect();
 		}
 	}
 }

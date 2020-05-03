@@ -253,6 +253,10 @@ namespace WinOpenGL_ShaderToy
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{
 			UpdateLists();
+			if(RenderSubject != null)
+			{
+				RenderSubject.LinkShaderUniforms();
+			}
 		}
 		private void UpdateLists()
 		{

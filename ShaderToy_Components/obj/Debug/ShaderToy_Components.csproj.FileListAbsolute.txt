@@ -11,3 +11,4 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderTo
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.csproj.CopyComplete
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.pdb
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.controlTransparent.resources

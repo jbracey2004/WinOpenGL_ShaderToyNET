@@ -10,38 +10,25 @@ using System.Windows.Forms;
 using FastColoredTextBoxNS;
 using System.Threading;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Operations;
-using System.Windows.Forms.DataVisualization.Charting;
-using System.Runtime.Remoting.Messaging;
+using System.Collections;
+using System.Diagnostics;
 
 namespace WinOpenGL_ShaderToy
 {
 	public partial class controlConsole : UserControl
 	{
-		protected static string strParsePattern = @"(?<PromptText>((.*?)(\s{0,}))+)\s" +
-												  @"(?<RecallText>((.*?)(\s{0,}))+)\s\s+" +
-												  @"(?<OutputText>((.*?)(\s{0,}))+)\s";
 		public class ConsoleEntry
 		{
 			public FastColoredTextBox Console;
-			public bool Written = false;
-			public bool Append = false;
+			public int Occurances { get; set; } = 0;
+			public bool Written { get; set; } = false;
+			public bool Append { get; set; } = false;
 			public string PromptText { get; set; }
 			public string RecallText { get; set; }
 			public string OutputText { get; set; }
 			public string Text
 			{
 				get => $"{PromptText} {RecallText}\r\n{OutputText}\r\n";
-				set
-				{
-					Match match = Regex.Match(value, strParsePattern);
-					if (!match.Success) return;
-					if (match.Groups["PromptText"] != null) PromptText = match.Groups["PromptText"].Value;
-					if (match.Groups["RecallText"] != null) PromptText = match.Groups["RecallText"].Value;
-					if (match.Groups["OutputText"] != null) PromptText = match.Groups["OutputText"].Value;
-				}
 			}
 			public string DisplayableText => Text.Replace('\0', ' ');
 			public override string ToString()
@@ -52,17 +39,17 @@ namespace WinOpenGL_ShaderToy
 		public class ConsoleEntryGroup
 		{
 			public FastColoredTextBox Console;
-			public string LastWrittenText = "";
+			public string LastWrittenText { get; set; } = "";
 			public int LastWrittenLocation(bool Append)
 			{
 				int intRet = -1;
-				string strTxt = @Console.Text.Replace('\0', ' ');
-				string strL = @LastWrittenText.Replace('\0', ' ');
-				if (!string.IsNullOrEmpty(LastWrittenText)) 
+				string strTxt = @Console.Text;
+				string strL = @LastWrittenText;
+				if (!string.IsNullOrEmpty(LastWrittenText))
 				{
 					intRet = (Append) ? (strTxt.LastIndexOf(strL)) : (strTxt.IndexOf(strL));
 				}
-				if(intRet == -1) intRet = (Append) ? (strTxt.Length) : (0);
+				if (intRet == -1) intRet = (Append) ? (strTxt.Length) : (0);
 				return intRet;
 			}
 			public int LastWrittenLength() { return ((!string.IsNullOrEmpty(LastWrittenText)) ? (@LastWrittenText.Length) : (0)); }
@@ -71,20 +58,21 @@ namespace WinOpenGL_ShaderToy
 			{
 				get
 				{
-					if(Entries.Count <= 0) return "";
+					if (Entries.Count <= 0) return "";
 					ConsoleEntry tmp = Entries[Entries.Count - 1];
 					return $"{tmp.PromptText} {tmp.RecallText} : {tmp.OutputText}";
 				}
 			}
-			public ConsoleEntry CurrentEntry { get => (Entries.Count > 0) ? (Entries[Entries.Count-1]) : (null); }
+			public ConsoleEntry CurrentEntry { get => (Entries.Count > 0) ? (Entries[Entries.Count - 1]) : (null); }
 			public List<ConsoleEntry> Entries { get; private set; } = new List<ConsoleEntry>();
-			public string Text { get => Entries.Aggregate("", (str, itm) => str += itm.Text); }
+			public string Text => Entries.Aggregate("", (str, itm) => str += string.Join("", ArrayList.Repeat(itm.Text, itm.Occurances).ToArray()));
 			public string DisplayableText { get => Text.Replace('\0', ' '); }
+			public int EntryCount { get => Entries.Aggregate(0, (total, itm) => total += itm.Occurances); }
 			public override string ToString()
 			{
 				if (Entries.Count <= 0) return "";
 				ConsoleEntry tmp = Entries[Entries.Count - 1];
-				return $"{tmp.PromptText} {tmp.RecallText}{((Entries.Count > 1)?($" x{Entries.Count}"):(""))}\r\n{tmp.OutputText}";
+				return $"{tmp.PromptText} {tmp.RecallText}{((EntryCount > 1)?($" x{EntryCount}"):(""))}\r\n{tmp.OutputText}";
 			}
 		}
 		public class ConsoleActionArgs : EventArgs
@@ -140,6 +128,7 @@ namespace WinOpenGL_ShaderToy
 									Output.BeginUpdate();
 									Output.InsertTextAndRestoreSelection(rangeInsert, str, null);
 									Output.EndUpdate();
+									if (entry.Append) Output.DoRangeVisible(rangeInsert);
 									entry.Written = true;
 									group.LastWrittenText = str;
 								}));
@@ -149,7 +138,7 @@ namespace WinOpenGL_ShaderToy
 								Console.WriteLine(err);
 							}
 							Application.DoEvents();
-							Thread.Sleep(10);
+							Thread.Sleep(50);
 						}
 					}
 					idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
@@ -178,6 +167,9 @@ namespace WinOpenGL_ShaderToy
 			ConsoleEntry entry = null;
 			if (!string.IsNullOrEmpty(prompt) && !string.IsNullOrEmpty(scope) && !string.IsNullOrEmpty(message))
 			{
+				prompt = prompt.Trim('\0', '\r', '\n');
+				scope = scope.Trim('\0', '\r', '\n');
+				message = message.Trim('\0', '\r', '\n');
 				group = EntryGroups.Find(itm => itm.ScopeText == scope);
 				if (group == null)
 				{
@@ -188,15 +180,23 @@ namespace WinOpenGL_ShaderToy
 					};
 					EntryGroups.Add(group);
 				}
-				entry = new ConsoleEntry()
+				entry = group.Entries.Find(itm => itm.OutputText == message);
+				if(entry == null)
 				{
-					Console = Output,
-					Append = OutputAppend,
-					PromptText = prompt.Trim('\0', '\r', '\n'),
-					RecallText = scope.Trim('\0', '\r', '\n'),
-					OutputText = message.Trim('\0', '\r', '\n')
-				};
-				group.Entries.Add(entry);
+					entry = new ConsoleEntry()
+					{
+						Console = Output,
+						Append = OutputAppend,
+						PromptText = prompt,
+						RecallText = scope,
+						OutputText = message
+					};
+					group.Entries.Add(entry);
+				} else
+				{
+					entry.Written = false;
+				}
+				entry.Occurances++;
 			}
 		}
 		public string Prompt(string message, string RetainText)
@@ -270,6 +270,45 @@ namespace WinOpenGL_ShaderToy
 				}
 			}
 			Application.DoEvents();
+		}
+		private void Output_KeyPressing(object sender, KeyPressEventArgs e)
+		{
+			e.Handled = true;
+		}
+		private static TextStyle styleBracketMatch = new TextStyle(new SolidBrush(Color.FromArgb(0,0,0)), 
+																   new SolidBrush(Color.FromArgb(255,255,0)),
+																   FontStyle.Regular);
+		private Range BracketRange = null;
+		private void Output_SelectionChanged(object sender, EventArgs e)
+		{
+			if (BracketRange != null) BracketRange.ClearStyle(styleBracketMatch);
+			string str = @Output.Text;
+			Range range = Output.Selection;
+			int st = Output.PlaceToPosition(range.Start);
+			int ed = Output.PlaceToPosition(range.End);
+			int intOpen; int intClose;
+			int bracketCount = 1;
+			while (bracketCount > 0)
+			{
+				intOpen = str.Substring(0, st).LastIndexOf('{');
+				intClose = str.Substring(0, st).LastIndexOf('}');
+				if (intOpen > intClose) { st = intOpen; bracketCount--; }
+				else if (intClose > intOpen) { st = intClose; bracketCount++; }
+				else bracketCount = -1;
+			}
+			if (bracketCount != 0) return;
+			bracketCount = 1;
+			while (bracketCount > 0)
+			{
+				intOpen = str.IndexOf('{', ed);
+				intClose = str.IndexOf('}', ed);
+				if (intOpen < intClose && intOpen >= 0) { ed = intOpen + 1; bracketCount++; }
+				else if (intClose < intOpen && intClose >= 0) { ed = intClose + 1; bracketCount--; }
+				else bracketCount = -1;
+			}
+			if (bracketCount != 0) return;
+			BracketRange = new Range(Output, Output.PositionToPlace(st), Output.PositionToPlace(ed));
+			BracketRange.SetStyle(styleBracketMatch);
 		}
 		private bool bolSelectionLock = false;
 		private void Input_SelectionChanged(object sender, EventArgs e)
@@ -371,6 +410,7 @@ namespace WinOpenGL_ShaderToy
 			Input.Clear();
 			Output.Clear();
 			EntryGroups.Clear();
+			GC.Collect();
 		}
 		public new void Dispose()
 		{
@@ -386,6 +426,7 @@ namespace WinOpenGL_ShaderToy
 				while (threadPromptLoop.IsAlive) { }
 			}
 			EntryGroups.Clear();
+			GC.Collect();
 			base.Dispose();
 		}
 	}

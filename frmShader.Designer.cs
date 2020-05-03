@@ -65,7 +65,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// panelMain
 			// 
-			
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			// 
 			// panelMain.Content
 			// 
@@ -79,6 +79,7 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 419);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -88,7 +89,7 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Size = new System.Drawing.Size(800, 449);
 			// 
 			// panelMain.Status
-			//
+			// 
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lstShaderType);
 			this.panelMain.Status.Controls.Add(this.btnLoad);
@@ -100,6 +101,7 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Status.Size = new System.Drawing.Size(800, 30);
 			this.panelMain.Status.TabIndex = 3;
 			this.panelMain.TabIndex = 4;
+			this.panelMain.Timer_IntervalUpdate = null;
 			// 
 			// panelSourceEdit
 			// 
@@ -139,6 +141,7 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtSource.DisabledColor = System.Drawing.Color.Gray;
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSource.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtSource.ForeColor = System.Drawing.Color.LightGray;
 			this.txtSource.IndentBackColor = System.Drawing.Color.Transparent;
 			this.txtSource.IsReplaceMode = false;

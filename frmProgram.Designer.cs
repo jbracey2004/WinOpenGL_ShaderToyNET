@@ -30,6 +30,7 @@
 		{
 			ShaderToy_Components.controlProjectObject.clsDesigner clsDesigner1 = new ShaderToy_Components.controlProjectObject.clsDesigner();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.panelMain = new ShaderToy_Components.controlProjectObject();
 			this.datagridShaderLinks = new System.Windows.Forms.DataGridView();
 			this.columnShader = new System.Windows.Forms.DataGridViewComboBoxColumn();
@@ -56,7 +57,7 @@
 			// 
 			// panelMain
 			// 
-			
+			this.panelMain.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			// 
 			// panelMain.Content
 			// 
@@ -70,6 +71,7 @@
 			this.panelMain.Content.Size = new System.Drawing.Size(423, 250);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -90,16 +92,25 @@
 			this.panelMain.Status.Size = new System.Drawing.Size(423, 30);
 			this.panelMain.Status.TabIndex = 3;
 			this.panelMain.TabIndex = 3;
+			this.panelMain.Timer_IntervalUpdate = null;
 			// 
 			// datagridShaderLinks
 			// 
 			this.datagridShaderLinks.AllowUserToResizeColumns = false;
 			this.datagridShaderLinks.AllowUserToResizeRows = false;
 			this.datagridShaderLinks.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-			this.datagridShaderLinks.BackgroundColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.datagridShaderLinks.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
 			this.datagridShaderLinks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.datagridShaderLinks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnShader});
+			dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlDark;
+			dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.Window;
+			dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+			dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+			dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+			this.datagridShaderLinks.DefaultCellStyle = dataGridViewCellStyle1;
 			this.datagridShaderLinks.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.datagridShaderLinks.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnF2;
 			this.datagridShaderLinks.Location = new System.Drawing.Point(0, 0);
@@ -150,8 +161,8 @@
 			this.dataLinkStatus.Location = new System.Drawing.Point(0, 23);
 			this.dataLinkStatus.Name = "dataLinkStatus";
 			this.dataLinkStatus.ReadOnly = true;
-			dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataLinkStatus.RowsDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataLinkStatus.RowsDefaultCellStyle = dataGridViewCellStyle2;
 			this.dataLinkStatus.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dataLinkStatus.Size = new System.Drawing.Size(421, 1);
 			this.dataLinkStatus.TabIndex = 0;

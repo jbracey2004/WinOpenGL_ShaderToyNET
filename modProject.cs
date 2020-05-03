@@ -34,6 +34,7 @@ using System.Text;
 using static modCommon.modWndProcInterop;
 using System.Threading.Tasks;
 using modCommon;
+using System.Web.Configuration;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -101,8 +102,10 @@ namespace WinOpenGL_ShaderToy
 			};
 			string[] aryImports = new string[] 
 			{
-				"System", 
-				"modCommon", 
+				"System",
+				"System.Drawing",
+				"modCommon",
+				"modProject.clsEventScript.clsEventScriptContext_Functions",
 				"modCommon.modWndProcInterop", "modCommon.modWndProcInterop.InputInterface"
 			};
 			GenericScriptOptions = ScriptOptions.Default
@@ -159,7 +162,6 @@ namespace modProject
 			writer.Close();
 			writer.Dispose();
 			TextStream.Clear();
-			TextStream = null;
 			return strRet;
 		}
 		public class Xml_Project
@@ -180,7 +182,8 @@ namespace modProject
 					obj.ProjectObjects.Add(objNew);
 					lstTags.Add(new Xml_KeyValuePair<Xml_ProjectObject, clsProjectObject>(itm, objNew));
 				}
-				foreach(var itrTag in lstTags)
+				lstTags.Sort((a, b) => Math.Sign(a.Value.ProjectObjType - b.Value.ProjectObjType));
+				foreach (var itrTag in lstTags)
 				{
 					itrTag.Key.UpdateObject(ref itrTag.Value);
 				}
@@ -233,17 +236,21 @@ namespace modProject
 				clsRender rend = obj as clsRender;
 				if (rend == null) return;
 				rend.RenderInterval = RenderInterval;
-				rend.Geometry = clsProjectObject.All.First(itm => (itm.ToString() == Geometry)) as clsGeometry;
-				rend.Program = clsProjectObject.All.First(itm => (itm.ToString() == Program)) as clsProgram;
+				rend.Geometry = clsProjectObject.All.FirstOrDefault(itm => (itm.ToString() == Geometry)) as clsGeometry;
+				rend.Program = clsProjectObject.All.FirstOrDefault(itm => (itm.ToString() == Program)) as clsProgram;
 				if(rend.Geometry != null)
 				{
 					clsVertexDescription Desc = rend.Geometry.VertexDescription;
-					foreach(var itr in GeometryShaderLinks)
+					if(Desc != null)
 					{
-						clsVertexDescriptionComponent compDesc = Desc.First(itm => (itm.Index == itr.Value));
-						if(compDesc == null) continue;
-						rend.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(itr.Key, compDesc));
+						foreach (var itr in GeometryShaderLinks)
+						{
+							clsVertexDescriptionComponent compDesc = Desc.FirstOrDefault(itm => (itm.Index == itr.Value));
+							if (compDesc == null) continue;
+							rend.GeometryShaderLinks.Add(new KeyValuePair<string, clsVertexDescriptionComponent>(itr.Key, compDesc));
+						}
 					}
+					rend.Geometry.glUpdateBuffers();
 				}
 				foreach(var itr in Uniforms)
 				{
@@ -260,6 +267,7 @@ namespace modProject
 					script.Compile();
 					rend.EventScripts.Add(script);
 				}
+				rend.LinkShaderUniforms();
 			}
 			public override string ToString()
 			{
@@ -891,73 +899,177 @@ namespace modProject
 		{
 			return EventScript_ToString(this);
 		}
-
-		public class clsEventScriptContext
+		public static class clsEventScriptContext_Functions
 		{
-			[Browsable(false)]
-			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
-			[Browsable(false)]
-			public event delegateArgumentsUpdated ArgumentsUpdated;
-			public clsRender RenderSubject { get; set; }
-			public clsUniformSetCollection Uniforms => new clsUniformSetCollection(RenderSubject.Uniforms);
-			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
-			public controlConsole Console
+			public static double pi => Math.PI;
+			public static double tau => pi * 2;
+			public static double sin(double x) => Math.Sin(x);
+			public static double cos(double x) => Math.Cos(x);
+			public static double tan(double x) => Math.Tan(x);
+			public static double sinh(double x) => Math.Sinh(x);
+			public static double cosh(double x) => Math.Cosh(x);
+			public static double tanh(double x) => Math.Tanh(x);
+			public static double arcsin(double x) => Math.Asin(x);
+			public static double arccos(double x) => Math.Acos(x);
+			public static double arctan(double x) => Math.Atan(x);
+			public static double arctan(double y, double x) => Math.Atan2(y, x);
+			public static double sqrt(double x) => Math.Sqrt(x);
+			public static double pow(double b, double exp) => Math.Pow(b, exp);
+			public static double e => Math.E;
+			public static double exp(double x) => Math.Exp(x);
+			public static double ln(double x) => Math.Log(x);
+			public static double log(double x, double b) => Math.Log(x, b);
+			public static double log(double x) => Math.Log10(x);
+			public static double abs(double x) => Math.Abs(x);
+			public static double sgn(double x) => Math.Sign(x);
+			public static double[] Vals(object[] args)
 			{
-				get
-				{
-					if (RenderSubject == null) return null;
-					frmRenderConfigure frm = frmRenderConfigure.FormWithSubjectObject(RenderSubject);
-					if (frm == null) return null;
-					return frm.Console;
-				}
+				return Array.ConvertAll(args, itm => 
+				{ 
+					double.TryParse(itm.ToString(), out double itmRet); 
+					return itmRet; 
+				}).ToArray();
 			}
-			public double pi => Math.PI;
-			public double tau => pi * 2;
-			public double sin(double x) => Math.Sin(x);
-			public double cos(double x) => Math.Cos(x);
-			public double tan(double x) => Math.Tan(x);
-			public double sinh(double x) => Math.Sinh(x);
-			public double cosh(double x) => Math.Cosh(x);
-			public double tanh(double x) => Math.Tanh(x);
-			public double arcsin(double x) => Math.Asin(x);
-			public double arccos(double x) => Math.Acos(x);
-			public double arctan(double x) => Math.Atan(x);
-			public double arctan(double y, double x) => Math.Atan2(y, x);
-			public double sqrt(double x) => Math.Sqrt(x);
-			public double pow(double b, double exp) => Math.Pow(b, exp);
-			public double e => Math.E;
-			public double exp(double x) => Math.Exp(x);
-			public double ln(double x) => Math.Log(x);
-			public double log(double x, double b) => Math.Log(x, b);
-			public double log(double x) => Math.Log10(x);
-			public double abs(double x) => Math.Abs(x);
-			public double sgn(double x) => Math.Sign(x);
-			public object[] Vec(int numElems)
+			public static object[] Vec(int numElems)
 			{
 				return ArrayList.Repeat(0, numElems).ToArray();
 			}
-			public object[] Vec<T>(params T[] args)
+			public static object[] Vec<T>(params T[] args)
 			{
 				return Array.ConvertAll(args, itm => (object)itm);
 			}
-			public object[] Vec(int Len, object Val)
+			public static object[] Vec(int Len, object Val)
 			{
 				return ArrayList.Repeat(Val, Len).ToArray();
 			}
-			public object Vec_Elem(object[] args, int index)
+			public static object Vec_Elem(object[] args, int index)
 			{
 				object objRet = 0;
 				if (index < args.Length) objRet = args[index];
 				return objRet;
 			}
-			public void Vec_Elem<T>(ref object[] args, int index, T value)
+			public static void Vec_Elem<T>(ref object[] args, int index, T value)
 			{
-				if(index < args.Length)
+				if (index < args.Length)
 				{
 					args[index] = value;
 				}
 			}
-			public object[] Matrix(int numCols, int numRows)
+			public static object[] Vec_Sum(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA + dB;
+				}
+				return VecRet;
+			}
+			public static object[] Vec_Diff(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA - dB;
+				}
+				return VecRet;
+			}
+			public static object[] Vec_Div(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA / dB;
+				}
+				return VecRet;
+			}
+			public static object[] Vec_Recipical(object[] Vec)
+			{
+				object[] VecRet = new object[Vec.Length];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
+					VecRet[itr] = 1.0 / dVec;
+				}
+				return VecRet;
+			}
+			public static object Vec_Dot(object[] VecA, object[] VecB)
+			{
+				double fRet = 0;
+				for (int itr = 0; itr < Math.Max(VecA.Length, VecB.Length); itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					fRet += dA * dB;
+				}
+				return fRet;
+			}
+			public static object[] Vec_Mul(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
+					VecRet[itr] = dA * dB;
+				}
+				return VecRet;
+			}
+			public static object[] Vec_Mul(object Val, object[] Vec)
+			{
+				object[] VecRet = new object[Vec.Length];
+				double.TryParse(Val.ToString(), out double dVal);
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
+					VecRet[itr] = dVal * dVec;
+				}
+				return VecRet;
+			}
+			public static object[] Vec_Mul(object[] Vec, int numColumns, int numRows, object[] matrix)
+			{
+				return Matrix_Mul(1, Vec.Length, Vec, Math.Min(Vec.Length, numColumns), numRows, matrix);
+			}
+			public static object[] Vec_Mul(int numColumns, int numRows, object[] matrix, object[] Vec)
+			{
+				return Matrix_Mul(numColumns, numRows, matrix, Math.Min(Vec.Length, numRows), 1, Vec);
+			}
+			public static object Vec_Len(object[] Vec)
+			{
+				double.TryParse(Vec_Dot(Vec, Vec).ToString(), out double dDot);
+				return Math.Sqrt(dDot);
+			}
+			public static object[] Vec_Norm(object[] Vec)
+			{
+				double.TryParse(Vec_Len(Vec).ToString(), out double dLen);
+				return Vec_Mul(1.0 / dLen, Vec);
+			}
+			public static object Vec_Angle(object[] VecA, object[] VecB)
+			{
+				double.TryParse(Vec_Dot(VecA, VecB).ToString(), out double dDot);
+				double.TryParse(Vec_Len(VecA).ToString(), out double dLenA);
+				double.TryParse(Vec_Len(VecB).ToString(), out double dLenB);
+				return Math.Acos(dDot / (dLenA * dLenB));
+			}
+			public static object[] Vec_Cross(object[] VecA, object[] VecB)
+			{
+				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
+				for (int itr = 0; itr < VecRet.Length; itr++)
+				{
+					double.TryParse(Vec_Elem(VecA, (itr + 1) % (VecRet.Length)).ToString(), out double dA);
+					double.TryParse(Vec_Elem(VecB, (itr + 2) % (VecRet.Length)).ToString(), out double dB);
+					double.TryParse(Vec_Elem(VecB, (itr + 1) % (VecRet.Length)).ToString(), out double dnA);
+					double.TryParse(Vec_Elem(VecA, (itr + 2) % (VecRet.Length)).ToString(), out double dnB);
+					VecRet[itr] = (dA * dB) - (dnA * dnB);
+				}
+				return VecRet;
+			}
+			public static object[] Matrix(int numCols, int numRows)
 			{
 				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
 				for (int itr = 0; itr < objRet.Length; itr++)
@@ -971,15 +1083,15 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public object[] Matrix<T>(int numCols, int numRows, params T[][] args)
+			public static object[] Matrix<T>(int numCols, int numRows, params T[][] args)
 			{
 				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
-				for(int idxRow = 0; idxRow < Math.Min(numRows, args.Length); idxRow++)
+				for (int idxRow = 0; idxRow < Math.Min(numRows, args.Length); idxRow++)
 				{
-					for(int idxCol = 0; idxCol < Math.Min(numCols, args[idxRow].Length); idxCol++)
+					for (int idxCol = 0; idxCol < Math.Min(numCols, args[idxRow].Length); idxCol++)
 					{
 						int idx = idxCol + idxRow * numCols;
-						if(idx < objRet.Length)
+						if (idx < objRet.Length)
 						{
 							objRet[idx] = args[idxRow][idxCol];
 						}
@@ -987,11 +1099,11 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public object[] Matrix<T>(int numCols, int numRows, params T[] args)
+			public static object[] Matrix<T>(int numCols, int numRows, params T[] args)
 			{
 				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
 				int argCols = (int)Math.Floor((double)args.Length / numRows);
-				for(int itr = 0; itr < objRet.Length; itr++)
+				for (int itr = 0; itr < objRet.Length; itr++)
 				{
 					int tmpCol = itr % argCols;
 					int tmpRow = (int)Math.Floor((double)itr / argCols);
@@ -1003,26 +1115,27 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public object Matrix_Elem(int numCols, int numRows, int indexCol, int indexRow, object[] args)
+			public static object Matrix_Elem(int numCols, int numRows, int indexCol, int indexRow, object[] args)
 			{
 				object objRet = 0;
-				if(indexCol < numCols && indexRow < numRows && indexCol + indexRow * numCols < args.Length)
+				if (indexCol < numCols && indexRow < numRows && indexCol + indexRow * numCols < args.Length)
 				{
-					objRet = args[indexCol + indexRow*numCols];
+					double.TryParse(args[indexCol + indexRow * numCols].ToString(), out double val);
+					objRet = val;
 				}
 				return objRet;
 			}
-			public void Matrix_Elem<T>(int numCols, int numRows, int indexCol, int indexRow, ref object[] args, T value)
+			public static void Matrix_Elem<T>(int numCols, int numRows, int indexCol, int indexRow, ref object[] args, T value)
 			{
 				if (indexCol < numCols && indexRow < numRows && indexCol + indexRow * numCols < args.Length)
 				{
 					args[indexCol + indexRow * numCols] = value;
 				}
 			}
-			public object[] Matrix_Row(int numCols, int numRows, int indexRow, object[] args)
+			public static object[] Matrix_Row(int numCols, int numRows, int indexRow, object[] args)
 			{
 				object[] objRet = ArrayList.Repeat(0, numCols).ToArray();
-				if(indexRow < numRows)
+				if (indexRow < numRows)
 				{
 					for (int idxCol = 0; idxCol < numCols; idxCol++)
 					{
@@ -1034,7 +1147,7 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public void Matrix_Row<T>(int numCols, int numRows, int indexRow, ref object[] args, T[] value)
+			public static void Matrix_Row<T>(int numCols, int numRows, int indexRow, ref object[] args, T[] value)
 			{
 				if (indexRow < numRows)
 				{
@@ -1047,7 +1160,7 @@ namespace modProject
 					}
 				}
 			}
-			public object[] Matrix_Column(int numCols, int numRows, int indexColumn, object[] args)
+			public static object[] Matrix_Column(int numCols, int numRows, int indexColumn, object[] args)
 			{
 				object[] objRet = ArrayList.Repeat(0, numRows).ToArray();
 				if (indexColumn < numRows)
@@ -1062,7 +1175,7 @@ namespace modProject
 				}
 				return objRet;
 			}
-			public void Matrix_Column<T>(int numCols, int numRows, int indexColumn, ref object[] args, T[] value)
+			public static void Matrix_Column<T>(int numCols, int numRows, int indexColumn, ref object[] args, T[] value)
 			{
 				if (indexColumn < numRows)
 				{
@@ -1075,129 +1188,23 @@ namespace modProject
 					}
 				}
 			}
-			public object[] Vec_Sum(object[] VecA, object[] VecB)
+			public static object[] Matrix_MinorAt(int numCols, int numRows, int AtCol, int AtRow, object[] args)
 			{
-				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
-				for(int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
-					VecRet[itr] = dA + dB;
-				}
-				return VecRet;
-			}
-			public object[] Vec_Diff(object[] VecA, object[] VecB)
-			{
-				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
-					VecRet[itr] = dA - dB;
-				}
-				return VecRet;
-			}
-			public object[] Vec_Div(object[] VecA, object[] VecB)
-			{
-				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
-					VecRet[itr] = dA / dB;
-				}
-				return VecRet;
-			}
-			public object[] Vec_Recipical(object[] Vec)
-			{
-				object[] VecRet = new object[Vec.Length];
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
-					VecRet[itr] = 1.0 / dVec;
-				}
-				return VecRet;
-			}
-			public object Vec_Dot(object[] VecA, object[] VecB)
-			{
-				double fRet = 0;
-				for (int itr = 0; itr < Math.Max(VecA.Length, VecB.Length); itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
-					fRet += dA * dB;
-				}
-				return fRet;
-			}
-			public object[] Vec_Mul(object[] VecA, object[] VecB)
-			{
-				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, itr).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, itr).ToString(), out double dB);
-					VecRet[itr] = dA * dB;
-				}
-				return VecRet;
-			}
-			public object[] Vec_Mul(object Val, object[] Vec)
-			{
-				object[] VecRet = new object[Vec.Length];
-				double.TryParse(Val.ToString(), out double dVal);
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(Vec, itr).ToString(), out double dVec);
-					VecRet[itr] = dVal * dVec;
-				}
-				return VecRet;
-			}
-			public object Vec_Len(object[] Vec)
-			{
-				double.TryParse(Vec_Dot(Vec, Vec).ToString(), out double dDot);
-				return Math.Sqrt(dDot);
-			}
-			public object[] Vec_Norm(object[] Vec)
-			{
-				double.TryParse(Vec_Len(Vec).ToString(), out double dLen);
-				return Vec_Mul(1.0/dLen, Vec);
-			}
-			public object Vec_Angle(object[] VecA, object[] VecB)
-			{
-				double.TryParse(Vec_Dot(VecA, VecB).ToString(), out double dDot);
-				double.TryParse(Vec_Len(VecA).ToString(), out double dLenA);
-				double.TryParse(Vec_Len(VecB).ToString(), out double dLenB);
-				return Math.Acos(dDot/(dLenA*dLenB));
-			}
-			public object[] Vec_Cross(object[] VecA, object[] VecB)
-			{
-				object[] VecRet = new object[Math.Max(VecA.Length, VecB.Length)];
-				for (int itr = 0; itr < VecRet.Length; itr++)
-				{
-					double.TryParse(Vec_Elem(VecA, (itr + 1) % (VecRet.Length)).ToString(), out double dA);
-					double.TryParse(Vec_Elem(VecB, (itr + 2) % (VecRet.Length)).ToString(), out double dB);
-					double.TryParse(Vec_Elem(VecB, (itr + 1) % (VecRet.Length)).ToString(), out double dnA);
-					double.TryParse(Vec_Elem(VecA, (itr + 2) % (VecRet.Length)).ToString(), out double dnB);
-					VecRet[itr] = (dA * dB) - (dnA * dnB);
-				}
-				return VecRet;
-			}
-			public object[] Matrix_MinorAt(int numCols, int numRows, int AtCol, int AtRow, object[] args)
-			{
-				object[] aryRet = ArrayList.Repeat(0, (numCols-1) * (numRows-1)).ToArray();
+				object[] aryRet = ArrayList.Repeat(0, (numCols - 1) * (numRows - 1)).ToArray();
 				for (int itr = 0; itr < args.Length; itr++)
 				{
 					int tmpCol = itr % numCols;
-					int tmpRow = (int)Math.Floor((double)itr / numCols); 
+					int tmpRow = (int)Math.Floor((double)itr / numCols);
 					if (tmpCol == AtCol) continue;
 					if (tmpRow == AtRow) continue;
 					if (tmpCol >= AtCol) tmpCol--;
 					if (tmpRow >= AtRow) tmpRow--;
-					int idx = tmpCol + tmpRow * (numCols-1);
+					int idx = tmpCol + tmpRow * (numCols - 1);
 					aryRet[idx] = args[itr];
 				}
 				return aryRet;
 			}
-			public object[] Matrix_OfMinors(int numCols, int numRows, object[] args)
+			public static object[] Matrix_OfMinors(int numCols, int numRows, object[] args)
 			{
 				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
 				for (int itr = 0; itr < aryRet.Length; itr++)
@@ -1205,11 +1212,11 @@ namespace modProject
 					int tmpCol = itr % numCols;
 					int tmpRow = (int)Math.Floor((double)itr / numCols);
 					int idx = tmpCol + tmpRow * numCols;
-					aryRet[idx] = Matrix_Det(numCols-1, numRows-1, Matrix_MinorAt(numCols, numRows, tmpCol, tmpRow, args));
+					aryRet[idx] = Matrix_Det(numCols - 1, numRows - 1, Matrix_MinorAt(numCols, numRows, tmpCol, tmpRow, args));
 				}
 				return aryRet;
 			}
-			public object[] Matrix_OfCoFactors(int numCols, int numRows, object[] args)
+			public static object[] Matrix_OfCoFactors(int numCols, int numRows, object[] args)
 			{
 				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
 				for (int itr = 0; itr < aryRet.Length; itr++)
@@ -1223,37 +1230,37 @@ namespace modProject
 				}
 				return aryRet;
 			}
-			public object[] Matrix_Transpose(int numCols, int numRows,  object[] args)
+			public static object[] Matrix_Transpose(int numCols, int numRows, object[] args)
 			{
 				object[] aryRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
 				int tmp = numCols;
-				numCols = numRows; 
+				numCols = numRows;
 				numRows = tmp;
 				for (int itr = 0; itr < aryRet.Length; itr++)
 				{
 					int tmpCol = (int)Math.Floor((double)itr / numCols);
 					int tmpRow = itr % numCols;
 					int idx = tmpCol + tmpRow * numRows;
-					if(idx < args.Length) aryRet[itr] = args[idx];
+					if (idx < args.Length) aryRet[itr] = args[idx];
 				}
 				return aryRet;
 			}
-			public object[] Matrix_Adjugate(int numCols, int numRows, object[] args)
+			public static object[] Matrix_Adjugate(int numCols, int numRows, object[] args)
 			{
 				return Matrix_Transpose(numCols, numRows, Matrix_OfCoFactors(numCols, numRows, args));
 			}
-			public object Matrix_Det(int numCols, int numRows, object[] args)
+			public static object Matrix_Det(int numCols, int numRows, object[] args)
 			{
 				double dRet = 0;
-				if((numCols == 1) && (numRows == 1)) return args[0];
-				for (int itrCol = 0; itrCol < ((numCols==2)?1:numCols); itrCol++)
+				if ((numCols == 1) && (numRows == 1)) return args[0];
+				for (int itrCol = 0; itrCol < ((numCols == 2) ? 1 : numCols); itrCol++)
 				{
 					double dProdPos = 1;
 					double dProdNeg = 1;
-					for(int itrRow = 0; itrRow < numRows; itrRow++)
+					for (int itrRow = 0; itrRow < numRows; itrRow++)
 					{
 						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, itrRow, args).ToString(), out double dPos);
-						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, (numRows-1) - itrRow, args).ToString(), out double dNeg);
+						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, (numRows - 1) - itrRow, args).ToString(), out double dNeg);
 						dProdPos *= dPos;
 						dProdNeg *= dNeg;
 					}
@@ -1261,12 +1268,12 @@ namespace modProject
 				}
 				return dRet;
 			}
-			public object[] Matrix_Inverse(int numCols, int numRows, object[] args)
+			public static object[] Matrix_Inverse(int numCols, int numRows, object[] args)
 			{
 				double.TryParse(Matrix_Det(numCols, numRows, args).ToString(), out double dDet);
-				return Matrix_Mul(1/dDet, Matrix_Adjugate(numCols, numRows, args));
+				return Matrix_Mul(1 / dDet, Matrix_Adjugate(numCols, numRows, args));
 			}
-			public object[] Matrix_Mul(double scl, object[] args)
+			public static object[] Matrix_Mul(double scl, object[] args)
 			{
 				object[] aryRet = ArrayList.Repeat(0, args.Length).ToArray();
 				for (int itr = 0; itr < aryRet.Length; itr++)
@@ -1276,7 +1283,7 @@ namespace modProject
 				}
 				return aryRet;
 			}
-			public object[] Matrix_Mul(int numColsA, int numRowsA, object[] argsA, int numColsB, int numRowsB, object[] argsB)
+			public static object[] Matrix_Mul(int numColsA, int numRowsA, object[] argsA, int numColsB, int numRowsB, object[] argsB)
 			{
 				int tmpCols = numColsA;
 				int tmpRows = numRowsB;
@@ -1292,13 +1299,13 @@ namespace modProject
 				}
 				return aryRet;
 			}
-			public object[] Matrix_Rot2x2(double ang)
+			public static object[] Matrix_Rot2x2(double ang)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
-				return new object[] {cos, sin, -sin, cos};
+				return new object[] { cos, sin, -sin, cos };
 			}
-			public void Matrix_Rot2x2(int argCols, int argRows, double ang, ref object[] args)
+			public static void Matrix_Rot2x2(int argCols, int argRows, double ang, ref object[] args)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
@@ -1308,18 +1315,18 @@ namespace modProject
 				Matrix_Elem(argCols, argRows, 1, 1, ref args, cos);
 				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1);
 			}
-			public object[] Matrix_Rot3x3(double ang, object[] vecAxis)
+			public static object[] Matrix_Rot3x3(double ang, object[] vecAxis)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
 				double.TryParse(Vec_Elem(vecAxis, 0).ToString(), out double x);
 				double.TryParse(Vec_Elem(vecAxis, 1).ToString(), out double y);
 				double.TryParse(Vec_Elem(vecAxis, 2).ToString(), out double z);
-			return new object[] { x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
+				return new object[] { x*x*(1-cos) + cos,   x*y*(1-cos) - z*sin, x*z*(1-cos) + y*sin,
 								  y*x*(1-cos) + z*sin, y*y*(1-cos) + cos,   y*z*(1-cos) - x*sin,
 								  z*x*(1-cos) - y*sin, z*y*(1-cos) + x*sin, z*z*(1-cos) + cos   };
 			}
-			public void Matrix_Rot3x3(int argCols, int argRows, double ang, object[] vecAxis,  ref object[] args)
+			public static void Matrix_Rot3x3(int argCols, int argRows, double ang, object[] vecAxis, ref object[] args)
 			{
 				double cos = Math.Cos(ang);
 				double sin = Math.Sin(ang);
@@ -1337,50 +1344,163 @@ namespace modProject
 				Matrix_Elem(argCols, argRows, 2, 2, ref args, z * z * (1 - cos) + cos);
 				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
 			}
-			public void Matrix_Reflect2x2(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
+			public static void Matrix_Reflect2x2(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
 			{
 				double.TryParse(Vec_Elem(vecCeoficients, 0).ToString(), out double a);
 				double.TryParse(Vec_Elem(vecCeoficients, 1).ToString(), out double b);
 				double.TryParse(Vec_Elem(vecCeoficients, 2).ToString(), out double c);
-				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2*a*a);
-				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2*a*b);
-				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2*a*c);
-				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2*a*b);
-				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2*b*b);
-				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2*b*c);
-				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2*a*c);
-				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2*b*c);
-				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2*c*c);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2 * a * a);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2 * a * b);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2 * a * c);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2 * a * b);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2 * b * b);
+				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2 * b * c);
+				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2 * a * c);
+				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2 * b * c);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2 * c * c);
 			}
-			public void Matrix_Reflect3x3(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
+			public static void Matrix_Reflect3x3(object[] vecCeoficients, int argCols, int argRows, ref object[] args)
 			{
 				double.TryParse(Vec_Elem(vecCeoficients, 0).ToString(), out double a);
 				double.TryParse(Vec_Elem(vecCeoficients, 1).ToString(), out double b);
 				double.TryParse(Vec_Elem(vecCeoficients, 2).ToString(), out double c);
 				double.TryParse(Vec_Elem(vecCeoficients, 3).ToString(), out double d);
-				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2*a*a);
-				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2*a*b);
-				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2*a*c);
-				Matrix_Elem(argCols, argRows, 3, 0, ref args, -2*a*d);
-				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2*a*b);
-				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2*b*b);
-				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2*b*c);
-				Matrix_Elem(argCols, argRows, 3, 1, ref args, -2 *b*d);
-				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2*a*c);
-				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2*b*c);
-				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2*c*c);
-				Matrix_Elem(argCols, argRows, 3, 2, ref args, -2*c*d);
+				Matrix_Elem(argCols, argRows, 0, 0, ref args, 1 - 2 * a * a);
+				Matrix_Elem(argCols, argRows, 1, 0, ref args, -2 * a * b);
+				Matrix_Elem(argCols, argRows, 2, 0, ref args, -2 * a * c);
+				Matrix_Elem(argCols, argRows, 3, 0, ref args, -2 * a * d);
+				Matrix_Elem(argCols, argRows, 0, 1, ref args, -2 * a * b);
+				Matrix_Elem(argCols, argRows, 1, 1, ref args, 1 - 2 * b * b);
+				Matrix_Elem(argCols, argRows, 2, 1, ref args, -2 * b * c);
+				Matrix_Elem(argCols, argRows, 3, 1, ref args, -2 * b * d);
+				Matrix_Elem(argCols, argRows, 0, 2, ref args, -2 * a * c);
+				Matrix_Elem(argCols, argRows, 1, 2, ref args, -2 * b * c);
+				Matrix_Elem(argCols, argRows, 2, 2, ref args, 1 - 2 * c * c);
+				Matrix_Elem(argCols, argRows, 3, 2, ref args, -2 * c * d);
 				Matrix_Elem(argCols, argRows, 0, 3, ref args, 0);
 				Matrix_Elem(argCols, argRows, 1, 3, ref args, 0);
 				Matrix_Elem(argCols, argRows, 2, 3, ref args, 0);
 				Matrix_Elem(argCols, argRows, 3, 3, ref args, 1);
 			}
-			public object[] Matrix_Perspective(double NearDist, double FarDist, double HorizontalAngle, double VerticalAngle)
+			public static object[] Matrix_Perspective(double NearDist, double FarDist, double HorizontalAngle, double VerticalAngle)
 			{
-				double[] fov = new double[] { 1.0/Math.Tan(0.5*HorizontalAngle), 1.0 / Math.Tan(0.5 * VerticalAngle) };
-				double Nf = NearDist / (FarDist - NearDist);
-				return Matrix(4,4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, -Nf, -1, 0, 0, -Nf*NearDist, 0);
+				double[] fov = new double[] { 1.0 / Math.Tan(0.5 * HorizontalAngle), 1.0 / Math.Tan(0.5 * VerticalAngle) };
+				double Nf = -FarDist / (FarDist - NearDist);
+				return Matrix(4, 4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, Nf, -1, 0, 0, Nf * NearDist, 0);
 			}
+			public static object[] Quat(double w, double x, double y, double z)
+			{
+				return Vec(w, x, y, z);
+			}
+			public static object[] Quat_Sum(object[] q1, object[] q2)
+			{
+				return Vec_Sum(q1, q2);
+			}
+			public static object[] Quat_Mul(object val, object[] q)
+			{
+				return Vec_Mul(val, q);
+			}
+			public static object[] Quat_Mul(object[] q1, object[] q2)
+			{
+				double[] a = new double[2], b = new double[2], c = new double[2], d = new double[2];
+				double.TryParse(Vec_Elem(q1, 0).ToString(), out a[0]);
+				double.TryParse(Vec_Elem(q2, 0).ToString(), out a[1]);
+				double.TryParse(Vec_Elem(q1, 1).ToString(), out b[0]);
+				double.TryParse(Vec_Elem(q2, 1).ToString(), out b[1]);
+				double.TryParse(Vec_Elem(q1, 2).ToString(), out c[0]);
+				double.TryParse(Vec_Elem(q2, 2).ToString(), out c[1]);
+				double.TryParse(Vec_Elem(q1, 3).ToString(), out d[0]);
+				double.TryParse(Vec_Elem(q2, 3).ToString(), out d[1]);
+				return Vec(a[0] * a[1] - b[0] * b[1] - c[0] * c[1] - d[0] * d[1],
+						   a[0] * b[1] + b[0] * a[1] + c[0] * d[1] - d[0] * c[1],
+						   a[0] * c[1] - b[0] * d[1] + c[0] * a[1] + d[0] * b[1],
+						   a[0] * d[1] + b[0] * c[1] - c[0] * b[1] + d[0] * a[1]);
+			}
+			public static object Quat_Len(object[] q)
+			{
+				return Vec_Len(q);
+			}
+			public static object[] Quat_Norm(object[] q)
+			{
+				return Vec_Norm(q);
+			}
+			public static object[] Quat_Conjugate(object[] q)
+			{
+				double.TryParse(Vec_Elem(q, 0).ToString(), out double w);
+				double.TryParse(Vec_Elem(q, 1).ToString(), out double x);
+				double.TryParse(Vec_Elem(q, 2).ToString(), out double y);
+				double.TryParse(Vec_Elem(q, 3).ToString(), out double z);
+				return Vec(w, -x, -y, -z);
+			}
+			public static object[] Quat_Inverse(object[] q)
+			{
+				return Vec_Mul(1 / (double)Vec_Dot(q, q), Quat_Conjugate(q));
+			}
+			public static object Quat_ToAxisAngle(object[] q)
+			{
+				object[] qv = Vec(Vec_Elem(q, 1), Vec_Elem(q, 2), Vec_Elem(q, 3));
+				double qd = (double)Vec_Len(qv);
+				object[] axis = Vec_Mul(1 / qd, qv);
+				double angle = 2 * Math.Atan2(qd, (double)Vec_Elem(q, 0));
+				return new { Angle = angle, Axis = axis };
+			}
+		}
+		public struct clsEventScriptContextConsole
+		{
+			private controlConsole Console;
+			public clsEventScriptContextConsole(controlConsole console)
+			{
+				Console = console;
+			}
+			public void Write(object obj, string Label)
+			{
+				if(Console != null)
+				{
+					Console.Write(obj, Label);
+				}
+			}
+			public void Write(string message, string Label)
+			{
+				if (Console != null)
+				{
+					Console.Write(message, Label);
+				}
+			}
+			public void Write(object obj, string prompt, string scope)
+			{
+				if (Console != null)
+				{
+					Console.Write(obj, prompt, scope, false);
+				}
+			}
+			public void Write(string message, string prompt, string scope)
+			{
+				if (Console != null)
+				{
+					Console.Write(message, prompt, scope, false);
+				}
+			}
+		}
+		public class clsEventScriptContext
+		{
+			[Browsable(false)]
+			public delegate void delegateArgumentsUpdated(Dictionary<string, object> args);
+			[Browsable(false)]
+			public event delegateArgumentsUpdated ArgumentsUpdated;
+			public clsRender RenderSubject { get; set; }
+			public clsUniformSetCollection Uniforms => new clsUniformSetCollection(RenderSubject.Uniforms);
+			public Dictionary<string, object> Arguments { get; private set; } = new Dictionary<string, object>();
+			private controlConsole refConsole
+			{
+				get
+				{
+					if (RenderSubject == null) return null;
+					frmRenderConfigure frm = frmRenderConfigure.FormWithSubjectObject(RenderSubject);
+					if (frm == null) return null;
+					return frm.Console;
+				}
+			}
+			public clsEventScriptContextConsole Console { get { return new clsEventScriptContextConsole(refConsole); } }
 			public object[][] Uniform_Get(string name)
 			{
 				object[][] objRet = new object[][] { new object[] { } };
@@ -1676,11 +1796,11 @@ namespace modProject
 		private Script<object> script;
 		public void Compile()
 		{
-			if (Source == null) return;
 			script = null;
 			GC.Collect();
+			if (Source == null) return;
 			string str = PreProcess(Source, ScriptContext);
-			script = CSharpScript.Create(str, GenericScriptOptions, ScriptContext.GetType());
+			script = CSharpScript.Create(str, GenericScriptOptions, typeof(clsEventScriptContext));
 			script.Compile();
 		}
 		[Browsable(false)]
@@ -1689,9 +1809,11 @@ namespace modProject
 			if (script == null) return;
 			ScriptContext.SetArguments(eventType, args);
 			Task<ScriptState<object>> currentExe = null;
+			ScriptState<object> objResult = null;
 			try
 			{
 				currentExe = script.RunAsync(ScriptContext);
+				objResult = currentExe.Result;
 			}
 			catch(Exception err)
 			{
@@ -1701,14 +1823,18 @@ namespace modProject
 					strErr += errInner.Message + "; ";
 					errInner = errInner.InnerException;
 				}
-				ScriptContext.Console.Write(strErr, "Error> ", Source, false);
-				currentExe = null;
-			}
-			if(currentExe != null)
-			{
-				if(currentExe.Result != null && currentExe.Result.ReturnValue != null)
+				ScriptContext.Console.Write(strErr, "Error> ", Source);
+				if(currentExe != null)
 				{
-					ScriptContext.Console.Write(currentExe.Result.ReturnValue, "Log> ", Source, false);
+					currentExe.Dispose();
+					currentExe = null;
+				}
+			}
+			if(objResult != null)
+			{
+				if(objResult.ReturnValue != null)
+				{
+					ScriptContext.Console.Write(objResult.ReturnValue, "Log> ", Source);
 				}
 				currentExe.Dispose();
 			}

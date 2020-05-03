@@ -21,8 +21,7 @@ namespace modProject
 			Geometry = 2,
 			Shader = 3,
 			Program = 4,
-			IOLinks = 5,
-			Render = 6
+			Render = 5
 		}
 		public class Xml_ProjectObject
 		{

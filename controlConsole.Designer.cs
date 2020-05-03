@@ -39,6 +39,7 @@
 			// Output
 			// 
 			this.Output.AllowSeveralTextStyleDrawing = true;
+			this.Output.AutoCompleteBrackets = true;
 			this.Output.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -50,25 +51,34 @@
         '\"',
         '\'',
         '\''};
-			this.Output.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\n^\\s*(case|default)\\s*[^:]*(" +
-    "?<range>:)\\s*(?<range>[^;]+);";
+			this.Output.AutoIndent = false;
+			this.Output.AutoIndentChars = false;
+			this.Output.AutoIndentCharsPatterns = "\r\n^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:" +
+    "]*(?<range>:)\\s*(?<range>[^;]+);\r\n";
+			this.Output.AutoIndentExistingLines = false;
 			this.Output.AutoScrollMinSize = new System.Drawing.Size(0, 14);
 			this.Output.BackBrush = null;
 			this.Output.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
 			this.Output.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.Output.BracketsHighlightStrategy = FastColoredTextBoxNS.BracketsHighlightStrategy.Strategy2;
 			this.Output.CharHeight = 14;
 			this.Output.CharWidth = 8;
 			this.Output.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Output.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Output.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.Output.IsReplaceMode = false;
+			this.Output.Language = FastColoredTextBoxNS.Language.CSharp;
+			this.Output.LeftBracket = '(';
+			this.Output.LeftBracket2 = '{';
 			this.Output.Location = new System.Drawing.Point(0, 0);
 			this.Output.MinimumSize = new System.Drawing.Size(0, 24);
 			this.Output.Name = "Output";
 			this.Output.Paddings = new System.Windows.Forms.Padding(0);
-			this.Output.ReadOnly = true;
+			this.Output.RightBracket = ')';
+			this.Output.RightBracket2 = '}';
 			this.Output.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
 			this.Output.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("Output.ServiceColors")));
+			this.Output.ShowCaretWhenInactive = true;
 			this.Output.ShowFoldingLines = true;
 			this.Output.ShowLineNumbers = false;
 			this.Output.Size = new System.Drawing.Size(439, 161);
@@ -76,10 +86,13 @@
 			this.Output.TextAreaBorder = FastColoredTextBoxNS.TextAreaBorderType.Shadow;
 			this.Output.WordWrap = true;
 			this.Output.Zoom = 100;
+			this.Output.SelectionChanged += new System.EventHandler(this.Output_SelectionChanged);
+			this.Output.KeyPressing += new System.Windows.Forms.KeyPressEventHandler(this.Output_KeyPressing);
 			// 
 			// Input
 			// 
 			this.Input.AllowSeveralTextStyleDrawing = true;
+			this.Input.AutoCompleteBrackets = true;
 			this.Input.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -116,6 +129,7 @@
 			this.Input.RightBracket2 = '}';
 			this.Input.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
 			this.Input.ServiceColors = ((FastColoredTextBoxNS.ServiceColors)(resources.GetObject("Input.ServiceColors")));
+			this.Input.ShowCaretWhenInactive = true;
 			this.Input.ShowLineNumbers = false;
 			this.Input.Size = new System.Drawing.Size(439, 24);
 			this.Input.TabIndex = 1;
