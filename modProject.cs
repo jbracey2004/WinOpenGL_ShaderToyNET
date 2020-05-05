@@ -735,7 +735,15 @@ namespace modProject
 		public clsUniformSet() { }
 		public clsUniformSet(object[] ary)
 		{
+			object[][] dat = new object[][] { ary };
 			
+			SetData(dat);
+		}
+		public clsUniformSet(object[][] ary)
+		{
+			object[][] dat = ary;
+			
+			SetData(dat);
 		}
 		public clsUniformSet(string str)
 		{
@@ -751,6 +759,14 @@ namespace modProject
 		public static implicit operator object[][](clsUniformSet uds)
 		{
 			return uds.GetData();
+		}
+		public static implicit operator clsUniformSet(object[] ary)
+		{
+			return new clsUniformSet(ary);
+		}
+		public static implicit operator clsUniformSet(object[][] ary)
+		{
+			return new clsUniformSet(ary);
 		}
 		private object[] aryDataInlined = new object[] { };
 		private object[] aryDataInlined_Formatted = new object[] { };
