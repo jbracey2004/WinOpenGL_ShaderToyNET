@@ -133,7 +133,7 @@ namespace WinOpenGL_ShaderToy
 									group.LastWrittenText = str;
 								}));
 							}
-							catch (Exception err)
+							catch(Exception err)
 							{
 								Console.WriteLine(err);
 							}

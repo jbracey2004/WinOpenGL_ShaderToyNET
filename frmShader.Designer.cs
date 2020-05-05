@@ -117,7 +117,6 @@ namespace WinOpenGL_ShaderToy
 			// txtSource
 			// 
 			this.txtSource.AllowSeveralTextStyleDrawing = true;
-			this.txtSource.AutoCompleteBrackets = true;
 			this.txtSource.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -141,7 +140,6 @@ namespace WinOpenGL_ShaderToy
 			this.txtSource.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.txtSource.DisabledColor = System.Drawing.Color.Gray;
 			this.txtSource.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.txtSource.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.txtSource.ForeColor = System.Drawing.Color.LightGray;
 			this.txtSource.IndentBackColor = System.Drawing.Color.Transparent;
 			this.txtSource.IsReplaceMode = false;

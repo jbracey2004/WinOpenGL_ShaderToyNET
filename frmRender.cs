@@ -79,13 +79,14 @@ namespace WinOpenGL_ShaderToy
 		private void InitConfig()
 		{
 			tsRender = new infoFramePerformance();
-			tsRender.HistoryDuration = 10.0;
+			tsRender.HistoryDuration = 5.0;
 			tsRenderTimer = new infoFramePerformance();
-			tsRenderTimer.HistoryDuration = 5.0;
+			tsRenderTimer.HistoryDuration = 1.0;
 			glRender = new controlRender();
 			glRender.Name = Render.ToString();
 			glRender.Parent = panelMain.Content;
 			glRender.Dock = DockStyle.Fill;
+			glRender.Cursor = Cursors.Cross;
 			glRender.HandleCreated += glMain_HandleCreated;
 			glRender.SizeChanged += glMain_Resized;
 			glRender.PointerStart += glMain_PointerStart;

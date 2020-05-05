@@ -66,6 +66,7 @@
 			this.Output.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Output.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Output.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.Output.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.Output.IsReplaceMode = false;
 			this.Output.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.Output.LeftBracket = '(';
@@ -92,7 +93,6 @@
 			// Input
 			// 
 			this.Input.AllowSeveralTextStyleDrawing = true;
-			this.Input.AutoCompleteBrackets = true;
 			this.Input.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
@@ -116,7 +116,6 @@
 			this.Input.Cursor = System.Windows.Forms.Cursors.IBeam;
 			this.Input.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
 			this.Input.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.Input.Font = new System.Drawing.Font("Courier New", 9.75F);
 			this.Input.IsReplaceMode = false;
 			this.Input.Language = FastColoredTextBoxNS.Language.CSharp;
 			this.Input.LeftBracket = '(';

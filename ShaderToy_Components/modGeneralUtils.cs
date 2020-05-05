@@ -20,7 +20,7 @@ public class generalUtils
 		new KeyValuePair<string, int>( "µ", -6 ),
 		new KeyValuePair<string, int>( "m", -3 ),
 		new KeyValuePair<string, int>( "", 0 ),
-		new KeyValuePair<string, int>( "k", 3 ),
+		new KeyValuePair<string, int>( "K", 3 ),
 		new KeyValuePair<string, int>( "M", 6 ),
 		new KeyValuePair<string, int>( "G", 9 ),
 		new KeyValuePair<string, int>( "T", 12 )

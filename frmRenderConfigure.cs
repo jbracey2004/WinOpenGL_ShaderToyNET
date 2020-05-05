@@ -139,12 +139,8 @@ namespace WinOpenGL_ShaderToy
 			else
 			{
 				string strErr = "";
-				Exception errInner = Eval.Result as Exception;
-				while (errInner != null)
-				{
-					strErr += errInner.Message + "; ";
-					errInner = errInner.InnerException;
-				}
+				Exception err = Eval.Result as Exception;
+				if (err != null) strErr = ExceptionFullString(err);
 				strDisp = strErr + "\r\n";
 			}
 			Invoke(new Action(() => { Console.Write(strDisp, ">", strCode, true); }));

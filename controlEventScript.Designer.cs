@@ -47,6 +47,7 @@ namespace WinOpenGL_ShaderToy
 			// 
 			// txtSource
 			// 
+			this.txtSource.AllowSeveralTextStyleDrawing = true;
 			this.txtSource.AutoCompleteBracketsList = new char[] {
         '(',
         ')',

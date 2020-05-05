@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Diagnostics;
 using static modProject.clsProjectObject;
 using static WinOpenGL_ShaderToy.ProjectDef;
 using static generalUtils;
@@ -35,6 +36,7 @@ using static modCommon.modWndProcInterop;
 using System.Threading.Tasks;
 using modCommon;
 using System.Web.Configuration;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -114,6 +116,16 @@ namespace WinOpenGL_ShaderToy
 			MainScript = CSharpScript.Create("", GenericScriptOptions, typeof(clsEventScriptContext));
 			MainScript.Compile();
 		}
+		public static string ExceptionFullString(Exception err)
+		{
+			string strErr = ""; Exception errInner = err;
+			while (errInner != null)
+			{
+				strErr += errInner.Message + "; ";
+				errInner = errInner.InnerException;
+			}
+			return strErr;
+		}
 		public static string PreProcess(string strCode, clsEventScriptContext context)
 		{
 			return Regex.Replace(strCode, @"Obj\((?<objectDef>.*?)\)", match =>
@@ -129,7 +141,7 @@ namespace WinOpenGL_ShaderToy
 				}
 				catch(Exception err)
 				{
-					Console.WriteLine(err);
+					Console.WriteLine(ExceptionFullString(err));
 				}
 				if (obj == null) return "";
 				Type typ = obj.GetType();
@@ -506,7 +518,7 @@ namespace modProject
 			}
 		}
 	}
-	public class clsUniformSet
+	public class clsUniformSet : IEnumerable
 	{
 		public enum UniformType
 		{
@@ -704,35 +716,6 @@ namespace modProject
 			}
 			return strRet;
 		}
-		public class clsUniformSetCollection
-		{
-			public List<KeyValuePair<string, clsUniformSet>> Collection;
-			public clsUniformSetCollection(List<KeyValuePair<string, clsUniformSet>> collection)
-			{
-				Collection = collection;
-			}
-			public clsUniformSet this[int index]
-			{
-				get => Collection[index].Value;
-				set
-				{
-					Collection[index].Value.SetData(value.GetData());
-				}
-			}
-			public clsUniformSet this[string key]
-			{
-				get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
-				set
-				{
-					int index = Collection.FindIndex(itm => itm.Key.Equals(key));
-					if (index >= 0) Collection[index].Value.SetData(value.GetData());
-				}
-			}
-			public override string ToString()
-			{
-				return generalUtils.ArrayToString(Collection);
-			}
-		}
 		private UniformType typType = UniformType.Int;
 		public UniformType Type
 		{
@@ -750,12 +733,24 @@ namespace modProject
 		public int ElementCount { get; private set; }
 		public KeyValuePair<string, int> ShaderUniformLink { get; set; }
 		public clsUniformSet() { }
+		public clsUniformSet(object[] ary)
+		{
+			
+		}
 		public clsUniformSet(string str)
 		{
 			object[][] dat = StringToArray(str, out int intNewCompLen, out int intNewCompType).ToArray();
 			if (intNewCompType != -1) { Type = (UniformType)intNewCompType; }
 			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
 			SetData(dat);
+		}
+		public static implicit operator object[](clsUniformSet uds)
+		{
+			return uds.aryDataInlined;
+		}
+		public static implicit operator object[][](clsUniformSet uds)
+		{
+			return uds.GetData();
 		}
 		private object[] aryDataInlined = new object[] { };
 		private object[] aryDataInlined_Formatted = new object[] { };
@@ -835,8 +830,45 @@ namespace modProject
 		{
 			return $"<{Type}> " + ArrayToString(GetData(true).ToList());
 		}
-	}
 
+		public IEnumerator GetEnumerator()
+		{
+			return aryDataInlined.GetEnumerator();
+		}
+	}
+	public class clsUniformSetCollection : IEnumerable
+	{
+		public List<KeyValuePair<string, clsUniformSet>> Collection;
+		public clsUniformSetCollection(List<KeyValuePair<string, clsUniformSet>> collection)
+		{
+			Collection = collection;
+		}
+		public clsUniformSet this[int index]
+		{
+			get => Collection[index].Value;
+			set
+			{
+				Collection[index].Value.SetData(value.GetData());
+			}
+		}
+		public clsUniformSet this[string key]
+		{
+			get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
+			set
+			{
+				int index = Collection.FindIndex(itm => itm.Key.Equals(key));
+				if (index >= 0) Collection[index].Value.SetData(value.GetData());
+			}
+		}
+		public IEnumerator GetEnumerator()
+		{
+			return ((IEnumerable)Collection).GetEnumerator();
+		}
+		public override string ToString()
+		{
+			return generalUtils.ArrayToString(Collection);
+		}
+	}
 	public class clsEventScript
 	{
 		public enum EventType
@@ -1793,50 +1825,49 @@ namespace modProject
 			}
 			renderSubject = null;
 		}
-		private Script<object> script;
+		private ScriptRunner<object> script = null;
 		public void Compile()
 		{
 			script = null;
 			GC.Collect();
-			if (Source == null) return;
+			if (string.IsNullOrEmpty(Source)) return;
 			string str = PreProcess(Source, ScriptContext);
-			script = CSharpScript.Create(str, GenericScriptOptions, typeof(clsEventScriptContext));
-			script.Compile();
+			Script<object> scriptCompile = CSharpScript.Create(str, GenericScriptOptions, typeof(clsEventScriptContext));
+			scriptCompile.Compile();
+			try
+			{
+				script = scriptCompile.CreateDelegate();
+			}
+			catch(CompilationErrorException err)
+			{
+				string strErr = err.Diagnostics.Aggregate("", (strRet, errItm) => strRet += errItm + "\r\n");
+				ScriptContext.Console.Write(strErr, "Compilation Error> ", Type.ToString());
+				script = null;
+			}
+			scriptCompile = null;
+			GC.Collect();
 		}
 		[Browsable(false)]
 		public void Run(EventType eventType, params object[] args)
 		{
 			if (script == null) return;
 			ScriptContext.SetArguments(eventType, args);
-			Task<ScriptState<object>> currentExe = null;
-			ScriptState<object> objResult = null;
+			Task<object> scriptExe = null;
 			try
 			{
-				currentExe = script.RunAsync(ScriptContext);
-				objResult = currentExe.Result;
+				scriptExe = script.Invoke(ScriptContext);
 			}
 			catch(Exception err)
 			{
-				string strErr = ""; Exception errInner = err;
-				while (errInner != null)
-				{
-					strErr += errInner.Message + "; ";
-					errInner = errInner.InnerException;
-				}
-				ScriptContext.Console.Write(strErr, "Error> ", Source);
-				if(currentExe != null)
-				{
-					currentExe.Dispose();
-					currentExe = null;
-				}
+				ScriptContext.Console.Write(ExceptionFullString(err), "Error> ", Source);
 			}
-			if(objResult != null)
+			if(scriptExe != null)
 			{
-				if(objResult.ReturnValue != null)
+				if(scriptExe.Result != null)
 				{
-					ScriptContext.Console.Write(objResult.ReturnValue, "Log> ", Source);
+					ScriptContext.Console.Write(scriptExe.Result, "Log> ", Source);
 				}
-				currentExe.Dispose();
+				scriptExe.Dispose();
 			}
 			if (ConfigureForm != null)
 			{

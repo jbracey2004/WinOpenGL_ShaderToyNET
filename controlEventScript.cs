@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,7 +15,6 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
-using System.Collections;
 using static generalUtils;
 
 namespace WinOpenGL_ShaderToy
@@ -241,11 +241,22 @@ namespace WinOpenGL_ShaderToy
 				string strFragment = menu.Fragment.Text;
 				clsFragmentPart[] aryParts = clsFragmentPart.ArrayFromString(strFragment);
 				KeyValuePair<string, object>[] aryPartObjects = clsFragmentPart.ObjectsFromArray(context, aryParts);
-				if (strFragment.EndsWith("["))
+				int idxEnd = aryPartObjects.Length - 1;
+				if (strFragment.LastIndexOf("[") > strFragment.LastIndexOf("."))
 				{
+					IEnumerable ary = aryPartObjects[idxEnd].Value as IEnumerable;
+					if(ary != null)
+					{
+						foreach(var itm in ary)
+						{
+							if (TryKeyPairParse(itm, out KeyValuePair<dynamic, dynamic> kvp))
+							{
+								yield return new AutocompleteItem($"{aryPartObjects[idxEnd].Key}->{kvp.Key}", 0, $"\"{kvp.Key}\"");
+							}
+						}
+					}
 					yield break;
 				}
-				int idxEnd = aryPartObjects.Length - 1;
 				if (idxEnd >= 0)
 				{
 					KeyValuePair<string, object> part = aryPartObjects[idxEnd];
@@ -267,10 +278,34 @@ namespace WinOpenGL_ShaderToy
 			private Graphics gfx;
 			private Size InitialSize = new Size();
 			public clsAutoComplete(FastColoredTextBox textbox) : base(textbox) { InitialSize = Size; }
+			protected override void OnPaint(PaintEventArgs e)
+			{
+				base.OnPaint(e);
+			}
+			public override ToolStripItem GetNextItem(ToolStripItem start, ArrowDirection direction)
+			{
+				return base.GetNextItem(start, direction);
+			}
+			protected override void OnItemAdded(ToolStripItemEventArgs e)
+			{
+				base.OnItemAdded(e);
+			}
+			protected override void OnItemRemoved(ToolStripItemEventArgs e)
+			{
+				base.OnItemRemoved(e);
+			}
+			protected override void SetDisplayedItems()
+			{
+				base.SetDisplayedItems();
+			}
 			protected override void OnOpening(CancelEventArgs e)
 			{
 				UpdateWidth();
 				base.OnOpening(e);
+			}
+			protected override void OnClosing(ToolStripDropDownClosingEventArgs e)
+			{
+				base.OnClosing(e);
 			}
 			protected override void OnHandleCreated(EventArgs e)
 			{
