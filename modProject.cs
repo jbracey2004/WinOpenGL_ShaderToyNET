@@ -728,21 +728,21 @@ namespace modProject
 				ElementCount = aryDataInlined.Length / ComponentPerElement;
 			}
 		}
-		public Type ComponentType { get; private set; }
-		public int ComponentPerElement { get; private set; }
-		public int ElementCount { get; private set; }
-		public KeyValuePair<string, int> ShaderUniformLink { get; set; }
+		public Type ComponentType { get; private set; } = typeof(int);
+		public int ComponentPerElement { get; private set; } = 1;
+		public int ElementCount { get; private set; } = 1;
+		public KeyValuePair<string, int> ShaderUniformLink { get; set; } = new KeyValuePair<string, int>("", -1);
 		public clsUniformSet() { }
-		public clsUniformSet(object[] ary)
+		public clsUniformSet(UniformType type, object[] ary)
 		{
 			object[][] dat = new object[][] { ary };
-			
+			Type = type;
 			SetData(dat);
 		}
-		public clsUniformSet(object[][] ary)
+		public clsUniformSet(UniformType type, object[][] ary)
 		{
 			object[][] dat = ary;
-			
+			Type = type;
 			SetData(dat);
 		}
 		public clsUniformSet(string str)
@@ -752,24 +752,12 @@ namespace modProject
 			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
 			SetData(dat);
 		}
-		public static implicit operator object[](clsUniformSet uds)
-		{
-			return uds.aryDataInlined;
-		}
-		public static implicit operator object[][](clsUniformSet uds)
-		{
-			return uds.GetData();
-		}
-		public static implicit operator clsUniformSet(object[] ary)
-		{
-			return new clsUniformSet(ary);
-		}
-		public static implicit operator clsUniformSet(object[][] ary)
-		{
-			return new clsUniformSet(ary);
-		}
-		private object[] aryDataInlined = new object[] { };
-		private object[] aryDataInlined_Formatted = new object[] { };
+		public static implicit operator object[](clsUniformSet uds) => uds.aryDataInlined;
+		public static implicit operator object[][](clsUniformSet uds) => uds.GetData();
+		public static implicit operator string(clsUniformSet uds) => uds.ToString();
+		public static implicit operator clsUniformSet(string str) => new clsUniformSet(str);
+		private object[] aryDataInlined = new object[] { 0 };
+		private object[] aryDataInlined_Formatted = new object[] { 0 };
 		public object[] DataInlined
 		{
 			get => aryDataInlined;
@@ -846,7 +834,6 @@ namespace modProject
 		{
 			return $"<{Type}> " + ArrayToString(GetData(true).ToList());
 		}
-
 		public IEnumerator GetEnumerator()
 		{
 			return aryDataInlined.GetEnumerator();
@@ -862,10 +849,7 @@ namespace modProject
 		public clsUniformSet this[int index]
 		{
 			get => Collection[index].Value;
-			set
-			{
-				Collection[index].Value.SetData(value.GetData());
-			}
+			set { Collection[index].Value.SetData(value.GetData()); }
 		}
 		public clsUniformSet this[string key]
 		{
