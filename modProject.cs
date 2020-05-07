@@ -489,14 +489,20 @@ namespace modProject
 			get => new Xml_Project(this);
 		}
 	}
-	public class clsKeyCollection<TKey, TValue>
+	public class clsKeyCollection<TKey, TValue> : IDictionary<TKey, TValue>, IEnumerable 
 	{
-		public IList<KeyValuePair<TKey, TValue>> Collection { get; set; }
+		protected IList<KeyValuePair<TKey, TValue>> Collection;
 		public clsKeyCollection(IList<KeyValuePair<TKey, TValue>> collection) 
 		{
 			Collection = collection;
 		}
-		public TValue this[int index]
+		public ICollection<TKey> Keys { get => Collection.Select(itm => itm.Key).ToList(); }
+		public ICollection<TValue> Values { get => Collection.Select(itm => itm.Value).ToList(); }
+		[Browsable(false)]
+		public int Count { get => Collection.Count; }
+		[Browsable(false)]
+		public bool IsReadOnly { get => Collection.IsReadOnly; }
+		public virtual TValue this[int index]
 		{
 			get => Collection[index].Value;
 			set
@@ -506,7 +512,7 @@ namespace modProject
 				Collection[index] = keypairNew;
 			}
 		}
-		public TValue this[TKey key]
+		public virtual TValue this[TKey key]
 		{
 			get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
 			set
@@ -516,6 +522,55 @@ namespace modProject
 				int index = Collection.IndexOf(keypairOld);
 				Collection[index] = keypairNew;
 			}
+		}
+		public IEnumerator GetEnumerator() => ((IEnumerable)Collection).GetEnumerator();
+		IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() => Collection.GetEnumerator();
+		public bool Contains(KeyValuePair<TKey, TValue> itm) => Collection.Contains(itm);
+		public bool ContainsKey(TKey key) => Collection.Any(itm => (key.Equals(itm.Key)));
+		public bool ContainsValue(TValue value) => Collection.Any(itm => (value.Equals(itm.Value)));
+		[Browsable(false)]
+		public void Add(KeyValuePair<TKey, TValue> itm) { Collection.Add(itm); }
+		[Browsable(false)]
+		public void Add(TKey key, TValue value) { Collection.Add(new KeyValuePair<TKey, TValue>(key, value)); }
+		[Browsable(false)]
+		public bool Remove(KeyValuePair<TKey, TValue> itm) => Collection.Remove(itm);
+		[Browsable(false)]
+		public bool Remove(TKey key) 
+		{
+			var ary = Collection.ToList().FindAll(itm => key.Equals(itm.Key));
+			if (ary.Count <= 0) return false;
+			foreach (var itm in ary) { Collection.Remove(itm); }
+			return true;
+		}
+		[Browsable(false)]
+		public bool Remove(TValue value)
+		{
+			var ary = Collection.ToList().FindAll(itm => value.Equals(itm.Value));
+			if (ary.Count <= 0) return false;
+			foreach (var itm in ary) { Collection.Remove(itm); }
+			return true;
+		}
+		[Browsable(false)]
+		public bool TryGetValue(TKey key, out TValue value)
+		{
+			value = default;
+			if (!ContainsKey(key)) return false;
+			value = Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
+			return true;
+		}
+		public int IndexOf(KeyValuePair<TKey, TValue> itm) => Collection.IndexOf(itm);
+		public int IndexOf(TValue value) => Collection.IndexOf(Collection.FirstOrDefault(itm => value.Equals(itm.Value)));
+		[Browsable(false)]
+		public void Insert(int idx, KeyValuePair<TKey, TValue> itm) { Collection.Insert(idx, itm); }
+		[Browsable(false)]
+		public void Insert(int idx, TKey key, TValue value) { Collection.Insert(idx, new KeyValuePair<TKey, TValue>(key, value)); }
+		[Browsable(false)]
+		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) { Collection.CopyTo(array, arrayIndex); }
+		[Browsable(false)]
+		public void Clear() { Collection.Clear(); }
+		public override string ToString()
+		{
+			return generalUtils.ArrayToString(Collection);
 		}
 	}
 	public class clsUniformSet : IEnumerable
@@ -752,10 +807,14 @@ namespace modProject
 			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
 			SetData(dat);
 		}
-		public static implicit operator object[](clsUniformSet uds) => uds.aryDataInlined;
-		public static implicit operator object[][](clsUniformSet uds) => uds.GetData();
 		public static implicit operator string(clsUniformSet uds) => uds.ToString();
 		public static implicit operator clsUniformSet(string str) => new clsUniformSet(str);
+		public static implicit operator object[](clsUniformSet uds) => uds.aryDataInlined;
+		public static implicit operator object[][](clsUniformSet uds) => uds.GetData();
+		public static implicit operator clsUniformSet((UniformType uniTyp, object[] ary) udsDef) => new clsUniformSet(udsDef.uniTyp, udsDef.ary);
+		public static implicit operator clsUniformSet((UniformType uniTyp, object[][] dat) udsDef) => new clsUniformSet(udsDef.uniTyp, udsDef.dat);
+		public static implicit operator (UniformType uniTyp, object[] ary)(clsUniformSet uds) => (uniTyp: uds.Type, ary: uds.aryDataInlined);
+		public static implicit operator (UniformType uniTyp, object[][] dat)(clsUniformSet uds) => (uniTyp: uds.Type, dat: uds.GetData());
 		private object[] aryDataInlined = new object[] { 0 };
 		private object[] aryDataInlined_Formatted = new object[] { 0 };
 		public object[] DataInlined
@@ -839,34 +898,22 @@ namespace modProject
 			return aryDataInlined.GetEnumerator();
 		}
 	}
-	public class clsUniformSetCollection : IEnumerable
+	public class clsUniformSetCollection : clsKeyCollection<string, clsUniformSet>
 	{
-		public List<KeyValuePair<string, clsUniformSet>> Collection;
-		public clsUniformSetCollection(List<KeyValuePair<string, clsUniformSet>> collection)
+		public clsUniformSetCollection(List<KeyValuePair<string, clsUniformSet>> collection) : base(collection) { }
+		public override clsUniformSet this[int index]
 		{
-			Collection = collection;
+			get => base[index];
+			set { base[index].SetData(value.GetData()); }
 		}
-		public clsUniformSet this[int index]
+		public override clsUniformSet this[string key]
 		{
-			get => Collection[index].Value;
-			set { Collection[index].Value.SetData(value.GetData()); }
-		}
-		public clsUniformSet this[string key]
-		{
-			get => Collection.FirstOrDefault(itm => itm.Key.Equals(key)).Value;
+			get => base[key];
 			set
 			{
-				int index = Collection.FindIndex(itm => itm.Key.Equals(key));
-				if (index >= 0) Collection[index].Value.SetData(value.GetData());
+				int index = IndexOf(key);
+				if (index >= 0) base[index].SetData(value.GetData());
 			}
-		}
-		public IEnumerator GetEnumerator()
-		{
-			return ((IEnumerable)Collection).GetEnumerator();
-		}
-		public override string ToString()
-		{
-			return generalUtils.ArrayToString(Collection);
 		}
 	}
 	public class clsEventScript

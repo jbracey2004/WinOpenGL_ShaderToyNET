@@ -128,9 +128,9 @@ namespace WinOpenGL_ShaderToy
 									Output.BeginUpdate();
 									Output.InsertTextAndRestoreSelection(rangeInsert, str, null);
 									Output.EndUpdate();
-									if (entry.Append) Output.DoRangeVisible(rangeInsert);
 									entry.Written = true;
 									group.LastWrittenText = str;
+									if(entry.Append) Output.DoSelectionVisible();
 								}));
 							}
 							catch(Exception err)

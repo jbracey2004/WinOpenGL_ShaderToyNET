@@ -50,7 +50,7 @@ namespace WinOpenGL_ShaderToy
 							{
 								foreach (Capture groupCapture in groupParse.Captures)
 								{
-									aryRet.Add(groupCapture.Value.Trim('\"'));
+									aryRet.Add(groupCapture.Value);
 								}
 							}
 						}
@@ -76,8 +76,9 @@ namespace WinOpenGL_ShaderToy
 				public override string ToString()
 				{
 					string strRet = Name;
-					if (Parameters != "") strRet += "(" + Parameters + ")";
-					return base.ToString();
+					if (!string.IsNullOrEmpty(Parameters)) strRet += "(" + Parameters + ")";
+					if (!string.IsNullOrEmpty(Indexer)) strRet += "[" + Indexer + "]";
+					return strRet;
 				}
 				public static clsFragmentPart[] ArrayFromString(string strFragment)
 				{
@@ -112,10 +113,11 @@ namespace WinOpenGL_ShaderToy
 						object objArg;
 						try
 						{
-							objArg = CSharpScript.EvaluateAsync(aryStr[itr], globals: context).Result;
+							objArg = CSharpScript.EvaluateAsync(aryStr[itr], ProjectDef.GenericScriptOptions, context).Result;
 						}
-						catch
+						catch(Exception err)
 						{
+							Console.WriteLine(ProjectDef.ExceptionFullString(err));
 							objArg = null;
 						}
 						aryRet[itr] = objArg;

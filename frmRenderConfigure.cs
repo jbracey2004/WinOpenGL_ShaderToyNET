@@ -109,39 +109,33 @@ namespace WinOpenGL_ShaderToy
 		{
 			if (string.IsNullOrEmpty(e.Message)) return;
 			string strCode = PreProcess(e.Message, consoleScriptContext);
-			Task<object> Eval = new Task<object>(() => 
-			{
-				try
-				{
-					return MainScript.ContinueWith(strCode, GenericScriptOptions).RunAsync(consoleScriptContext).Result;
-				}
-				catch(Exception err)
-				{
-					return err;
-				}
-			});
-			Eval.Start();
-			while(!Eval.IsCompleted && !Eval.IsCanceled && !Eval.IsFaulted) { Application.DoEvents(); }
 			string strDisp = "\r\n";
-			ScriptState state = Eval.Result as ScriptState;
-			if (state != null)
+			Task<object> Eval = null;
+			try
 			{
-				object Ret = state.ReturnValue;
-				if (Ret != null)
-				{
-					strDisp = ExpandedObjectString(Ret, TypesExpandExempt, true) + "\r\n";
-				}
-				else
-				{
-					strDisp = Eval.Status.ToString() + "\r\n";
-				}
+				Eval = CSharpScript.EvaluateAsync(strCode, GenericScriptOptions, consoleScriptContext);
+				while (!Eval.IsCompleted && !Eval.IsFaulted && !Eval.IsCanceled) { Application.DoEvents(); }
 			}
-			else
+			catch (CompilationErrorException err)
 			{
-				string strErr = "";
-				Exception err = Eval.Result as Exception;
-				if (err != null) strErr = ExceptionFullString(err);
-				strDisp = strErr + "\r\n";
+				strDisp = err.Diagnostics.Aggregate("", (strRet, errItm) => strRet += errItm + "\r\n");
+			}
+			if(Eval != null)
+			{
+				if(Eval.Exception == null)
+				{
+					if(Eval.Result != null)
+					{
+						strDisp = ExpandedObjectString(Eval.Result, TypesExpandExempt, true) + "\r\n";
+					} else
+					{
+						strDisp = "<NULL>\r\n";
+					}
+				} else
+				{
+					strDisp = ExceptionFullString(Eval.Exception);
+				}
+				Eval.Dispose();
 			}
 			Invoke(new Action(() => { Console.Write(strDisp, ">", strCode, true); }));
 		}
