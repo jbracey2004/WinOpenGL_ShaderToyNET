@@ -114,7 +114,7 @@ namespace WinOpenGL_ShaderToy
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
 			glRender.Invalidate();
-			panelMain.Content.Invalidate();
+			//panelMain.Content.Invalidate();
 			LogFrameStatus();
 			double tsDelta = e.TimeDelta * 0.001;
 			if (bolIsRenderFrameValid)
@@ -145,6 +145,11 @@ namespace WinOpenGL_ShaderToy
 								 $"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
 								 $"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
 					ConfigureDialog.Console.Write(str, "Frame Render Status");
+					OpenTK.Graphics.OpenGL.ErrorCode glErr = GL.GetError();
+					if (glErr != 0)
+					{
+						ConfigureDialog.Console.Write($"{glErr}", $"glError Code {(int)glErr}");
+					}
 				}
 			}
 		}

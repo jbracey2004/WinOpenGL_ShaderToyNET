@@ -559,6 +559,8 @@ namespace modProject
 			return true;
 		}
 		public int IndexOf(KeyValuePair<TKey, TValue> itm) => Collection.IndexOf(itm);
+		public int IndexOf(TKey key) => Collection.IndexOf(Collection.FirstOrDefault(itm => key.Equals(itm.Key)));
+		[Browsable(false)]
 		public int IndexOf(TValue value) => Collection.IndexOf(Collection.FirstOrDefault(itm => value.Equals(itm.Value)));
 		[Browsable(false)]
 		public void Insert(int idx, KeyValuePair<TKey, TValue> itm) { Collection.Insert(idx, itm); }
@@ -788,25 +790,9 @@ namespace modProject
 		public int ElementCount { get; private set; } = 1;
 		public KeyValuePair<string, int> ShaderUniformLink { get; set; } = new KeyValuePair<string, int>("", -1);
 		public clsUniformSet() { }
-		public clsUniformSet(UniformType type, object[] ary)
-		{
-			object[][] dat = new object[][] { ary };
-			Type = type;
-			SetData(dat);
-		}
-		public clsUniformSet(UniformType type, object[][] ary)
-		{
-			object[][] dat = ary;
-			Type = type;
-			SetData(dat);
-		}
-		public clsUniformSet(string str)
-		{
-			object[][] dat = StringToArray(str, out int intNewCompLen, out int intNewCompType).ToArray();
-			if (intNewCompType != -1) { Type = (UniformType)intNewCompType; }
-			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
-			SetData(dat);
-		}
+		public clsUniformSet(UniformType type, object[] ary) { SetData(type, ary); }
+		public clsUniformSet(UniformType type, object[][] ary) { SetData(type, ary); }
+		public clsUniformSet(string str) { SetData(str); }
 		public static implicit operator string(clsUniformSet uds) => uds.ToString();
 		public static implicit operator clsUniformSet(string str) => new clsUniformSet(str);
 		public static implicit operator object[](clsUniformSet uds) => uds.aryDataInlined;
@@ -838,6 +824,17 @@ namespace modProject
 		{
 			get => GetData(Element, Component, bolFormatted);
 			set { SetData(Element, Component, value); }
+		}
+		public void SetData(clsUniformSet uds) { Type = uds.Type; SetData(uds.Data); }
+		public void SetData(object[] dat) { SetData(new object[][] { dat }); }
+		public void SetData(UniformType typ, object[] dat) { Type = typ; SetData(new object[][] { dat }); }
+		public void SetData(UniformType typ, object[][] dat) { Type = typ; SetData(dat); }
+		public void SetData(string str)
+		{
+			object[][] dat = StringToArray(str, out int intNewCompLen, out int intNewCompType).ToArray();
+			if (intNewCompType != -1) { Type = (UniformType)intNewCompType; }
+			if (intNewCompLen != -1) { ComponentPerElement = intNewCompLen; }
+			SetData(dat);
 		}
 		public object[][] GetData(bool bolFormatted = false)
 		{
@@ -904,7 +901,7 @@ namespace modProject
 		public override clsUniformSet this[int index]
 		{
 			get => base[index];
-			set { base[index].SetData(value.GetData()); }
+			set { base[index].SetData(value); }
 		}
 		public override clsUniformSet this[string key]
 		{
@@ -912,7 +909,7 @@ namespace modProject
 			set
 			{
 				int index = IndexOf(key);
-				if (index >= 0) base[index].SetData(value.GetData());
+				if (index >= 0) base[index].SetData(value);
 			}
 		}
 	}
@@ -1330,20 +1327,14 @@ namespace modProject
 			}
 			public static object Matrix_Det(int numCols, int numRows, object[] args)
 			{
+				if (numCols == 1 && numRows == 1) return Matrix_Elem(numCols, numRows, 0,0, args);
 				double dRet = 0;
-				if ((numCols == 1) && (numRows == 1)) return args[0];
-				for (int itrCol = 0; itrCol < ((numCols == 2) ? 1 : numCols); itrCol++)
+				for (int itrCol = 0; itrCol < numCols; itrCol++)
 				{
-					double dProdPos = 1;
-					double dProdNeg = 1;
-					for (int itrRow = 0; itrRow < numRows; itrRow++)
-					{
-						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, itrRow, args).ToString(), out double dPos);
-						double.TryParse(Matrix_Elem(numCols, numRows, (itrCol + itrRow) % numCols, (numRows - 1) - itrRow, args).ToString(), out double dNeg);
-						dProdPos *= dPos;
-						dProdNeg *= dNeg;
-					}
-					dRet += (dProdPos - dProdNeg);
+					object[] aryMatrixMinor = Matrix_MinorAt(numCols, numRows, itrCol, 0, args);
+					double.TryParse(Matrix_Elem(numCols, numRows, itrCol, 0, args).ToString(), out double dCell);
+					double.TryParse(Matrix_Det(numCols-1, numRows-1, aryMatrixMinor).ToString(), out double dDetMin);
+					dRet += Math.Pow(-1, itrCol) * dCell * dDetMin;
 				}
 				return dRet;
 			}
@@ -1463,9 +1454,9 @@ namespace modProject
 			}
 			public static object[] Matrix_Perspective(double NearDist, double FarDist, double HorizontalAngle, double VerticalAngle)
 			{
-				double[] fov = new double[] { 1.0 / Math.Tan(0.5 * HorizontalAngle), 1.0 / Math.Tan(0.5 * VerticalAngle) };
-				double Nf = -FarDist / (FarDist - NearDist);
-				return Matrix(4, 4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, Nf, -1, 0, 0, Nf * NearDist, 0);
+				double Nf = 1 / (NearDist - FarDist);
+				double[] fov = new double[] { 1.0/Math.Tan(0.5 * HorizontalAngle), 1.0/Math.Tan(0.5 * VerticalAngle) };
+				return Matrix(4, 4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, (NearDist + FarDist)*Nf, 1, 0, 0, (2 * NearDist * FarDist) * NearDist, 0);
 			}
 			public static object[] Quat(double w, double x, double y, double z)
 			{
@@ -3440,7 +3431,7 @@ namespace modProject
 		{
 			int intProgramID = (Program != null && Program.IsValid) ? Program.glID : -1;
 			if (intProgramID < 0) return;
-			GL.UseProgram(intProgramID);
+			GL.GetProgram(intProgramID, GetProgramParameterName.ActiveUniforms, out int intUniCount);
 			foreach (KeyValuePair<string, clsUniformSet> itm in Uniforms)
 			{
 				if (itm.Key == null) continue;
@@ -3450,6 +3441,7 @@ namespace modProject
 					int uniLoc = -1;
 					uniName = (uni.Key != null) ? uni.Key : "";
 					uniLoc = (!string.IsNullOrEmpty(uniName) && intProgramID >= 0) ? GL.GetUniformLocation(intProgramID, uniName) : -1;
+					if (uniLoc > intUniCount) uniLoc = -1;
 					itm.Value.ShaderUniformLink = new KeyValuePair<string, int>(uniName, uniLoc);
 				}
 			}

@@ -105,15 +105,16 @@ namespace WinOpenGL_ShaderToy
 		private void loopWriteGroupEntries()
 		{
 			int idxGroup = 0;
+			int idxEntry = 0;
 			while(bolMainLoop)
 			{
 				if(idxGroup < EntryGroups.Count)
 				{
 					ConsoleEntryGroup group = EntryGroups[idxGroup];
-					if(group.Entries.Count > 0)
+					if(idxEntry < group.Entries.Count)
 					{
-						ConsoleEntry entry = group.Entries[group.Entries.Count - 1];
-						if (entry != null && !entry.Written)
+						ConsoleEntry entry = group.Entries[idxEntry];
+						if (!entry.Written)
 						{
 							try
 							{
@@ -128,9 +129,9 @@ namespace WinOpenGL_ShaderToy
 									Output.BeginUpdate();
 									Output.InsertTextAndRestoreSelection(rangeInsert, str, null);
 									Output.EndUpdate();
-									entry.Written = true;
 									group.LastWrittenText = str;
-									if(entry.Append) Output.DoSelectionVisible();
+									entry.Written = true;
+									if (entry.Append) Output.DoSelectionVisible();
 								}));
 							}
 							catch(Exception err)
@@ -141,9 +142,9 @@ namespace WinOpenGL_ShaderToy
 							Thread.Sleep(50);
 						}
 					}
-					idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
+					idxEntry = (idxEntry + 1) % Math.Max(group.Entries.Count, 1);
 				}
-				idxGroup = idxGroup % Math.Max(EntryGroups.Count, 1);
+				idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
 				Application.DoEvents();
 			}
 		}
@@ -335,7 +336,7 @@ namespace WinOpenGL_ShaderToy
 			if (bolInit)
 			{
 				int intLineCount = Input.LineInfos.Aggregate(0, (count, itm) => count += itm.WordWrapStringsCount);
-				Invoke(new Action(() => { Input.Height = intLineCount * (Input.CharHeight); }));
+				Invoke(new Action(() => { Input.Height = intLineCount * (Input.CharHeight + 2); }));
 			}
 		}
 		private void Input_TextChanging(object sender, TextChangingEventArgs e)

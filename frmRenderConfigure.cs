@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Collections.Generic;
 using modProject;
+using OpenTK.Graphics.OpenGL4;
 using static WinOpenGL_ShaderToy.ProjectDef;
 using static WinOpenGL_ShaderToy.controlUniformData;
 using static modProject.clsUniformSet;
@@ -114,7 +115,6 @@ namespace WinOpenGL_ShaderToy
 			try
 			{
 				Eval = CSharpScript.EvaluateAsync(strCode, GenericScriptOptions, consoleScriptContext);
-				while (!Eval.IsCompleted && !Eval.IsFaulted && !Eval.IsCanceled) { Application.DoEvents(); }
 			}
 			catch (CompilationErrorException err)
 			{
@@ -129,7 +129,7 @@ namespace WinOpenGL_ShaderToy
 						strDisp = ExpandedObjectString(Eval.Result, TypesExpandExempt, true) + "\r\n";
 					} else
 					{
-						strDisp = "<NULL>\r\n";
+						strDisp = (strCode.EndsWith(";"))?$"{Eval.Status}":"<NULL>\r\n";
 					}
 				} else
 				{
@@ -243,13 +243,10 @@ namespace WinOpenGL_ShaderToy
 		private void timerUpdateLists_EndInterval(object sender, HPIntervalEventArgs e)
 		{
 			UpdateLists();
-			if(RenderSubject != null)
-			{
-				RenderSubject.LinkShaderUniforms();
-			}
 		}
 		private void UpdateLists()
 		{
+			RenderSubject?.LinkShaderUniforms();
 			UpdateGeometryList();
 			UpdateProgramList();
 			UpdateAttributeList();
@@ -322,9 +319,9 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void UpdateUniformsData()
 		{
+			datagridUniformsValues.Rows.Clear();
 			if (RenderSubject == null) return;
 			if (RenderSubject.Uniforms == null) return;
-			datagridUniformsValues.Rows.Clear();
 			for(int itr = 0; itr < RenderSubject.Uniforms.Count; itr++)
 			{
 				KeyValuePair<string, clsUniformSet> itm = RenderSubject.Uniforms[itr];
@@ -335,9 +332,9 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void UpdateGeometryRouting()
 		{
+			datagridGeometryRouting.Rows.Clear();
 			if (RenderSubject == null) return;
 			if (RenderSubject.Geometry == null) return;
-			datagridGeometryRouting.Rows.Clear();
 			foreach (KeyValuePair<string, clsVertexDescriptionComponent> itm in RenderSubject.GeometryShaderLinks)
 			{
 				datagridGeometryRouting.Rows.Add(new object[] { itm.Key as string, itm.Value as clsVertexDescriptionComponent });
@@ -345,19 +342,20 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void UpdateUniformRouting()
 		{
+			datagridUniformsRouting.Rows.Clear();
 			if (RenderSubject == null) return;
 			if (RenderSubject.Program == null) return;
-			datagridUniformsRouting.Rows.Clear();
-			foreach(KeyValuePair<string, string> itm in RenderSubject.UniformShaderLinks)
+			GL.UseProgram(RenderSubject.Program.glID);
+			foreach (KeyValuePair<string, string> itm in RenderSubject.UniformShaderLinks)
 			{
-				datagridUniformsRouting.Rows.Add(new object[] { itm.Key as string, itm.Value as string } );
+				datagridUniformsRouting.Rows.Add(new object[] { strUniformLocationRef(itm.Key as string), itm.Value as string } );
 			}
 		}
 		private void UpdateEventScripts()
 		{
+			datagridEvents.Rows.Clear();
 			if (RenderSubject == null) return;
 			if (datagridEvents.ColumnCount <= 0) return;
-			datagridEvents.Rows.Clear();
 			foreach (clsEventScript itm in RenderSubject.EventScripts)
 			{
 				datagridEvents.Rows.Add(itm.ToString());
@@ -401,9 +399,23 @@ namespace WinOpenGL_ShaderToy
 			DataGridViewComboBoxColumn column = datagridUniformsRouting.Columns["columnProgramUniform"] as DataGridViewComboBoxColumn;
 			column.Items.Clear();
 			if (RenderSubject.Program == null) return;
-			column.Items.AddRange(RenderSubject.Program.Uniforms);
+			foreach (string strUni in RenderSubject.Program.Uniforms)
+			{
+				column.Items.Add(strUniformLocationRef(strUni));
+			}
 		}
-
+		private string strUniformLocationRef(string str)
+		{
+			int glLoc = GL.GetUniformLocation(RenderSubject.Program.glID, str);
+			GL.GetProgram(RenderSubject.Program.glID, GetProgramParameterName.ActiveUniforms, out int intUniCount);
+			string strLoc = (glLoc >= 0) ? $" {{{glLoc}}}" : "";
+			return $"{str}\t{((glLoc < intUniCount)?strLoc:" {X}")}";
+		}
+		private string strUniformLocationRefName(string strRef)
+		{
+			int idx = strRef.IndexOf("\t");
+			return strRef.Substring(0, (idx>=0)?idx:strRef.Length);
+		}
 		private void datagridGeometryRouting_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
 		{
 			DataGridViewCell cell = datagridGeometryRouting.CurrentCell;
@@ -564,7 +576,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void datagridUniformsRouting_UserAddedRow(object sender, DataGridViewRowEventArgs e)
 		{
-			string strUniform = e.Row.Cells["columnProgramUniform"].Value as string;
+			string strUniform = strUniformLocationRefName(e.Row.Cells["columnProgramUniform"].Value as string);
 			string strVarName = e.Row.Cells["columnVarName"].Value as string;
 			RenderSubject.UniformShaderLinks.Add(new KeyValuePair<string, string>(strUniform, strVarName));
 			RenderSubject.LinkShaderUniforms();
@@ -586,7 +598,7 @@ namespace WinOpenGL_ShaderToy
 			{
 				DataGridViewComboBoxEditingControl lst = cell.Tag as DataGridViewComboBoxEditingControl;
 				if (lst == null) return;
-				string obj = lst.SelectedItem as string;
+				string obj = strUniformLocationRefName(lst.SelectedItem as string);
 				RenderSubject.UniformShaderLinks[row.Index] = new KeyValuePair<string, string>(obj, oldValue.Value);
 			}
 			if (column.Name == "columnVarName")
@@ -597,11 +609,27 @@ namespace WinOpenGL_ShaderToy
 				RenderSubject.UniformShaderLinks[row.Index] = new KeyValuePair<string, string>(oldValue.Key, obj);
 			}
 			cell.Tag = null;
-			RenderSubjectForm.UpdateGeometryRouting();
+			RenderSubjectForm?.UpdateGeometryRouting();
 			RenderSubject.LinkShaderUniforms();
 		}
 		private void datagridUniformsRouting_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
+			DataGridViewCell cell = datagridUniformsRouting[e.ColumnIndex, e.RowIndex];
+			if(cell.OwningColumn.Name == "columnProgramUniform")
+			{
+				DataGridViewComboBoxCell cellCombo = cell as DataGridViewComboBoxCell;
+				if(cellCombo != null)
+				{
+					foreach (var itm in cellCombo.Items)
+					{
+						if (strUniformLocationRefName(itm as string) == strUniformLocationRefName(cell.Value as string))
+						{
+							cell.Value = itm;
+							break;
+						}
+					}
+				}
+			}
 			e.Cancel = true;
 		}
 		private void datagridEvents_UserAddedRow(object sender, DataGridViewRowEventArgs e)
