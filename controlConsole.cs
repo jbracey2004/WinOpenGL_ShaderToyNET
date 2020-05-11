@@ -105,16 +105,16 @@ namespace WinOpenGL_ShaderToy
 		private void loopWriteGroupEntries()
 		{
 			int idxGroup = 0;
-			int idxEntry = 0;
+			//int idxEntry = 0;
 			while(bolMainLoop)
 			{
 				if(idxGroup < EntryGroups.Count)
 				{
 					ConsoleEntryGroup group = EntryGroups[idxGroup];
-					if(idxEntry < group.Entries.Count)
+					if(group != null)
 					{
-						ConsoleEntry entry = group.Entries[idxEntry];
-						if (!entry.Written)
+						ConsoleEntry entry = group.Entries[group.Entries.Count - 1];
+						if (entry != null && !entry.Written)
 						{
 							try
 							{
@@ -129,8 +129,8 @@ namespace WinOpenGL_ShaderToy
 									Output.BeginUpdate();
 									Output.InsertTextAndRestoreSelection(rangeInsert, str, null);
 									Output.EndUpdate();
-									group.LastWrittenText = str;
 									entry.Written = true;
+									group.LastWrittenText = str;
 									if (entry.Append) Output.DoSelectionVisible();
 								}));
 							}
@@ -142,7 +142,8 @@ namespace WinOpenGL_ShaderToy
 							Thread.Sleep(50);
 						}
 					}
-					idxEntry = (idxEntry + 1) % Math.Max(group.Entries.Count, 1);
+					//idxEntry = (idxEntry + 1) % Math.Max(group.Entries.Count, 1);
+					//idxEntry = group.Entries.Count-1;
 				}
 				idxGroup = (idxGroup + 1) % Math.Max(EntryGroups.Count, 1);
 				Application.DoEvents();

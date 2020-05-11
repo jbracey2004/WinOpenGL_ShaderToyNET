@@ -100,13 +100,14 @@ namespace WinOpenGL_ShaderToy
 		{
 			Assembly[] aryAssm = new Assembly[]
 			{
-				Assembly.GetExecutingAssembly()
+				typeof(modCommon.modWndProcInterop).Assembly,
+				typeof(modProject.clsEventScript).Assembly
 			};
 			string[] aryImports = new string[] 
 			{
-				"System",
-				"System.Drawing",
 				"modCommon",
+				"modProject",
+				"modProject.clsEventScript",
 				"modProject.clsEventScript.clsEventScriptContext_Functions",
 				"modCommon.modWndProcInterop", "modCommon.modWndProcInterop.InputInterface"
 			};
@@ -715,7 +716,7 @@ namespace modProject
 			if (intComponentType == -1) { intComponentCount = 1; } else { intComponentCount = UniformType_ComponentCount(enumType); }
 			List<object[]> aryRet = new List<object[]>();
 			if (!str.Contains("(") && !str.Contains(")")) { str = "(" + str + ")"; }
-			foreach (Match regMatch in Regex.Matches(str, @"\((\S+?\s{0,}\,{0,}\s{0,}){1,}\)"))
+			foreach (Match regMatch in Regex.Matches(str, @"\(.*?\)"))
 			{
 				string[] aryStr = regMatch.Value.Split(',');
 				List<object> elem = new List<object>();
@@ -843,7 +844,7 @@ namespace modProject
 			for (int itr = 0; itr < lstRet.Length; itr++)
 			{
 				lstRet[itr] = new object[ComponentPerElement];
-				arySelected.CopyTo(lstRet[itr], itr * ComponentPerElement);
+				Array.Copy(arySelected, itr * ComponentPerElement, lstRet[itr], 0, ComponentPerElement);
 			}
 			return lstRet;
 		}
@@ -1018,6 +1019,12 @@ namespace modProject
 			{
 				return ArrayList.Repeat(Val, Len).ToArray();
 			}
+			public static object[] Vec(int Len, object[] Vec)
+			{
+				object[] aryRet = new object[Len];
+				for (int itr = 0; itr < Len; itr++) aryRet[itr] = Vec_Elem(Vec, itr);
+				return aryRet;
+			}
 			public static object Vec_Elem(object[] args, int index)
 			{
 				object objRet = 0;
@@ -1109,11 +1116,11 @@ namespace modProject
 			}
 			public static object[] Vec_Mul(object[] Vec, int numColumns, int numRows, object[] matrix)
 			{
-				return Matrix_Mul(1, Vec.Length, Vec, Math.Min(Vec.Length, numColumns), numRows, matrix);
+				return Matrix_Mul(1, numColumns, Vec, numColumns, numRows, matrix);
 			}
 			public static object[] Vec_Mul(int numColumns, int numRows, object[] matrix, object[] Vec)
 			{
-				return Matrix_Mul(numColumns, numRows, matrix, Math.Min(Vec.Length, numRows), 1, Vec);
+				return Matrix_Mul(numColumns, numRows, matrix, Math.Max(Vec.Length, numRows), 1, Vec);
 			}
 			public static object Vec_Len(object[] Vec)
 			{
@@ -1152,10 +1159,7 @@ namespace modProject
 				{
 					int tmpCol = itr % numCols;
 					int tmpRow = (int)Math.Floor((double)itr / numCols);
-					if (tmpCol == tmpRow)
-					{
-						objRet[itr] = 1.0;
-					}
+					if (tmpCol == tmpRow) objRet[itr] = 1.0;
 				}
 				return objRet;
 			}
@@ -1177,19 +1181,41 @@ namespace modProject
 			}
 			public static object[] Matrix<T>(int numCols, int numRows, params T[] args)
 			{
+				object[] aryArgs = Array.ConvertAll(args, itm => (object)itm);
 				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
-				int argCols = (int)Math.Floor((double)args.Length / numRows);
 				for (int itr = 0; itr < objRet.Length; itr++)
 				{
-					int tmpCol = itr % argCols;
-					int tmpRow = (int)Math.Floor((double)itr / argCols);
-					int idx = tmpCol + tmpRow * numCols;
-					if (idx < objRet.Length)
-					{
-						objRet[idx] = args[itr];
-					}
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numRows);
+					object objItm = Matrix_Elem(numCols, numRows, tmpCol, tmpRow, aryArgs);
+					Matrix_Elem(numCols, numRows, tmpCol, tmpRow, ref objRet, objItm);
 				}
 				return objRet;
+			}
+			public static object[] Matrix<T>(int numCols, int numRows, int argNumCols, int argNumRows, params T[] args)
+			{
+				object[] aryArgs = Array.ConvertAll(args, itm => (object)itm);
+				object[] objRet = ArrayList.Repeat(0, numCols * numRows).ToArray();
+				for (int itr = 0; itr < objRet.Length; itr++)
+				{
+					int tmpCol = itr % numCols;
+					int tmpRow = (int)Math.Floor((double)itr / numRows);
+					object objItm = Matrix_Elem(argNumCols, argNumRows, tmpCol, tmpRow, aryArgs);
+					Matrix_Elem(numCols, numRows, tmpCol, tmpRow, ref objRet, objItm);
+				}
+				return objRet;
+			}
+			public static void Matrix(int numColsA, int numRowsA, ref object[] matrix, int numColsB, int numRowsB, object[] args)
+			{
+				for (int itr = 0; itr < (numColsB * numRowsB); itr++)
+				{
+					int tmpColA = itr % numColsA;
+					int tmpRowA = (int)Math.Floor((double)itr / numColsA);
+					int tmpColB = itr % numColsB;
+					int tmpRowB = (int)Math.Floor((double)itr / numColsB);
+					object objItm = Matrix_Elem(numColsB, numRowsB, tmpColB, tmpRowB, args);
+					Matrix_Elem(numColsA, numRowsA, tmpColA, tmpRowA, ref matrix, objItm);
+				}
 			}
 			public static object Matrix_Elem(int numCols, int numRows, int indexCol, int indexRow, object[] args)
 			{
@@ -1357,16 +1383,22 @@ namespace modProject
 			{
 				int tmpCols = numColsA;
 				int tmpRows = numRowsB;
-				object[] aryRet = ArrayList.Repeat(0, tmpCols * tmpRows).ToArray();
-				for (int itr = 0; itr < aryRet.Length; itr++)
+				object[] aryRet = Matrix(numColsA, numRowsA, argsA);
+				for (int itr = 0; itr < (tmpCols * tmpRows); itr++)
 				{
 					int tmpCol = itr % tmpCols;
 					int tmpRow = (int)Math.Floor((double)itr / tmpCols);
 					object[] vecCol = Matrix_Column(numColsA, numRowsA, tmpCol, argsA);
 					object[] vecRow = Matrix_Row(numColsB, numRowsB, tmpRow, argsB);
 					double.TryParse(Vec_Dot(vecCol, vecRow).ToString(), out double dDot);
-					aryRet[itr] = dDot;
+					Matrix_Elem(numColsA, numRowsA, tmpCol, tmpRow, ref aryRet, dDot);
 				}
+				return aryRet;
+			}
+			public static object[] Matrix_Translate(int numCols, int numRows, object[] Vec)
+			{
+				object[] aryRet = Matrix(numCols, numRows);
+				Matrix_Row(numCols, numRows, numRows - 1, ref aryRet, Vec);
 				return aryRet;
 			}
 			public static object[] Matrix_Rot2x2(double ang)
@@ -1456,7 +1488,7 @@ namespace modProject
 			{
 				double Nf = 1 / (NearDist - FarDist);
 				double[] fov = new double[] { 1.0/Math.Tan(0.5 * HorizontalAngle), 1.0/Math.Tan(0.5 * VerticalAngle) };
-				return Matrix(4, 4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, (NearDist + FarDist)*Nf, 1, 0, 0, (2 * NearDist * FarDist) * NearDist, 0);
+				return Matrix(4, 4, fov[0], 0, 0, 0, 0, fov[1], 0, 0, 0, 0, -(NearDist - FarDist)*Nf, -1, 0, 0, (2.0 * NearDist * FarDist) * NearDist, 0);
 			}
 			public static object[] Quat(double w, double x, double y, double z)
 			{

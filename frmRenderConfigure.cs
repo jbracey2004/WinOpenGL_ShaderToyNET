@@ -512,8 +512,6 @@ namespace WinOpenGL_ShaderToy
 				if(cellUniformData != null)
 				{
 					clsUniformSet valueNew = new clsUniformSet(cellUniformData.Value.ToString());
-					valueNew.Type = cellUniformData.DataUniformType;
-					valueNew.SetData(cellUniformData.DataObject.ToArray());
 					RenderSubject.Uniforms[intUni] = new KeyValuePair<string, clsUniformSet>(oldValue.Key, valueNew);
 				}
 			}

@@ -182,6 +182,7 @@ namespace modCommon
 				public double Distance { get; set; }
 				public double DistanceUV { get; set; }
 				public List<TouchPoint> TouchPoints { get; private set; } = new List<TouchPoint>();
+				public TouchPoint InitialTouchPoint { get => ((TouchPoints.Count > 0) ? (TouchPoints[0]) : (TouchPoint.Empty)); }
 				public TouchPoint CurrentTouchPoint { get => ((TouchPoints.Count > 0) ? (TouchPoints[TouchPoints.Count - 1]): (TouchPoint.Empty)); }
 				public TouchPoint PreviousTouchPoint { get => ((TouchPoints.Count > 1) ? (TouchPoints[TouchPoints.Count - 2]) : (TouchPoint.Empty)); }
 				public Point MoveDelta 

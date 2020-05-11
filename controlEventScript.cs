@@ -149,6 +149,28 @@ namespace WinOpenGL_ShaderToy
 					}
 					return aryRet.ToArray();
 				}
+				public static KeyValuePair<string, object>[] ObjectsFromArray(Type typeRoot, clsFragmentPart[] aryParts)
+				{
+					List<KeyValuePair<string, object>> aryRet = new List<KeyValuePair<string, object>>();
+					string strPart = "";
+					for (int itr = 0; itr < aryParts.Length; itr++)
+					{
+						Type typeItm = typeRoot;
+						GetMethod(aryParts[itr], typeItm, out MethodInfo methodItm, out object methodObj);
+						GetProperty(aryParts[itr], typeItm, out PropertyInfo propItm, out object propObj);
+						object obj = null;
+						if (propItm != null) obj = propObj;
+						if (methodItm != null) obj = methodObj;
+						if (obj != null)
+						{
+							aryRet.Add(new KeyValuePair<string, object>(aryParts[itr].Name, obj));
+							strPart += aryParts[itr].Name + ".";
+							continue;
+						}
+						break;
+					}
+					return aryRet.ToArray();
+				}
 			}
 			public static AutocompleteItem[] GetAutoCompleteItems(Type obj)
 			{
@@ -214,6 +236,20 @@ namespace WinOpenGL_ShaderToy
 					break;
 				}
 			}
+			public static void GetMethod(clsFragmentPart part, Type obj, out MethodInfo methodRet, out object objRet)
+			{
+				methodRet = null;
+				objRet = null;
+				foreach (MethodInfo t in obj.GetMethods())
+				{
+					if (!IsMemberBrowsable(t)) continue;
+					if (t.IsSpecialName) continue;
+					if (t.Name != part.Name) continue;
+					methodRet = t;
+
+					break;
+				}
+			}
 			public static void GetProperty(clsFragmentPart part, object context, Type obj, out PropertyInfo propRet, out object objRet)
 			{
 				propRet = null;
@@ -235,6 +271,20 @@ namespace WinOpenGL_ShaderToy
 					if (!bolSignatureValid) continue;
 					propRet = t;
 					objRet = t.GetValue(context, aryParams);
+					break;
+				}
+			}
+			public static void GetProperty(clsFragmentPart part, Type obj, out PropertyInfo propRet, out object objRet)
+			{
+				propRet = null;
+				objRet = null;
+				foreach (PropertyInfo t in obj.GetProperties())
+				{
+					if (!IsPropertyBrowsable(t)) continue;
+					if (t.IsSpecialName) continue;
+					if (t.Name != part.Name) continue;
+					propRet = t;
+
 					break;
 				}
 			}
