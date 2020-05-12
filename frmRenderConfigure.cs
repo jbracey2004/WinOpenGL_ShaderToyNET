@@ -78,17 +78,17 @@ namespace WinOpenGL_ShaderToy
 		public controlConsole Console { get; private set; }
 		private clsEventScriptContext consoleScriptContext;
 		private clsAutoComplete consoleAutoComplete;
-		private AutoCompleteCollection consoleItemsCollection;
+		private clsAutoCompleteCollection consoleItemsCollection;
 		private void InitConsole()
 		{
 			consoleScriptContext = new clsEventScriptContext();
 			consoleScriptContext.RenderSubject = RenderSubject;
 			Console = new controlConsole();
 			consoleAutoComplete = new clsAutoComplete(Console.Input);
-			consoleAutoComplete.SearchPattern = @"[\w\d\.\[\(\]\)\""]";
+			consoleAutoComplete.SearchPattern = @"[\w\d\.\,\[\(\]\)\""\s]";
 			consoleAutoComplete.AutoSize = true;
 			consoleAutoComplete.MinFragmentLength = 1;
-			consoleItemsCollection = new AutoCompleteCollection(consoleScriptContext, Console.Input, consoleAutoComplete);
+			consoleItemsCollection = new clsAutoCompleteCollection(consoleScriptContext, consoleAutoComplete);
 			consoleAutoComplete.Items.SetAutocompleteItems(consoleItemsCollection);
 			Console.Parent = panelEventsConsole;
 			Console.Dock = DockStyle.Fill;

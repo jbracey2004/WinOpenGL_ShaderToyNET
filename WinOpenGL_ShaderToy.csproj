@@ -172,6 +172,7 @@
     <Compile Include="frmShader.Designer.cs">
       <DependentUpon>frmShader.cs</DependentUpon>
     </Compile>
+    <Compile Include="modAutoComplete.cs" />
     <Compile Include="modProject.cs" />
     <Compile Include="modEventScriptDataView.cs" />
     <Compile Include="modUniformDataView.cs" />

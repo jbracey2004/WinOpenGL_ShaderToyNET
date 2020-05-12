@@ -80,6 +80,7 @@ namespace WinOpenGL_ShaderToy
 			}
 		}
 		public static ScriptOptions GenericScriptOptions;
+		public static clsEventScriptContext_Functions ScriptContextFunctions;
 		public static Script MainScript;
 		public static frmMain formMain;
 		public static clsProject projectMain;
@@ -98,6 +99,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		public static void DefaultScriptInit()
 		{
+			ScriptContextFunctions = new clsEventScriptContext_Functions();
 			Assembly[] aryAssm = new Assembly[]
 			{
 				typeof(modCommon.modWndProcInterop).Assembly,
@@ -976,7 +978,7 @@ namespace modProject
 		{
 			return EventScript_ToString(this);
 		}
-		public static class clsEventScriptContext_Functions
+		public class clsEventScriptContext_Functions
 		{
 			public static double pi => Math.PI;
 			public static double tau => pi * 2;
