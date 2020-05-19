@@ -43,6 +43,7 @@
 			this.lstVertexDesc = new System.Windows.Forms.ComboBox();
 			this.lblPositionAttr = new System.Windows.Forms.Label();
 			this.lstPositionAttr = new System.Windows.Forms.ComboBox();
+			this.panelRender = new System.Windows.Forms.Panel();
 			this.panelMain.Content.SuspendLayout();
 			this.panelMain.Status.SuspendLayout();
 			this.panelMain.SuspendLayout();
@@ -65,6 +66,7 @@
 			this.panelMain.Content.Size = new System.Drawing.Size(871, 479);
 			this.panelMain.Content.TabIndex = 2;
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);
 			this.panelMain.Margin = new System.Windows.Forms.Padding(0);
 			this.panelMain.Name = "panelMain";
@@ -74,7 +76,7 @@
 			this.panelMain.Size = new System.Drawing.Size(871, 509);
 			// 
 			// panelMain.Status
-			//
+			// 
 			this.panelMain.Status.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelMain.Status.Controls.Add(this.lblName);
 			this.panelMain.Status.Controls.Add(this.lblVertexDesc);
@@ -87,10 +89,12 @@
 			this.panelMain.Status.Size = new System.Drawing.Size(871, 30);
 			this.panelMain.Status.TabIndex = 3;
 			this.panelMain.TabIndex = 0;
+			this.panelMain.Timer_IntervalUpdate = null;
 			// 
 			// panelCollapse
 			// 
-			this.panelCollapse.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.panelCollapse.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.panelCollapse.Controls.Add(this.panelRender);
 			this.panelCollapse.Controls.Add(this.splitterLeft);
 			this.panelCollapse.Controls.Add(this.splitterRight);
 			this.panelCollapse.Controls.Add(this.panelLeft);
@@ -256,6 +260,16 @@
 			this.lstPositionAttr.TabIndex = 5;
 			this.lstPositionAttr.SelectedIndexChanged += new System.EventHandler(this.LstPositionAttr_SelectedIndexChanged);
 			// 
+			// panelRender
+			// 
+			this.panelRender.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.panelRender.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelRender.Location = new System.Drawing.Point(8, 0);
+			this.panelRender.Margin = new System.Windows.Forms.Padding(0);
+			this.panelRender.Name = "panelRender";
+			this.panelRender.Size = new System.Drawing.Size(604, 477);
+			this.panelRender.TabIndex = 13;
+			// 
 			// frmGeometry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -294,5 +308,6 @@
 		private System.Windows.Forms.Label lblVertexDesc;
 		private System.Windows.Forms.ComboBox lstVertexDesc;
 		private System.Windows.Forms.Label lblHeader_Geometry;
+		private System.Windows.Forms.Panel panelRender;
 	}
 }

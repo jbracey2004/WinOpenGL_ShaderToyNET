@@ -67,6 +67,7 @@ public class clsHPTimer : IDisposable
 	{
 		long ElapsedTicks;
 		double fElapsedDelta;
+		ts.Start();
 		while (bolRunning)
 		{
 			if (ts.ElapsedTicks >= tickInterval)
@@ -76,26 +77,26 @@ public class clsHPTimer : IDisposable
 				ts.Restart();
 				try
 				{
-					HPIntervalEventHandler evnt = IntervalEnd;
-					if(evnt != null)
+					if (IntervalEnd != null)
 					{
-						Parent.Invoke(evnt, this, new HPIntervalEventArgs(DateTime.Now, fElapsedDelta));
+						Parent.Invoke(IntervalEnd, this, new HPIntervalEventArgs(DateTime.Now, fElapsedDelta));
 					}
 				}
 				catch
 				{
-					if(Parent != null)
+					if (Parent != null)
 					{
 						if (Parent.IsDisposed || Parent.Disposing)
 						{
 							bolRunning = false;
 						}
-					} else
+					} 
+					else
 					{
 						Console.WriteLine("No Timer Event: Parent Context Disposition Out of Sync");
 					}
 				}
-				//Application.DoEvents();
+				Application.DoEvents();
 				if (SleepInterval > 0)
 				{
 					Thread.Sleep(SleepInterval);
@@ -103,7 +104,6 @@ public class clsHPTimer : IDisposable
 			}
 			//Application.DoEvents();
 		}
-		//Application.DoEvents();
 	}
 	bool bolIsDisposed = false;
 	protected virtual void Dispose(bool bolDisposing)
@@ -120,6 +120,5 @@ public class clsHPTimer : IDisposable
 	public void Dispose()
 	{
 		Dispose(true);
-		//GC.SuppressFinalize(this);
 	}
 }

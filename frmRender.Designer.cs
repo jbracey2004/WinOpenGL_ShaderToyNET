@@ -65,7 +65,6 @@ namespace WinOpenGL_ShaderToy
 			this.panelMain.Content.Name = "Content";
 			this.panelMain.Content.Size = new System.Drawing.Size(800, 420);
 			this.panelMain.Content.TabIndex = 2;
-			this.panelMain.Content.Paint += new System.Windows.Forms.PaintEventHandler(this.panelMain_Content_Paint);
 			this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelMain.ForeColor = System.Drawing.SystemColors.Window;
 			this.panelMain.Location = new System.Drawing.Point(0, 0);

@@ -45,7 +45,6 @@ namespace WinOpenGL_ShaderToy
 			lstEventType.Items.AddRange(Enum.GetNames(typeof(EventType)));
 			lstEventType.SelectedIndex = 0;
 			menuAutoComplete = new clsAutoComplete(txtSource);
-			menuAutoComplete.SearchPattern = @"[\w\d\.\[\(\]\)\""]";
 			menuAutoComplete.AutoSize = true;
 			menuAutoComplete.MinFragmentLength = 1;
 			menuItemsCollection = new clsAutoCompleteCollection(ScriptContext, menuAutoComplete);

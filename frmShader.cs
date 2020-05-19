@@ -89,7 +89,7 @@ namespace WinOpenGL_ShaderToy
 		{
 			e.ChangedRange.ClearStyle(styleAccessModifiers, styleGLTypes, styleCodeFlow, styleGLInputOutput, styleGLKeywords, styleBuiltInFunctions);
 			e.ChangedRange.SetStyle(styleCodeFlow,
-				@"\s*#\b(define|undef|if|ifdef|ifndef|else|elif|endif|error|pragma|extension |version |line)\b");
+				@"\s*#\b(define|undef|if|ifdef|ifndef|else|elif|endif|error|pragma|extension|version|line)\b");
 			e.ChangedRange.SetStyle(styleAccessModifiers,
 				@"\b(attribute|const|uniform|varying|buffer|shared|coherent|volatile|restrict|readonly|writeonly|struct|layout|centroid|flat|smooth|noperspective|patch|sample|break|continue|do|for|while|switch|case|default|if|else|subroutine|in|out|inout|true|false|invariant|discard|return|lowp|mediump|highp|precision)\b");
 			e.ChangedRange.SetStyle(styleGLTypes,
@@ -127,7 +127,6 @@ namespace WinOpenGL_ShaderToy
 		{
 			if(Shader != null)
 			{
-				glContext_Main.MakeCurrent(infoWindow);
 				lblCompileStatus.ForeColor = Color.Blue;
 				lblCompileStatus.Text = "Compile Status: Compiling...";
 				Shader.Compile();

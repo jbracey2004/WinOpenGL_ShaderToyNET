@@ -14,6 +14,9 @@ using System.Web.UI.Design;
 
 public class generalUtils
 {
+	public static Random RandomSeed = new Random();
+	public static int Rnd(int min, int max) => RandomSeed.Next(min, max);
+	public static double Rnd(double min, double max) => min + RandomSeed.NextDouble() * (max - min);
 	public static KeyValuePair<string, int>[] SIUnits = new KeyValuePair<string, int>[]
 	{
 		new KeyValuePair<string, int>( "p", -9 ),

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Collections.Generic;
 using modProject;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using static WinOpenGL_ShaderToy.ProjectDef;
 using static WinOpenGL_ShaderToy.controlUniformData;
 using static modProject.clsUniformSet;
@@ -85,7 +85,6 @@ namespace WinOpenGL_ShaderToy
 			consoleScriptContext.RenderSubject = RenderSubject;
 			Console = new controlConsole();
 			consoleAutoComplete = new clsAutoComplete(Console.Input);
-			consoleAutoComplete.SearchPattern = @"[\w\d\.\,\[\(\]\)\""\s]";
 			consoleAutoComplete.AutoSize = true;
 			consoleAutoComplete.MinFragmentLength = 1;
 			consoleItemsCollection = new clsAutoCompleteCollection(consoleScriptContext, consoleAutoComplete);

@@ -61,6 +61,10 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\ru\Microsoft.CodeAnalysis.Scr
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.dll
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.pdb
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.dll
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Buffers.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Collections.Immutable.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Memory.dll
@@ -166,16 +170,10 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Xml.XmlSerializer.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Xml.XPath.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\System.Xml.XPath.XDocument.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\FastColoredTextBox.dll
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.dll
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\ShaderToy_Components.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\FastColoredTextBox.xml
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.xml
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\OpenTK.GLControl.xml
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\ShaderToy_Components.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.pdb

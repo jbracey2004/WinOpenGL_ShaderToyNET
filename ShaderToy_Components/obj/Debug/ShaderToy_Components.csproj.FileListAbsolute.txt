@@ -6,9 +6,9 @@ C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\bin\Debug\WeifenLu
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.pdb
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.csprojAssemblyReference.cache
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.controlProjectObject.resources
+C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.controlTransparent.resources
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.csproj.GenerateResource.cache
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.csproj.CoreCompileInputs.cache
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.csproj.CopyComplete
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.dll
 C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.pdb
-C:\inetpub\GitHub\WinOpenGL_ShaderToyNET\ShaderToy_Components\obj\Debug\ShaderToy_Components.controlTransparent.resources

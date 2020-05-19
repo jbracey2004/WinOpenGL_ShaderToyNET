@@ -1,5 +1,6 @@
 ﻿using modProject;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
@@ -22,20 +23,19 @@ namespace WinOpenGL_ShaderToy
 		private Matrix4 matxView = Matrix4.Identity;
 		private Matrix4 matxProjection = Matrix4.Identity;
 		private clsCollapsePanel containerMain;
-		private Stopwatch timeRun;
 		private infoFramePerformance tsRender;
 		private void FrmGeometry_Load(object sender, EventArgs e)
 		{
 			glRender = new controlRender();
 			glRender.Name = Geometry.ToString();
-			glRender.Parent = panelCollapse;
+			glRender.Parent = panelRender;
+			glRender.ForeColor = panelRender.ForeColor;
+			glRender.BackColor = panelRender.BackColor;
 			glRender.Dock = DockStyle.Fill;
 			glRender.BringToFront();
-			glRender.BackColor = SystemColors.ControlDarkDark;
-			glRender.ForeColor = SystemColors.Control;
 			glRender.BorderStyle = BorderStyle.FixedSingle;
 			glRender.HandleCreated += glRender_HandleCreated;
-			glRender.ClientSizeChanged += glRender_Resize;
+			glRender.SizeChanged += glRender_Resize;
 			glRender.Paint += glRender_Paint;
 			containerMain = new clsCollapsePanel(panelCollapse);
 			containerMain.CollapseStateChanged += containerMain_CollapseChange;
@@ -85,9 +85,7 @@ namespace WinOpenGL_ShaderToy
 			lstPositionAttr.SelectedIndex = Math.Min(lstPositionAttr.Items.Count - 1, 1);
 			matxView.Row3 = new Vector4(0, 0, -2, 1);
 			panelMain.Timer_IntervalUpdate += timerUpdateLists_EndInterval;
-			timeRun = new Stopwatch();
 			tsRender = new infoFramePerformance();
-			timeRun.Start();
 			glRender_Init();
 			ProjectDef.AllForms.Add(this);
 		}
@@ -220,8 +218,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void glRender_Init()
 		{
-			glRender.Context.Update(glRender.WindowInfo);
-			GL.Viewport(glRender.ClientRectangle);
+			glRender.MakeContextCurrent();
 			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
 			if (itmBuff != null)
 			{
@@ -233,7 +230,7 @@ namespace WinOpenGL_ShaderToy
 					matxProjection = Matrix4.CreateOrthographic(2, 2, -1, 1);
 				}
 			}
-			glRender.Invalidate();
+			glRender_Render();
 		}
 		private void glRender_HandleCreated(object sender, EventArgs e)
 		{
@@ -245,51 +242,50 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void glRender_Paint(object sender, EventArgs e)
 		{
-			glRender_Render();
+			glRender_Init();
 		}
 		private void glRender_Render()
 		{
-			glRender.Context.MakeCurrent(glRender.WindowInfo);
-			GL.Viewport(glRender.ClientRectangle);
-			tsRender.ResetInterval();
-			tsRender.StartInterval();
-			GL.ClearColor(glRender.BackColor);
-			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 			propsVertexDescriptionComponentItem itmBuff = lstPositionAttr.SelectedItem as propsVertexDescriptionComponentItem;
 			if(itmBuff != null)
 			{
-				clsVertexDescriptionComponent comp = itmBuff.Component;
-				GL.Enable(EnableCap.Blend);
-				GL.Enable(EnableCap.ProgramPointSize);
-				GL.Enable(EnableCap.PointSmooth);
-				GL.PointSize(16);
-				GL.LineWidth(2);
-				GL.MatrixMode(MatrixMode.Projection);
-				GL.LoadMatrix(ref matxProjection);
-				GL.MatrixMode(MatrixMode.Modelview);
-				GL.LoadIdentity();
-				if (itmBuff.Component.ElementCount >= 3) GL.LoadMatrix(ref matxView);
-				GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.DstColor);
-				GL.EnableClientState(ArrayCap.VertexArray);
-				GL.EnableClientState(ArrayCap.IndexArray);
-				GL.BindBuffer(BufferTarget.ArrayBuffer, Geometry.glBuffers[comp.Index]);
-				GL.VertexPointer(comp.ElementCount, clsVertexDescriptionComponent.VertexPointerTypes[comp.ElementGLType], comp.ComponentSize, 0);
-				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Geometry.glIndexBuffer);
-				GL.Color4(Color.FromArgb(96, glRender.ForeColor));
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-				GL.Color4(Color.FromArgb(108, glRender.ForeColor));
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-				GL.Color4(Color.FromArgb(128, glRender.ForeColor));
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Point);
-				GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-				GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-				GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+				bool bolRendered = glRender.GLRender(new Action(() => 
+				{
+					clsVertexDescriptionComponent comp = itmBuff.Component;
+					GL.Enable(EnableCap.Blend);
+					GL.Enable(EnableCap.ProgramPointSize);
+					GL.Enable(EnableCap.PointSmooth);
+					GL.PointSize(16);
+					GL.LineWidth(2);
+					GL.MatrixMode(MatrixMode.Projection);
+					GL.LoadMatrix(ref matxProjection);
+					GL.MatrixMode(MatrixMode.Modelview);
+					GL.LoadIdentity();
+					if (itmBuff.Component.ElementCount >= 3) GL.LoadMatrix(ref matxView);
+					GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.DstColor);
+					GL.EnableClientState(ArrayCap.VertexArray);
+					GL.EnableClientState(ArrayCap.IndexArray);
+					GL.BindBuffer(BufferTarget.ArrayBuffer, Geometry.glBuffers[comp.Index]);
+					GL.VertexPointer(comp.ElementCount, clsVertexDescriptionComponent.VertexPointerTypes[comp.ElementGLType], comp.ComponentSize, 0);
+					GL.BindBuffer(BufferTarget.ElementArrayBuffer, Geometry.glIndexBuffer);
+					GL.Color4(Color.FromArgb(96, glRender.ForeColor));
+					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+					GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+					GL.Color4(Color.FromArgb(108, glRender.ForeColor));
+					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+					GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+					GL.Color4(Color.FromArgb(128, glRender.ForeColor));
+					GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Point);
+					GL.DrawElements(PrimitiveType.Triangles, Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+					GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+					GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+				}));
+				if(bolRendered)
+				{
+					if(tsRender != null) tsRender.SampleFrame(glRender.RenderResult.RenderTime);
+					if (glRender.RenderResult.GLResult != 0) Console.WriteLine(glRender.RenderResult.GLResult);
+				}
 			}
-			glRender.Context.SwapBuffers();
-			tsRender.SampleInterval(timeRun.Elapsed.TotalSeconds);
-			tsRender.StopInterval();
 		}
 		private void Geometry_VertexDescription_Updated()
 		{

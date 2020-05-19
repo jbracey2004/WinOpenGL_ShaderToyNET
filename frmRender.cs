@@ -1,4 +1,6 @@
 ﻿using modProject;
+using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Diagnostics;
@@ -12,8 +14,6 @@ using static modProject.clsGeometry;
 using static modCommon.modWndProcInterop.InputInterface;
 using System.Drawing;
 using System.Drawing.Imaging;
-using OpenTK.Platform.Egl;
-using OpenTK.Platform;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -62,7 +62,6 @@ namespace WinOpenGL_ShaderToy
 			timerRender.Stop();
 			timerRender.Dispose();
 			timerRender = null;
-			tsTimeElapsed = null;
 			panelMain.ProjectObject = null;
 			ProjectDef.AllForms.Remove(this);
 		}
@@ -87,13 +86,10 @@ namespace WinOpenGL_ShaderToy
 			glRender.Parent = panelMain.Content;
 			glRender.Dock = DockStyle.Fill;
 			glRender.Cursor = Cursors.Cross;
-			glRender.HandleCreated += glMain_HandleCreated;
 			glRender.SizeChanged += glMain_Resized;
 			glRender.PointerStart += glMain_PointerStart;
 			glRender.PointerMove += glMain_PointerMove;
 			glRender.PointerEnd += glMain_PointerEnd;
-			glRender.Paint += glMain_Render3D;
-			glRender.MakeCurrent();
 			UpdateGeometryRouting();
 			UpdateUniformRouting();
 			tsTimeElapsed = new Stopwatch();
@@ -113,9 +109,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void TimerRender_Tick(object sender, HPIntervalEventArgs e)
 		{
-			glRender.Invalidate();
-			//panelMain.Content.Invalidate();
-			LogFrameStatus();
+			glMain_Render3D();
 			double tsDelta = e.TimeDelta * 0.001;
 			if (bolIsRenderFrameValid)
 			{
@@ -137,15 +131,18 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void LogFrameStatus()
 		{
+			if (Render == null) return;
 			if (ConfigureDialog != null)
 			{
 				if (ConfigureDialog.Console != null)
 				{
-					string str = $"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
-								 $"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
-								 $"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
+					double tsElapsed = glRender.RenderResult.RenderTime;
+					string str = $"Rendered {floatToSIUnits(tsElapsed, SIUnits)}s {floatToSIUnits(1.0/tsElapsed, SIUnits)}Hz; " +
+									$"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
+									$"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
+									$"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
 					ConfigureDialog.Console.Write(str, "Frame Render Status");
-					OpenTK.Graphics.OpenGL.ErrorCode glErr = GL.GetError();
+					ErrorCode glErr = glRender.RenderResult.GLResult;
 					if (glErr != 0)
 					{
 						ConfigureDialog.Console.Write($"{glErr}", $"glError Code {(int)glErr}");
@@ -155,29 +152,12 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void glMain_Resized(object sender, EventArgs e)
 		{
-			glRender.Context.Update(glRender.WindowInfo);
-			glRender.Context.MakeCurrent(glRender.WindowInfo);
-			UpdateGeometryRouting();
 			Render?.RaiseResizeEvent(glRender.Width, glRender.Height);
 		}
-		private void glMain_HandleCreated(object sender, EventArgs e)
-		{
-			glRender.Context.Update(glRender.WindowInfo);
-			glRender.Context.MakeCurrent(glRender.WindowInfo);
-			UpdateGeometryRouting();
-		}
-		//private Bitmap bmp;
-		//private BitmapData mem;
 		private bool bolIsRenderFrameValid = false;
-		private void glMain_Render3D(object sender, PaintEventArgs e)
+		private void glMain_Render3D()
 		{
 			bolIsRenderFrameValid = true;
-			if (!glRender.Context.IsCurrent)
-			{
-				glRender.MakeCurrent();
-				GL.Viewport(glRender.ClientRectangle);
-				GL.ClearColor(glRender.BackColor);
-			}
 			if (Render.Geometry == null || !Render.Geometry.IsValid) bolIsRenderFrameValid = false;
 			if (Render.Program != null)
 			{
@@ -189,39 +169,43 @@ namespace WinOpenGL_ShaderToy
 				bolIsRenderFrameValid = false;
 			}
 			if (bolIsRenderFrameValid) tsRender.StartInterval();
-			//GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-			if (bolIsRenderFrameValid)
+			bool bolRendered = glRender.GLRender(new Action(() => 
 			{
-				UpdateUniformRouting();
-				GL.EnableClientState(ArrayCap.IndexArray);
-				GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
-				GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
-			}
-			glRender.SwapBuffers();
+				if (bolIsRenderFrameValid)
+				{
+					UpdateUniformRouting();
+					GL.EnableClientState(ArrayCap.IndexArray);
+					GL.BindBuffer(BufferTarget.ElementArrayBuffer, Render.Geometry.glIndexBuffer);
+					GL.DrawElements(PrimitiveType.Triangles, Render.Geometry.Triangles.Indices.Length, DrawElementsType.UnsignedInt, 0);
+				}
+			}));
 			if (bolIsRenderFrameValid)
 			{
 				tsRender.StopInterval();
-				tsRender.SampleInterval(CurrentTimeStamp);
+				if(bolRendered) tsRender.SampleInterval(CurrentTimeStamp);
 				tsRender.ResetInterval();
 			}
-			/*bmp = new Bitmap(Width, Height);
-			mem = bmp.LockBits(new Rectangle(0, 0, Width, Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-			GL.PixelStore(PixelStoreParameter.PackRowLength, mem.Stride / 4);
-			GL.ReadPixels(0, 0, Width, Height, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, mem.Scan0);
-			bmp.UnlockBits(mem);
-			mem = null;*/
-			//panelMain.Content.Invalidate();
+			if(bolRendered)
+			{
+				glRender.GDIDraw(glMain_Render2D);
+				LogFrameStatus();
+			}
 		}
-		private void panelMain_Content_Paint(object sender, PaintEventArgs e)
+		private void glMain_Render2D(Graphics gdi)
 		{
-			//e.Graphics.DrawImage(bmp, Point.Empty);
-		}
-		private void glMain_Render2D(object sender, PaintEventArgs e)
-		{
-			string str = $"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
+			infoRenderQueueResult infoRenderResult = glRender.RenderResult;
+			if (infoRenderResult == null) return;
+			double tsElapsed = infoRenderResult.RenderTime;
+			string str = $"ProjectObject: {Render};\n" +
+						 $"Renderer: {GL.GetString(StringName.Renderer)};\n" +
+						 $"OpenGL: {GL.GetString(StringName.Version)};\n" +
+						 $"GLSL: {GL.GetString(StringName.ShadingLanguageVersion)};\n" +
+						 $"TimeRender: {tsElapsed*1000.0} ms, {1.0/tsElapsed} Hz;\n" +
+						 $"Progrm:{((Render.Program != null) ? Render.Program.IsValid.ToString() : "Ø")}; " +
 						 $"Geometry:{{Index:{((Render.Geometry != null) ? Render.Geometry.IsIndexBufferValid.ToString() : "Ø")}; " +
-						 $"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}};";
-			e.Graphics.DrawString(str, Font, new SolidBrush(glRender.ForeColor), new Point(8, 8));
+						 $"Buffers:[{((Render.Geometry != null) ? NumberAsBase(Render.Geometry.ValidVertexBufferFlags, 2) : "Ø")}]}}; \n" +
+						 $"GLResult {(int)infoRenderResult.GLResult}: {infoRenderResult.GLResult};";
+			gdi.DrawString(str, Font, new SolidBrush(glRender.ForeColor), new Point(8, 8));
 		}
 		public void UpdateGeometryRouting()
 		{
@@ -229,7 +213,6 @@ namespace WinOpenGL_ShaderToy
 			if (Render.Program == null) return;
 			if (Render.Geometry == null) return;
 			GL.UseProgram(Render.Program.glID);
-			GL.Viewport(glRender.ClientRectangle);
 			foreach (KeyValuePair<string, clsVertexDescriptionComponent> itrItm in Render.GeometryShaderLinks)
 			{
 				string strAttr = itrItm.Key;
@@ -242,10 +225,11 @@ namespace WinOpenGL_ShaderToy
 				GL.VertexAttribPointer(intUniformLocation, comp.ElementCount, comp.ElementGLType, false, 0, 0);
 			}
 		}
-		public void UpdateUniformRouting()
+		private void UpdateUniformRouting()
 		{
 			if (Render == null) return;
 			if (Render.Program == null) return;
+			if (!Render.Program.IsValid) return;
 			GL.UseProgram(Render.Program.glID);
 			foreach (KeyValuePair<string, clsUniformSet> itm in Render.Uniforms)
 			{

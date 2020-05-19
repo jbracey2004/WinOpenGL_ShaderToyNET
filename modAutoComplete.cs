@@ -23,8 +23,9 @@ namespace WinOpenGL_ShaderToy
 		public clsAutoCompleteItem(string text, string textMenu) : base(text, 0, textMenu) { }
 		public override CompareResult Compare(string fragmentText)
 		{
-			//return base.Compare(fragmentText);
-			return CompareResult.Visible;
+			if (Text.Trim().ToLower() == fragmentText.Trim().ToLower()) return CompareResult.VisibleAndSelected;
+			if (Text.Trim().ToLower().Contains(fragmentText.Trim().ToLower())) return CompareResult.Visible;
+			return CompareResult.Hidden;
 		}
 		public override string GetTextForReplace()
 		{
@@ -258,28 +259,39 @@ namespace WinOpenGL_ShaderToy
 			aryPartObjects.AddRange(clsFragmentPart.ObjectsFromArray(context, aryParts));
 			aryPartObjects.AddRange(clsFragmentPart.ObjectsFromArray(ProjectDef.ScriptContextFunctions, aryParts));
 			int idxEnd = (aryParts.Length > 0)?aryPartObjects.FindIndex(itm => aryParts[aryParts.Length - 1].Name == itm.Key):-1;
-			if (strFragment.LastIndexOf("[") > strFragment.LastIndexOf("."))
-			{
-				IEnumerable ary = aryPartObjects[idxEnd].Value as IEnumerable;
-				if (ary != null)
-				{
-					foreach (var itm in ary)
-					{
-						if (TryKeyPairParse(itm, out KeyValuePair<dynamic, dynamic> kvp))
-						{
-							yield return new clsAutoCompleteItem($"{aryPartObjects[idxEnd].Key}[\"{kvp.Key}\"]", $"\"{kvp.Key}\"");
-						}
-					}
-				}
-				yield break;
-			}
 			if (idxEnd >= 0)
 			{
+				if (strFragment.LastIndexOf("[") > strFragment.LastIndexOf("."))
+				{
+					IEnumerable ary = aryPartObjects[idxEnd].Value as IEnumerable;
+					if (ary != null)
+					{
+						foreach (var itm in ary)
+						{
+							if (TryKeyPairParse(itm, out KeyValuePair<dynamic, dynamic> kvp))
+							{
+								yield return new clsAutoCompleteItem($"{aryPartObjects[idxEnd].Key}[\"{kvp.Key}\"]", $"\"{kvp.Key}\"");
+							}
+						}
+					}
+					yield break;
+				}
 				KeyValuePair<string, object> part = aryPartObjects[idxEnd];
 				foreach (var itm in GetAutoCompleteItems(part.Value.GetType()))
 				{
 					itm.Text = $"{part.Key}{((part.Key != "") ? (".") : (""))}{itm.Text}";
 					yield return itm;
+				}
+			}
+			else
+			{
+				foreach(var part in aryPartObjects)
+				{
+					foreach (var itm in GetAutoCompleteItems(part.Value.GetType()))
+					{
+						itm.Text = $"{part.Key}{((part.Key != "") ? (".") : (""))}{itm.Text}";
+						yield return itm;
+					}
 				}
 			}
 			yield break;
@@ -293,7 +305,11 @@ namespace WinOpenGL_ShaderToy
 	{
 		private Graphics gfx;
 		private Size InitialSize = new Size();
-		public clsAutoComplete(FastColoredTextBox textbox) : base(textbox) { InitialSize = Size; }
+		public clsAutoComplete(FastColoredTextBox textbox) : base(textbox) 
+		{ 
+			InitialSize = Size;
+			SearchPattern = @"[\w\d\.\,\[\(\]\)\""\s]";
+		}
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);

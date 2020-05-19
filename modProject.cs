@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
+using static OpenTK.Platform.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,18 +14,13 @@ using System.Text.RegularExpressions;
 using WeifenLuo.WinFormsUI.Docking;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Diagnostics;
 using static modProject.clsProjectObject;
 using static WinOpenGL_ShaderToy.ProjectDef;
 using static generalUtils;
-using static OpenTK.Platform.Utilities;
 using System.ComponentModel;
 using System.Reflection;
 using static modProject.clsGeometry;
-using System.Windows.Forms;
-using static modProject.clsUniformSet;
 using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
 using WinOpenGL_ShaderToy;
 using static modProject.clsEventScript;
 using static modCommon.modWndProcInterop.InputInterface;
@@ -32,11 +28,11 @@ using System.Xml.Serialization;
 using static modProject.modXml;
 using System.Xml;
 using System.Text;
-using static modCommon.modWndProcInterop;
 using System.Threading.Tasks;
-using modCommon;
-using System.Web.Configuration;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
+using System.Threading;
+using System.Diagnostics;
 
 namespace WinOpenGL_ShaderToy
 {
@@ -45,7 +41,7 @@ namespace WinOpenGL_ShaderToy
 		public static List<DockContent> AllForms = new List<DockContent>();
 		public static DockContent NewFormFromObject(clsProjectObject obj)
 		{
-			switch(obj.ProjectObjType)
+			switch (obj.ProjectObjType)
 			{
 				case ProjectObjectTypes.VertexDescription:
 					return new frmVertexDescription((clsVertexDescription)obj);
@@ -85,28 +81,44 @@ namespace WinOpenGL_ShaderToy
 		public static frmMain formMain;
 		public static clsProject projectMain;
 		public static DockPanel dockMainPanel;
-		public static ContextHandle glHandle_Main;
 		public static GraphicsMode glMode_Main;
 		public static GraphicsContext glContext_Main;
 		public static IWindowInfo infoWindow;
+		private static BitmapData mem;
 		public static void glInit(IntPtr handle)
 		{
-			glHandle_Main = new ContextHandle(handle);
 			infoWindow = CreateWindowsWindowInfo(handle);
-			glMode_Main = new GraphicsMode();
-			glContext_Main = new GraphicsContext(glMode_Main, infoWindow, 4, 0, GraphicsContextFlags.ForwardCompatible);
+			glMode_Main = new GraphicsMode(new ColorFormat(8, 8, 8, 0), 32, 8, 1, new ColorFormat(0, 0, 0, 0), 1, false);
+			glContext_Main = new GraphicsContext(glMode_Main, infoWindow, 5, 0, GraphicsContextFlags.ForwardCompatible);
 			glContext_Main.LoadAll();
+		}
+		public static void glUnload()
+		{
+			glContext_Main.Dispose();
+			glContext_Main = null;
+		}
+		public static void glBlit(Bitmap bmp)
+		{
+			Size sz = new Size(bmp.Width, bmp.Height);
+			mem = bmp.LockBits(new Rectangle(0, 0, sz.Width, sz.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			//GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
+			GL.ReadPixels(0, 0, sz.Width, sz.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
+			//GL.ReadnPixels(0, 0, sz.Width, sz.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, sz.Width*sz.Height*4,mem.Scan0);
+			bmp.UnlockBits(mem);
+			mem = null;
 		}
 		public static void DefaultScriptInit()
 		{
 			ScriptContextFunctions = new clsEventScriptContext_Functions();
 			Assembly[] aryAssm = new Assembly[]
 			{
+				typeof(System.Drawing.PointF).Assembly,
 				typeof(modCommon.modWndProcInterop).Assembly,
 				typeof(modProject.clsEventScript).Assembly
 			};
 			string[] aryImports = new string[] 
 			{
+				"System.Drawing",
 				"modCommon",
 				"modProject",
 				"modProject.clsEventScript",
@@ -155,6 +167,18 @@ namespace WinOpenGL_ShaderToy
 }
 namespace modProject
 {
+	public class clsRenderQueueItem
+	{
+		public Control Widget;
+		public IWindowInfo Window;
+		public bool RenderComplete;
+		public infoRenderQueueResult Result;
+	}
+	public class infoRenderQueueResult
+	{
+		public double RenderTime;
+		public ErrorCode GLResult;
+	}
 	public static class modXml
 	{
 		public static Type[] ProjectXmlTypes = new Type[]
@@ -1984,7 +2008,7 @@ namespace modProject
 		}
 		public void UpdateGLID(bool bolForceNewID = false)
 		{
-			glContext_Main.MakeCurrent(infoWindow);
+			//glContext_Main.MakeCurrent(infoWindow);
 			if (IsValid)
 			{
 				if (!bolForceNewID) return;
@@ -2070,7 +2094,7 @@ namespace modProject
 		}
 		public void UpdateGLID(bool bolForceNewID = false)
 		{
-			glContext_Main.MakeCurrent(infoWindow);
+			//glContext_Main.MakeCurrent(infoWindow);
 			if (IsValid)
 			{
 				if (!bolForceNewID) return;
@@ -3517,7 +3541,7 @@ namespace modProject
 			{
 				int retLine = -1;
 				int retColumn = -1;
-				MatchCollection matches = Regex.Matches(FullString, @"(?<column>[\w\d]{0,})\((?<line>\d+)\)");
+				MatchCollection matches = Regex.Matches(FullString, @"(?<column>(\d){0,})\:(?<line>(\d){0,})");
 				if(matches.Count > 0)
 				{
 					string strLine = matches[0].Groups["line"].Value;
@@ -3559,7 +3583,7 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\:\s+(?<msglevel>\w+)\s(?<msgnum>\w\d+)\:");
+					MatchCollection matches = Regex.Matches(FullString, @"(?<msglevel>[A-Z]+)\:");
 					return (matches.Count > 0) ? (matches[0].Groups["msglevel"].Value).ToUpper() : ("");
 				}
 			}
@@ -3567,7 +3591,7 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\A(?<location>[\w\d]{0,}\(\d+\))\s+\:");
+					MatchCollection matches = Regex.Matches(FullString, @"(?<location>(\d){0,}\:(\d){0,})\:");
 					return (matches.Count > 0) ? (new InfoLocation(matches[0].Groups["location"].Value)) : (new InfoLocation());
 				}
 			}
@@ -3575,8 +3599,8 @@ namespace modProject
 			{
 				get
 				{
-					MatchCollection matches = Regex.Matches(FullString, @"\w\d+\:(\w|\W)+");
-					return (matches.Count > 0) ? (matches[0].Value) : FullString;
+					MatchCollection matches = Regex.Matches(FullString, @"(?<msglevel>[A-Z]+)\:\s(?<location>(\d){0,}\:(\d){0,})\:\s(?<msg>.*?\z)");
+					return (matches.Count > 0) ? (matches[0].Groups["msg"].Value) : FullString;
 				}
 			}
 			public override bool Equals(object obj)

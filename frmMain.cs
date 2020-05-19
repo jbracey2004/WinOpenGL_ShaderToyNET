@@ -32,6 +32,7 @@ namespace WinOpenGL_ShaderToy
 		}
 		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			glUnload();
 			CloseAllForms();
 			projectMain.Dispose();
 			projectMain = null;
